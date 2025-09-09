@@ -7,6 +7,7 @@ import { LanguageProvider } from './context/LanguageContext';
 import { FavoritesProvider } from './context/FavoritesContext';
 import { AdminProvider } from './context/AdminContext';
 import { NotificationProvider, useNotifications } from './context/NotificationContext';
+import { LocationProvider } from './context/LocationContext';
 import { orderGateway } from './services/OrderGateway';
 import Header from './components/Header';
 import ParallaxHero from './components/ParallaxHero';
@@ -24,9 +25,6 @@ import TermsPage from './components/TermsPage';
 import CookiePolicyPage from './components/CookiePolicyPage';
 import AllergenInformationPage from './components/AllergenInformationPage';
 import Footer from './components/Footer';
-import TestimonialsSection from './components/TestimonialsSection';
-import ChefShowcaseSection from './components/ChefShowcaseSection';
-import SpecialOffersSection from './components/SpecialOffersSection';
 import { AdminDashboard } from './components/AdminDashboard';
 import { NotificationCenter } from './components/NotificationCenter';
 
@@ -56,19 +54,21 @@ function App() {
   return (
     <LanguageProvider>
       <ToastProvider>
-        <AuthProvider>
-          <NotificationProvider>
-            <FavoritesProvider>
-              <OrderProvider>
-                <CartProvider>
-                  <AdminProvider>
-                    <AppContent />
-                  </AdminProvider>
-                </CartProvider>
-              </OrderProvider>
-            </FavoritesProvider>
-          </NotificationProvider>
-        </AuthProvider>
+        <LocationProvider>
+          <AuthProvider>
+            <NotificationProvider>
+              <FavoritesProvider>
+                <OrderProvider>
+                  <CartProvider>
+                    <AdminProvider>
+                      <AppContent />
+                    </AdminProvider>
+                  </CartProvider>
+                </OrderProvider>
+              </FavoritesProvider>
+            </NotificationProvider>
+          </AuthProvider>
+        </LocationProvider>
       </ToastProvider>
     </LanguageProvider>
   );
@@ -77,7 +77,7 @@ function App() {
 function AppContent() {
   const { state: authState } = useAuth();
   const [currentView, setCurrentView] = useState<'home' | 'menu' | 'about' | 'orders' | 'my-orders' | 'admin' | 'impressum' | 'jobs' | 'privacy' | 'terms' | 'cookies' | 'allergens'>('home');
-  const [selectedRestaurant, setSelectedRestaurant] = useState<string>('');
+  const [selectedRestaurant, setSelectedRestaurant] = useState<string>('doner');
   const [viewTransition, setViewTransition] = useState(false);
 
   // Protect admin panel access
@@ -138,23 +138,17 @@ function AppContent() {
 
   const renderCurrentView = () => {
     switch (currentView) {
-      case 'home':
-        return (
-          <>
-            <ParallaxHero onRestaurantSelect={handleRestaurantSelect} />
-            <RestaurantSection onRestaurantSelect={handleRestaurantSelect} />
-            <ChefShowcaseSection />
-            <SpecialOffersSection />
-            <TestimonialsSection />
-          </>
-        );
       case 'menu':
-        if (selectedRestaurant) {
-          // Show food items for selected restaurant
-          return <MenuSection restaurantId={selectedRestaurant} />;
-        } else {
-          // Show location cards when no restaurant is selected
+        if (selectedRestaurant === 'locations') {
           return <LocationCardsPage onRestaurantSelect={handleRestaurantSelect} />;
+        } else {
+          return (
+            <div className="bg-gray-900 min-h-screen pt-20">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <MenuSection restaurantId={selectedRestaurant} />
+              </div>
+            </div>
+          );
         }
       case 'about':
         return <AboutPage />;

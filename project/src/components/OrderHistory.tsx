@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Clock, MapPin, Truck, Star, RotateCcw } from 'lucide-react';
+import { Clock, MapPin, Star, RotateCcw } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useOrder } from '../context/OrderContext';
 import { useCart } from '../context/CartContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Order } from '../types';
 
 const OrderHistory: React.FC = () => {
   const { state: authState } = useAuth();
   const { getOrderHistory } = useOrder();
   const { addToCart } = useCart();
+  const { t } = useLanguage();
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
@@ -24,22 +26,20 @@ const OrderHistory: React.FC = () => {
       case 'confirmed': return 'text-blue-400';
       case 'preparing': return 'text-orange-400';
       case 'ready': return 'text-green-400';
-      case 'out-for-delivery': return 'text-purple-400';
-      case 'delivered': return 'text-green-500';
       case 'completed': return 'text-gray-400';
+      case 'cancelled': return 'text-red-400';
       default: return 'text-gray-400';
     }
   };
 
   const getStatusText = (status: Order['status']) => {
     switch (status) {
-      case 'pending': return 'Order Placed';
-      case 'confirmed': return 'Confirmed';
-      case 'preparing': return 'Preparing';
-      case 'ready': return 'Ready';
-      case 'out-for-delivery': return 'Out for Delivery';
-      case 'delivered': return 'Delivered';
-      case 'completed': return 'Completed';
+      case 'pending': return t('order.pending');
+      case 'confirmed': return t('order.confirmed');
+      case 'preparing': return t('order.preparing');
+      case 'ready': return t('order.ready');
+      case 'completed': return t('order.completed');
+      case 'cancelled': return 'Cancelled'; // This might not have translation yet
       default: return status;
     }
   };
@@ -53,7 +53,7 @@ const OrderHistory: React.FC = () => {
   if (!authState.isAuthenticated) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-400 text-lg">Please sign in to view your order history</p>
+        <p className="text-gray-400 text-lg">{t('order.signInToView')}</p>
       </div>
     );
   }
@@ -62,15 +62,15 @@ const OrderHistory: React.FC = () => {
     return (
       <div className="text-center py-12">
         <Clock className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-        <p className="text-gray-400 text-lg mb-2">No orders yet</p>
-        <p className="text-gray-500">Your order history will appear here</p>
+        <p className="text-gray-400 text-lg mb-2">{t('order.noOrdersMessage')}</p>
+        <p className="text-gray-500">{t('order.historyAppears')}</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-white mb-6">Order History</h2>
+      <h2 className="text-2xl font-bold text-white mb-6">{t('order.orderHistory')}</h2>
       
       {orders.map((order) => (
         <div key={order.id} className="bg-black border border-gray-800 rounded-xl p-6">
@@ -78,10 +78,10 @@ const OrderHistory: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-lg font-semibold text-white">
-                Order #{order.id.slice(-8).toUpperCase()}
+                {t('order.orderNumberShort')}{order.id.slice(-8).toUpperCase()}
               </h3>
               <p className="text-gray-400 text-sm">
-                {new Date(order.createdAt).toLocaleDateString()} at{' '}
+                {new Date(order.createdAt).toLocaleDateString()} {t('order.at')}{' '}
                 {new Date(order.createdAt).toLocaleTimeString()}
               </p>
             </div>
@@ -97,14 +97,10 @@ const OrderHistory: React.FC = () => {
 
           {/* Order Type */}
           <div className="flex items-center mb-4 text-gray-400">
-            {order.orderType === 'delivery' ? (
-              <Truck className="w-4 h-4 mr-2" />
-            ) : (
-              <MapPin className="w-4 h-4 mr-2" />
-            )}
-            <span className="capitalize">{order.orderType}</span>
+            <MapPin className="w-4 h-4 mr-2" />
+            <span className="capitalize">{t('order.pickup')}</span>
             {order.estimatedTime && (
-              <span className="ml-4">• Est. {order.estimatedTime}</span>
+              <span className="ml-4">• {t('order.est')} {order.estimatedTime}</span>
             )}
           </div>
 
@@ -120,10 +116,10 @@ const OrderHistory: React.FC = () => {
                   />
                   <div>
                     <h4 className="text-white font-medium">{item.menuItem.name}</h4>
-                    <p className="text-gray-400 text-sm">Qty: {item.quantity}</p>
+                    <p className="text-gray-400 text-sm">{t('order.qtyLabel')} {item.quantity}</p>
                     {item.customizations && item.customizations.length > 0 && (
                       <p className="text-gray-500 text-xs">
-                        {item.customizations.length} modification(s)
+                        {item.customizations.length} {t('order.modifications')}
                       </p>
                     )}
                   </div>
@@ -143,17 +139,17 @@ const OrderHistory: React.FC = () => {
                 className="flex items-center space-x-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
               >
                 <RotateCcw className="w-4 h-4" />
-                <span>Reorder</span>
+                <span>{t('order.reorderBtn')}</span>
               </button>
               <button className="flex items-center space-x-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors">
                 <Star className="w-4 h-4" />
-                <span>Rate Order</span>
+                <span>{t('order.rateOrderBtn')}</span>
               </button>
             </div>
             
             {order.specialInstructions && (
               <div className="text-right">
-                <p className="text-gray-500 text-xs">Special Instructions:</p>
+                <p className="text-gray-500 text-xs">{t('order.specialInstructionsLabel')}</p>
                 <p className="text-gray-400 text-sm">{order.specialInstructions}</p>
               </div>
             )}

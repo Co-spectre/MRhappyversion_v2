@@ -1,8 +1,9 @@
 // MongoDB Schema Definitions for MRhappy Restaurant Platform
-// Using Mongoose ODM for schema validation and structure
+// Connection: mongodb://localhost:27018/mrhappy
 
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 
 // ==========================================
 // USER SCHEMA - Authentication & Profile
@@ -34,7 +35,13 @@ const userSchema = new mongoose.Schema({
   phone: {
     type: String,
     trim: true,
-    match: [/^[\+]?[1-9][\d]{0,15}$/, 'Please enter a valid phone number']
+    validate: {
+      validator: function(v) {
+        // Allow various phone number formats: +49 421 123 4567, +49-421-123-4567, +494211234567, etc.
+        return !v || /^[\+]?[\d\s\-\(\)]{10,20}$/.test(v);
+      },
+      message: 'Please enter a valid phone number'
+    }
   },
   
   // Role-based access control
@@ -59,6 +66,13 @@ const userSchema = new mongoose.Schema({
   // Password reset
   passwordResetToken: String,
   passwordResetExpires: Date,
+  
+  // Refresh tokens for JWT authentication
+  refreshTokens: [{
+    token: { type: String, required: true },
+    expiresAt: { type: Date, required: true },
+    createdAt: { type: Date, default: Date.now }
+  }],
   
   // Customer specific data
   addresses: [{
@@ -132,7 +146,6 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 
 // Generate email verification token
 userSchema.methods.createEmailVerificationToken = function() {
-  const crypto = require('crypto');
   const token = crypto.randomBytes(32).toString('hex');
   
   this.emailVerificationToken = crypto
@@ -147,7 +160,6 @@ userSchema.methods.createEmailVerificationToken = function() {
 
 // Generate password reset token
 userSchema.methods.createPasswordResetToken = function() {
-  const crypto = require('crypto');
   const resetToken = crypto.randomBytes(32).toString('hex');
   
   this.passwordResetToken = crypto
@@ -371,8 +383,10 @@ const orderSchema = new mongoose.Schema({
   // Order identification
   orderNumber: {
     type: String,
-    required: true,
-    unique: true
+    unique: true,
+    default: function() {
+      return `MR${Date.now().toString().slice(-8)}${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+    }
   },
   
   // Customer reference
@@ -654,11 +668,9 @@ const analyticsSchema = new mongoose.Schema({
 // ==========================================
 // EXPORT SCHEMAS
 // ==========================================
-module.exports = {
-  User: mongoose.model('User', userSchema),
-  Restaurant: mongoose.model('Restaurant', restaurantSchema),
-  MenuItem: mongoose.model('MenuItem', menuItemSchema),
-  Order: mongoose.model('Order', orderSchema),
-  Inventory: mongoose.model('Inventory', inventorySchema),
-  Analytics: mongoose.model('Analytics', analyticsSchema)
-};
+export const User = mongoose.model('User', userSchema);
+export const Restaurant = mongoose.model('Restaurant', restaurantSchema);
+export const MenuItem = mongoose.model('MenuItem', menuItemSchema);
+export const Order = mongoose.model('Order', orderSchema);
+export const Inventory = mongoose.model('Inventory', inventorySchema);
+export const Analytics = mongoose.model('Analytics', analyticsSchema);

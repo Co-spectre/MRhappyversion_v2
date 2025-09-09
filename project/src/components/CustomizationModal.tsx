@@ -140,7 +140,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
                       >
                         <div className="font-medium">{size.name}</div>
                         <div className="text-sm opacity-75">
-                          ${(item.basePrice * size.priceMultiplier).toFixed(2)}
+                          €{(item.basePrice * size.priceMultiplier).toFixed(2)}
                         </div>
                       </button>
                     ))}

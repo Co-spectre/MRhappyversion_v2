@@ -1,9 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Menu, X, User, Search, LogOut, History, Heart, Languages, Shield, UtensilsCrossed, Beef, ChefHat } from 'lucide-react';
+import { 
+  ShoppingCart, 
+  Menu, 
+  X, 
+  User, 
+  LogOut, 
+  History, 
+  Heart, 
+  Languages, 
+  Shield, 
+  UtensilsCrossed, 
+  Beef, 
+  ChefHat,
+  MapPin
+} from './icons';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage, Language } from '../context/LanguageContext';
-import LoginModal from './LoginModal';
+import { useLocation } from '../context/LocationContext';
+import EnhancedRegistrationModal from './EnhancedRegistrationModal';
+import UserProfileModal from './UserProfileModal';
+import LocationPermissionModal from './LocationPermissionModal';
 
 interface HeaderProps {
   currentRestaurant: string;
@@ -15,12 +32,20 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ currentRestaurant, onRestaurantChange, currentView, onViewChange }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const { getTotalItems, getTotalPrice, dispatch } = useCart();
-  const { state, logout } = useAuth();
+  const { state, logout, checkProfileComplete } = useAuth();
   const { language, setLanguage, t } = useLanguage();
+  const { 
+    location, 
+    isLocationEnabled, 
+    showLocationModal, 
+    setShowLocationModal, 
+    setLocation: setLocationData 
+  } = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -70,9 +95,42 @@ const Header: React.FC<HeaderProps> = ({ currentRestaurant, onRestaurantChange, 
     if (state.isAuthenticated) {
       setIsUserMenuOpen(!isUserMenuOpen);
     } else {
-      setIsLoginModalOpen(true);
+      setIsRegistrationModalOpen(true);
     }
   };
+
+  const handleLocationRequest = () => {
+    if (!isLocationEnabled) {
+      setShowLocationModal(true);
+    }
+  };
+
+  const handleLocationGranted = (position: GeolocationPosition) => {
+    const locationData = {
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude,
+      accuracy: position.coords.accuracy,
+      timestamp: Date.now()
+    };
+    setLocationData(locationData);
+  };
+
+  const handleLocationDenied = () => {
+    // User can manually enter address during checkout
+    console.log('Location access denied');
+  };
+
+  const getProfileCompletionStatus = () => {
+    if (!state.isAuthenticated) return null;
+    const isComplete = checkProfileComplete();
+    return {
+      isComplete,
+      icon: isComplete ? <User className="w-5 h-5 text-green-400" /> : <User className="w-5 h-5 text-orange-400" />,
+      badgeColor: isComplete ? 'bg-green-500' : 'bg-orange-500'
+    };
+  };
+
+  const profileStatus = getProfileCompletionStatus();
 
   return (
     <>
@@ -133,6 +191,24 @@ const Header: React.FC<HeaderProps> = ({ currentRestaurant, onRestaurantChange, 
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
+            {/* Location Button */}
+            <button
+              onClick={handleLocationRequest}
+              className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+                isLocationEnabled
+                  ? 'text-green-400 bg-green-500/10 hover:bg-green-500/20'
+                  : 'text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700'
+              }`}
+              title={isLocationEnabled ? 'Location enabled' : 'Enable location for better experience'}
+            >
+              <MapPin className={`w-4 h-4 ${isLocationEnabled ? 'text-green-400' : ''}`} />
+              {isLocationEnabled && location?.address?.city && (
+                <span className="text-sm hidden sm:inline">
+                  {location.address.city}
+                </span>
+              )}
+            </button>
+
             {/* Language Switcher Dropdown */}
             <div className="relative">
               <button
@@ -176,18 +252,22 @@ const Header: React.FC<HeaderProps> = ({ currentRestaurant, onRestaurantChange, 
               )}
             </div>
 
-            {/* Search */}
-            <button className="p-2 text-gray-300 hover:text-white transition-colors">
-              <Search className="w-5 h-5" />
-            </button>
-
             {/* User Account */}
             <div className="relative">
               <button 
                 onClick={handleUserMenuClick}
-                className="flex items-center space-x-2 p-2 text-gray-300 hover:text-white transition-colors"
+                className="flex items-center space-x-2 p-2 text-gray-300 hover:text-white transition-colors relative"
               >
-                <User className="w-5 h-5" />
+                {state.isAuthenticated && profileStatus ? (
+                  <div className="relative">
+                    {profileStatus.icon}
+                    {!profileStatus.isComplete && (
+                      <div className={`absolute -top-1 -right-1 w-3 h-3 ${profileStatus.badgeColor} rounded-full border-2 border-gray-900`} />
+                    )}
+                  </div>
+                ) : (
+                  <User className="w-5 h-5" />
+                )}
                 {state.isAuthenticated && (
                   <span className="hidden sm:block text-sm font-medium">{state.user?.name}</span>
                 )}
@@ -199,18 +279,48 @@ const Header: React.FC<HeaderProps> = ({ currentRestaurant, onRestaurantChange, 
                   {/* User Info Section */}
                   <div className="p-4 bg-gradient-to-r from-gray-800 to-gray-700 border-b border-gray-600">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center">
+                      <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center relative">
                         <User className="w-5 h-5 text-white" />
+                        {!checkProfileComplete() && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full border-2 border-gray-900" />
+                        )}
                       </div>
-                      <div>
+                      <div className="flex-1">
                         <p className="text-white font-semibold text-sm">{state.user?.name}</p>
                         <p className="text-gray-300 text-xs">{state.user?.email}</p>
+                        {!checkProfileComplete() && (
+                          <p className="text-orange-400 text-xs mt-1">Profile incomplete</p>
+                        )}
                       </div>
                     </div>
                   </div>
                   
                   {/* Menu Items */}
                   <div className="py-2">
+                    <button
+                      onClick={() => {
+                        setIsProfileModalOpen(true);
+                        setIsUserMenuOpen(false);
+                      }}
+                      className="flex items-center space-x-3 w-full px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-700/80 transition-all duration-200 group h-14"
+                    >
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors flex-shrink-0 ${
+                        checkProfileComplete() 
+                          ? 'bg-gray-700 group-hover:bg-green-600' 
+                          : 'bg-orange-900/50 group-hover:bg-orange-600'
+                      }`}>
+                        <User className={`w-4 h-4 transition-colors ${
+                          checkProfileComplete()
+                            ? 'text-gray-300 group-hover:text-white'
+                            : 'text-orange-400 group-hover:text-white'
+                        }`} />
+                      </div>
+                      <span className="font-medium text-sm">Manage Profile</span>
+                      {!checkProfileComplete() && (
+                        <div className="ml-auto w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+                      )}
+                    </button>
+
                     <button
                       onClick={() => {
                         onViewChange('orders');
@@ -358,10 +468,24 @@ const Header: React.FC<HeaderProps> = ({ currentRestaurant, onRestaurantChange, 
       </div>
     </header>
     
-    {/* Login Modal */}
-    <LoginModal 
-      isOpen={isLoginModalOpen} 
-      onClose={() => setIsLoginModalOpen(false)} 
+    {/* Enhanced Registration Modal */}
+    <EnhancedRegistrationModal 
+      isOpen={isRegistrationModalOpen} 
+      onClose={() => setIsRegistrationModalOpen(false)} 
+    />
+    
+    {/* User Profile Modal */}
+    <UserProfileModal 
+      isOpen={isProfileModalOpen} 
+      onClose={() => setIsProfileModalOpen(false)} 
+    />
+    
+    {/* Location Permission Modal */}
+    <LocationPermissionModal 
+      isOpen={showLocationModal} 
+      onClose={() => setShowLocationModal(false)}
+      onLocationGranted={handleLocationGranted}
+      onLocationDenied={handleLocationDenied}
     />
     
     {/* Click outside to close user menu */}

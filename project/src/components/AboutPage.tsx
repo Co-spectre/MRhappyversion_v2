@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, Award, Users, Clock, Leaf, Shield } from 'lucide-react';
+import { Heart, Award, Users, Clock, Leaf, Shield, ChefHat, Flame, UtensilsCrossed } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const AboutPage: React.FC = () => {
@@ -8,33 +8,33 @@ const AboutPage: React.FC = () => {
   const values = [
     {
       icon: Heart,
-      title: 'Passion for Food',
-      description: 'Every dish is crafted with love and attention to detail, using only the finest ingredients.'
+      title: t('about.values.passion.title'),
+      description: t('about.values.passion.desc')
     },
     {
       icon: Award,
-      title: 'Quality Excellence',
-      description: 'We maintain the highest standards in food preparation, service, and customer satisfaction.'
+      title: t('about.values.quality.title'),
+      description: t('about.values.quality.desc')
     },
     {
       icon: Users,
-      title: 'Community First',
-      description: 'Building lasting relationships with our customers and supporting our local community.'
+      title: t('about.values.community.title'),
+      description: t('about.values.community.desc')
     },
     {
       icon: Clock,
-      title: 'Fresh Daily',
-      description: 'All ingredients are sourced fresh daily to ensure maximum flavor and nutritional value.'
+      title: t('about.values.fresh.title'),
+      description: t('about.values.fresh.desc')
     },
     {
       icon: Leaf,
-      title: 'Sustainable Practices',
-      description: 'Committed to environmentally responsible sourcing and eco-friendly packaging.'
+      title: t('about.values.sustainable.title'),
+      description: t('about.values.sustainable.desc')
     },
     {
       icon: Shield,
-      title: 'Food Safety',
-      description: 'Rigorous food safety protocols and regular health inspections ensure your peace of mind.'
+      title: t('about.values.safety.title'),
+      description: t('about.values.safety.desc')
     }
   ];
 
@@ -64,22 +64,31 @@ const AboutPage: React.FC = () => {
 
   const team = [
     {
-      name: 'Chef Mehmet Özkan',
-      role: 'Head Chef - Mr.Happy Doner',
-      image: 'https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=400',
-      bio: '25+ years of Turkish culinary expertise, trained in Istanbul\'s finest restaurants.'
+      name: 'Chef Muhittin',
+      role: 'The Griller - Mr.Happy Burger',
+      icon: 'https://images.pexels.com/photos/2102934/pexels-photo-2102934.jpeg?auto=compress&cs=tinysrgb&w=400',
+      bio: 'Master of the grill, specializing in premium burger creations and perfectly cooked meats. Known for his precision and passion for creating the perfect burger experience.',
+      specialty: 'Grill Master',
+      specialtyIcon: Flame,
+      gradient: 'from-orange-500 to-red-600'
     },
     {
-      name: 'Chef Marcus Johnson',
-      role: 'Head Chef - Mr.Happy Burger',
-      image: 'https://images.pexels.com/photos/2102934/pexels-photo-2102934.jpeg?auto=compress&cs=tinysrgb&w=400',
-      bio: 'Former sous chef at Michelin-starred restaurants, specializing in elevated comfort food.'
+      name: 'Chef Muhammet',
+      role: 'Head Chef - Mr.Happy Döner',
+      icon: 'https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=400',
+      bio: 'Traditional döner specialist with years of experience in authentic Turkish cuisine. Expert in traditional marinades and döner preparation techniques.',
+      specialty: 'Döner Specialist',
+      specialtyIcon: UtensilsCrossed,
+      gradient: 'from-green-500 to-blue-600'
     },
     {
-      name: 'Chef Maria Rodriguez',
+      name: 'Chef Mustafa',
       role: 'Executive Chef - Mr.Happy Restaurant',
-      image: 'https://images.pexels.com/photos/2102933/pexels-photo-2102933.jpeg?auto=compress&cs=tinysrgb&w=400',
-      bio: 'Culinary Institute graduate with expertise in international cuisine and innovative techniques.'
+      icon: 'https://images.pexels.com/photos/2102933/pexels-photo-2102933.jpeg?auto=compress&cs=tinysrgb&w=400',
+      bio: 'Culinary artist with expertise in fine dining and international cuisine. Creates innovative dishes that blend traditional techniques with modern presentation.',
+      specialty: 'Fine Dining Expert',
+      specialtyIcon: ChefHat,
+      gradient: 'from-purple-500 to-red-600'
     }
   ];
 
@@ -143,9 +152,9 @@ const AboutPage: React.FC = () => {
       <section className="py-20 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">Our Values</h2>
+            <h2 className="text-4xl font-bold text-white mb-4">{t('about.values.title')}</h2>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              The principles that guide everything we do, from sourcing ingredients to serving customers
+              {t('about.values.subtitle')}
             </p>
           </div>
 
@@ -169,9 +178,9 @@ const AboutPage: React.FC = () => {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">Our Restaurant Concepts</h2>
+            <h2 className="text-4xl font-bold text-white mb-4">{t('about.restaurants.title')}</h2>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Three distinct culinary experiences, each with its own personality and specialties
+              {t('about.restaurants.subtitle')}
             </p>
           </div>
 
@@ -194,7 +203,7 @@ const AboutPage: React.FC = () => {
                   </p>
                   
                   <div className="mb-6">
-                    <h4 className="text-lg font-semibold text-white mb-3">Specialties</h4>
+                    <h4 className="text-lg font-semibold text-white mb-3">{t('about.restaurants.specialties')}</h4>
                     <div className="flex flex-wrap gap-2">
                       {restaurant.specialties.map((specialty, idx) => (
                         <span key={idx} className="px-3 py-1 bg-red-600/10 text-red-400 rounded-full text-sm">
@@ -218,25 +227,34 @@ const AboutPage: React.FC = () => {
       <section className="py-20 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">Meet Our Culinary Team</h2>
+            <h2 className="text-4xl font-bold text-white mb-4">{t('about.team.title')}</h2>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              The talented chefs and culinary artists behind our exceptional dining experiences
+              {t('about.team.subtitle')}
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {team.map((member, index) => (
-              <div key={index} className="text-center">
-                <div className="relative mb-6">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-48 h-48 object-cover rounded-full mx-auto shadow-2xl"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent rounded-full" />
+              <div key={index} className="text-center group">
+                <div className="relative mb-6 transform transition-all duration-300 group-hover:scale-105">
+                  <div className={`w-48 h-48 bg-gradient-to-br ${member.gradient} rounded-full mx-auto shadow-2xl flex items-center justify-center`}>
+                    <div className="w-40 h-40 bg-gray-800 rounded-full flex items-center justify-center border-4 border-white/20">
+                      <img
+                        src={member.icon}
+                        alt={member.name}
+                        className="w-32 h-32 object-cover rounded-full"
+                      />
+                    </div>
+                  </div>
+                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+                    <div className="bg-gray-800 border border-gray-600 text-white px-4 py-2 rounded-full text-sm font-medium flex items-center space-x-2 shadow-lg">
+                      <member.specialtyIcon className="w-4 h-4" />
+                      <span>{member.specialty}</span>
+                    </div>
+                  </div>
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">{member.name}</h3>
-                <p className="text-red-600 font-medium mb-4">{member.role}</p>
+                <p className="text-red-400 font-medium mb-4">{member.role}</p>
                 <p className="text-gray-400 leading-relaxed">{member.bio}</p>
               </div>
             ))}
@@ -247,17 +265,16 @@ const AboutPage: React.FC = () => {
       {/* Contact CTA */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold text-white mb-6">Join the Mr.Happy Family</h2>
+          <h2 className="text-4xl font-bold text-white mb-6">{t('about.cta.title')}</h2>
           <p className="text-xl text-gray-400 mb-8 leading-relaxed">
-            Experience the difference that passion, quality, and dedication make. 
-            We can't wait to serve you and create your next happy moment.
+            {t('about.cta.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-red-600/25">
-              Order Now
+              {t('about.cta.orderNow')}
             </button>
             <button className="bg-gray-800 hover:bg-gray-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 border border-gray-700 hover:border-gray-600">
-              Contact Us
+              {t('about.cta.contactUs')}
             </button>
           </div>
         </div>

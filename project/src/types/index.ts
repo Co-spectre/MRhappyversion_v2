@@ -137,6 +137,7 @@ export interface AuthUser {
   email: string;
   name: string;
   phone?: string;
+  emailVerified?: boolean;
   addresses: Address[];
   favoriteItems: string[];
   loyaltyPoints: number;

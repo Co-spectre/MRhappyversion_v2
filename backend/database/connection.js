@@ -1,6 +1,6 @@
 // MongoDB Database Configuration and Connection Setup
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
 // Load environment variables
 dotenv.config();
@@ -12,22 +12,18 @@ class Database {
 
   async connect() {
     try {
-      // MongoDB connection options
+      // MongoDB connection options (updated for modern MongoDB driver)
       const options = {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
         maxPoolSize: 10, // Maintain up to 10 socket connections
         serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
         socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
         family: 4, // Use IPv4, skip trying IPv6
-        bufferCommands: false, // Disable mongoose buffering
-        bufferMaxEntries: 0 // Disable mongoose buffering
       };
 
-      // Connection string from environment or default
+      // Connection string for MRhappy dedicated MongoDB instance (port 27017)
       const connectionString = process.env.MONGODB_URI || 
         process.env.MONGODB_URL || 
-        'mongodb://localhost:27017/mrhappy_restaurant';
+        'mongodb://localhost:27017/mrhappy';
 
       // Connect to MongoDB
       this.connection = await mongoose.connect(connectionString, options);
@@ -124,7 +120,5 @@ class Database {
 // Create and export database instance
 const database = new Database();
 
-module.exports = {
-  database,
-  mongoose
-};
+export { database, mongoose };
+export default database;

@@ -1,10 +1,10 @@
 // MongoDB Database Seeder for MRhappy Restaurant Platform
 // Populates the database with initial data for development and testing
 
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const { database } = require('./connection');
-const { User, Restaurant, MenuItem, Order, Inventory, Analytics } = require('./mongodb-schema');
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+import { database } from './connection.js';
+import { User, Restaurant, MenuItem, Order, Inventory, Analytics } from './mongodb-schema.js';
 
 class DatabaseSeeder {
   constructor() {

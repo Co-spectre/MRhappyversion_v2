@@ -22,6 +22,14 @@ const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = fal
   const { addToCart } = useCart();
 
   const restaurantMenuItems = menuItems.filter(item => item.restaurantId === restaurantId);
+  
+  // Debug logging
+  console.log('MenuSection Debug:', {
+    restaurantId,
+    totalMenuItems: menuItems.length,
+    filteredMenuItems: restaurantMenuItems.length,
+    menuItemsSample: menuItems.slice(0, 2).map(item => ({ id: item.id, restaurantId: item.restaurantId }))
+  });
 
   // Get all available ingredients from the global ingredients list
   const availableIngredients: Ingredient[] = useMemo(() => {
@@ -168,7 +176,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = fal
                 <div className="h-full flex flex-col">
                   <MenuItemCard
                     item={item}
-                    onCustomizeClick={handleCustomizeClick}
+                    onCustomizeClick={item.customizable ? handleCustomizeClick : undefined}
                   />
                 </div>
               </div>
@@ -205,4 +213,6 @@ const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = fal
     </div>
   );
 };
+
+export default MenuSection;
 

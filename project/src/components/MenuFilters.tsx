@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter } from './icons';
 
 interface MenuFiltersProps {
   categories: string[];

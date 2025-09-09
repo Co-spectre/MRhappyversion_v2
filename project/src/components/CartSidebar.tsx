@@ -2,14 +2,13 @@ import React from 'react';
 import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { useOrder } from '../context/OrderContext';
 import OrderTypeSelector from './OrderTypeSelector';
+import CheckoutModal from './CheckoutModal';
 
 const CartSidebar: React.FC = () => {
   const { state, dispatch, getTotalPrice, removeFromCart } = useCart();
-  const { state: authState } = useAuth();
-  const { createOrder } = useOrder();
-  const [isCheckingOut, setIsCheckingOut] = React.useState(false);
+  const { state: authState, checkProfileComplete } = useAuth();
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = React.useState(false);
   const [slideIn, setSlideIn] = React.useState(false);
 
   // Trigger slide-in animation when cart opens
@@ -29,7 +28,7 @@ const CartSidebar: React.FC = () => {
     }
   };
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     if (!authState.isAuthenticated) {
       alert('Please sign in to place an order');
       return;
@@ -37,17 +36,13 @@ const CartSidebar: React.FC = () => {
     
     if (state.items.length === 0) return;
     
-    setIsCheckingOut(true);
-    try {
-      await createOrder(state.items, authState.user!.id);
-      dispatch({ type: 'CLEAR_CART' });
-      dispatch({ type: 'CLOSE_CART' });
-      alert('Order placed successfully!');
-    } catch (error) {
-      alert('Failed to place order. Please try again.');
-    } finally {
-      setIsCheckingOut(false);
+    // Check if profile is complete
+    if (!checkProfileComplete()) {
+      alert('Please complete your profile before placing an order');
+      return;
     }
+    
+    setIsCheckoutModalOpen(true);
   };
   const getCustomizationSummary = (customizations: any[]) => {
     if (customizations.length === 0) return 'No modifications';
@@ -64,7 +59,8 @@ const CartSidebar: React.FC = () => {
   if (!state.isOpen) return null;
 
   return (
-    <div className={`fixed inset-0 z-50 overflow-hidden transition-all duration-300 ${state.isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+    <>
+      <div className={`fixed inset-0 z-50 overflow-hidden transition-all duration-300 ${state.isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
       {/* Background overlay */}
       <div 
         className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${state.isOpen ? 'opacity-100' : 'opacity-0'}`}
@@ -216,18 +212,17 @@ const CartSidebar: React.FC = () => {
               <div className="space-y-2">
                 <button 
                   onClick={handleCheckout}
-                  disabled={isCheckingOut || !authState.isAuthenticated}
+                  disabled={state.items.length === 0}
                   className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-600 disabled:to-gray-700 text-white py-3 rounded-lg font-bold transition-all duration-300 hover:shadow-xl hover:shadow-red-600/25 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  {isCheckingOut ? (
-                    <div className="flex items-center justify-center space-x-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Placing Order...</span>
-                    </div>
-                  ) : !authState.isAuthenticated ? (
+                  {!authState.isAuthenticated ? (
                     'Sign In to Order'
+                  ) : !checkProfileComplete() ? (
+                    'Complete Profile to Order'
+                  ) : state.items.length === 0 ? (
+                    'Add Items to Order'
                   ) : (
-                    `Place Order - €${getTotalPrice().toFixed(2)}`
+                    `Proceed to Checkout - €${getTotalPrice().toFixed(2)}`
                   )}
                 </button>
                 <button 
@@ -242,6 +237,13 @@ const CartSidebar: React.FC = () => {
         </div>
       </div>
     </div>
+    
+    {/* Checkout Modal */}
+    <CheckoutModal 
+      isOpen={isCheckoutModalOpen}
+      onClose={() => setIsCheckoutModalOpen(false)}
+    />
+    </>
   );
 };
 

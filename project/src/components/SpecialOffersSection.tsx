@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Percent, Gift } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const SpecialOffersSection: React.FC = () => {
   const { state, applyPromoCode, dispatch } = useCart();
+  const { t } = useLanguage();
   const [promoCode, setPromoCode] = useState('');
   const [message, setMessage] = useState('');
 
@@ -11,11 +13,11 @@ const SpecialOffersSection: React.FC = () => {
     if (promoCode.trim()) {
       applyPromoCode(promoCode.trim());
       if (promoCode.toLowerCase() === 'mr.happy') {
-        setMessage('Promo code applied! 10% discount added to your order.');
+        setMessage(t('offers.successMessage'));
         // Open cart to show the discount
         dispatch({ type: 'OPEN_CART' });
       } else {
-
+        setMessage(t('offers.invalidCodeMessage'));
       }
       setPromoCode('');
     }
@@ -28,11 +30,11 @@ const SpecialOffersSection: React.FC = () => {
           <div className="flex items-center justify-center mb-4">
             <Gift className="w-8 h-8 text-red-500 mr-3" />
             <h2 className="text-4xl md:text-5xl font-bold text-white">
-              Special <span className="text-red-500">Offers</span> & Deals
+              {t('offers.title')}
             </h2>
           </div>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Enter your promo code to save on your order
+            {t('offers.description')}
           </p>
         </div>
 
@@ -41,17 +43,17 @@ const SpecialOffersSection: React.FC = () => {
           <div className="bg-gradient-to-r from-gray-800 to-gray-700 rounded-2xl p-8 text-center border border-gray-600">
             <div className="flex items-center justify-center mb-4">
               <Percent className="w-6 h-6 text-red-500 mr-3" />
-              <h3 className="text-2xl font-bold text-white">Promo Code</h3>
+              <h3 className="text-2xl font-bold text-white">{t('offers.promoCode')}</h3>
             </div>
             <p className="text-gray-300 mb-6">
-              Use code <span className="text-red-500 font-bold">MR.Happy</span> for 10% off your entire order!
+              {t('offers.promoCodeDescription')}
             </p>
             <div className="space-y-4">
               <input
                 type="text"
                 value={promoCode}
                 onChange={(e) => setPromoCode(e.target.value)}
-                placeholder="Enter promo code"
+                placeholder={t('offers.placeholder')}
                 className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-red-500"
                 onKeyPress={(e) => e.key === 'Enter' && handleApplyCode()}
               />
@@ -59,16 +61,16 @@ const SpecialOffersSection: React.FC = () => {
                 onClick={handleApplyCode}
                 className="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-semibold transition-colors"
               >
-                Apply Code
+                {t('offers.applyButton')}
               </button>
               {message && (
-                <p className={`text-sm ${message.includes('applied') ? 'text-green-400' : 'text-red-400'}`}>
+                <p className={`text-sm ${message.includes('applied') || message.includes('uygulandı') || message.includes('angewendet') ? 'text-green-400' : 'text-red-400'}`}>
                   {message}
                 </p>
               )}
               {state.promoCode && (
                 <p className="text-green-400 text-sm">
-                  Current code: <span className="font-bold">{state.promoCode}</span> - {state.discount > 0 ? `€${state.discount.toFixed(2)} discount applied` : ''}
+                  {t('offers.currentCode')} <span className="font-bold">{state.promoCode}</span> - {state.discount > 0 ? `€${state.discount.toFixed(2)} ${t('offers.discountApplied')}` : ''}
                 </p>
               )}
             </div>

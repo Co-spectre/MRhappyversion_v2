@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Star, Clock, Leaf, Flame, Award, Info, Heart } from 'lucide-react';
+import { Plus, Star, Clock, Leaf, Flame, Award, Info, Heart } from './icons';
 import { MenuItem } from '../types';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';

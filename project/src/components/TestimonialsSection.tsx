@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Star, Quote, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const TestimonialsSection: React.FC = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const { t } = useLanguage();
 
   const testimonials = [
     {
@@ -72,7 +74,7 @@ const TestimonialsSection: React.FC = () => {
           <div className="flex items-center justify-center mb-4">
             <Heart className="w-8 h-8 text-red-500 mr-3" />
             <h2 className="text-4xl md:text-5xl font-bold text-white">
-              What Our <span className="text-red-500">Customers</span> Say
+              {t('testimonials.title')}
             </h2>
           </div>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
@@ -156,19 +158,19 @@ const TestimonialsSection: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16">
           <div className="text-center">
             <div className="text-3xl md:text-4xl font-bold text-red-500 mb-2">500+</div>
-            <div className="text-gray-300">Happy Customers</div>
+            <div className="text-gray-300">{t('testimonials.happyCustomers')}</div>
           </div>
           <div className="text-center">
             <div className="text-3xl md:text-4xl font-bold text-red-500 mb-2">4.9★</div>
-            <div className="text-gray-300">Average Rating</div>
+            <div className="text-gray-300">{t('testimonials.averageRating')}</div>
           </div>
           <div className="text-center">
             <div className="text-3xl md:text-4xl font-bold text-red-500 mb-2">3</div>
-            <div className="text-gray-300">Locations</div>
+            <div className="text-gray-300">{t('testimonials.locations')}</div>
           </div>
           <div className="text-center">
             <div className="text-3xl md:text-4xl font-bold text-red-500 mb-2">10+</div>
-            <div className="text-gray-300">Years Experience</div>
+            <div className="text-gray-300">{t('testimonials.yearsExperience')}</div>
           </div>
         </div>
       </div>

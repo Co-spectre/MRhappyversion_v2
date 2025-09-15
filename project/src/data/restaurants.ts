@@ -135,6 +135,7 @@ export const menuItems: MenuItem[] = [
     calories: 650,
     ingredients: ['doner-fleisch', 'tomate', 'rote-zwiebeln', 'tzaziki'],
     customizable: true,
+    requiresCustomization: true,
     popular: true,
     preparationTime: '8-12 min',
     origin: 'Türkische Tradition'
@@ -152,6 +153,7 @@ export const menuItems: MenuItem[] = [
     calories: 720,
     ingredients: ['doner-fleisch', 'chili-cheese', 'tomate', 'rote-zwiebeln'],
     customizable: true,
+    requiresCustomization: true,
     popular: true,
     preparationTime: '8-12 min',
     origin: 'Türkische Tradition'
@@ -169,6 +171,7 @@ export const menuItems: MenuItem[] = [
     calories: 580,
     ingredients: ['tomate', 'rote-zwiebeln', 'tzaziki', 'feta', 'mais', 'paprika'],
     customizable: true,
+    requiresCustomization: true,
     popular: false,
     preparationTime: '8-12 min',
     origin: 'Vegetarische Option'
@@ -186,6 +189,7 @@ export const menuItems: MenuItem[] = [
     calories: 620,
     ingredients: ['falafel', 'tomate', 'rote-zwiebeln', 'tzaziki'],
     customizable: true,
+    requiresCustomization: true,
     popular: true,
     preparationTime: '8-12 min',
     origin: 'Vegetarische Option'
@@ -203,6 +207,7 @@ export const menuItems: MenuItem[] = [
     calories: 750,
     ingredients: ['doner-fleisch', 'pommes', 'tzaziki'],
     customizable: true,
+    requiresCustomization: true,
     popular: true,
     preparationTime: '10-15 min',
     origin: 'Türkische Tradition'
@@ -220,6 +225,7 @@ export const menuItems: MenuItem[] = [
     calories: 680,
     ingredients: ['doner-fleisch', 'tomate', 'rote-zwiebeln', 'tzaziki'],
     customizable: true,
+    requiresCustomization: true,
     popular: true,
     preparationTime: '10-15 min',
     origin: 'Türkische Tradition'
@@ -237,6 +243,7 @@ export const menuItems: MenuItem[] = [
     calories: 850,
     ingredients: ['doner-fleisch', 'pommes', 'tzaziki'],
     customizable: true,
+    requiresCustomization: true,
     popular: true,
     preparationTime: '12-18 min',
     origin: 'Türkische Tradition'
@@ -256,6 +263,7 @@ export const menuItems: MenuItem[] = [
     calories: 620,
     ingredients: ['doner-fleisch', 'tomate', 'rote-zwiebeln', 'tzaziki'],
     customizable: true,
+    requiresCustomization: true,
     popular: true,
     preparationTime: '10-15 min',
     origin: 'Türkische Tradition'
@@ -273,6 +281,7 @@ export const menuItems: MenuItem[] = [
     calories: 650,
     ingredients: ['sucuk', 'tomate', 'rote-zwiebeln', 'tzaziki'],
     customizable: true,
+    requiresCustomization: true,
     popular: true,
     preparationTime: '10-15 min',
     origin: 'Türkische Tradition'
@@ -290,6 +299,7 @@ export const menuItems: MenuItem[] = [
     calories: 590,
     ingredients: ['tonno', 'tomate', 'rote-zwiebeln', 'tzaziki'],
     customizable: true,
+    requiresCustomization: true,
     popular: false,
     preparationTime: '10-15 min',
     origin: 'Türkische Tradition'
@@ -307,6 +317,7 @@ export const menuItems: MenuItem[] = [
     calories: 550,
     ingredients: ['tomate', 'rote-zwiebeln', 'tzaziki', 'feta', 'mais', 'paprika'],
     customizable: true,
+    requiresCustomization: true,
     popular: false,
     preparationTime: '10-15 min',
     origin: 'Vegetarische Option'

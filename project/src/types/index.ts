@@ -57,6 +57,7 @@ export interface MenuItem {
   fat?: number;
   ingredients: string[];
   customizable: boolean;
+  requiresCustomization?: boolean; // New property for mandatory customization
   popular: boolean;
   preparationTime?: string;
   origin?: string;

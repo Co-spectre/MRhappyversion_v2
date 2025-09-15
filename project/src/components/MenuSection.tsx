@@ -1,11 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { menuItems, ingredients as allIngredients } from '../data/restaurants';
-import MenuItemCard from './MenuItemCard';
+import { menuItems } from '../data/restaurants';
+import { MenuItemCard } from './MenuItemCard';
 import MenuFilters from './MenuFilters';
 import MenuItemSkeleton from './MenuItemSkeleton';
 import CustomizationModal from './CustomizationModal';
 import { useCart } from '../context/CartContext';
-import { Ingredient } from '../types';
 
 interface MenuSectionProps {
   restaurantId: string;
@@ -30,20 +29,6 @@ const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = fal
     filteredMenuItems: restaurantMenuItems.length,
     menuItemsSample: menuItems.slice(0, 2).map(item => ({ id: item.id, restaurantId: item.restaurantId }))
   });
-
-  // Get all available ingredients from the global ingredients list
-  const availableIngredients: Ingredient[] = useMemo(() => {
-    const allIngredientIds = new Set<string>();
-    restaurantMenuItems.forEach(item => {
-      if (item.ingredients) {
-        item.ingredients.forEach(ingredientId => {
-          allIngredientIds.add(ingredientId);
-        });
-      }
-    });
-    
-    return allIngredients.filter((ing: Ingredient) => allIngredientIds.has(ing.id));
-  }, [restaurantMenuItems, allIngredients]);
 
   // Trigger animations when component mounts or when restaurant changes
   React.useEffect(() => {
@@ -204,7 +189,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = fal
         {isCustomizationModalOpen && selectedItemForCustomization && (
           <CustomizationModal
             item={selectedItemForCustomization}
-            availableIngredients={availableIngredients}
+            isOpen={isCustomizationModalOpen}
             onClose={handleCloseCustomizationModal}
             onAddToCart={handleAddToCartWithCustomizations}
           />

@@ -1,0 +1,54 @@
+{
+  "recommendations": [
+    // === ESSENTIAL COPILOT COMPANIONS ===
+    "github.copilot",
+    "github.copilot-chat",
+    "github.copilot-labs",
+    
+    // === REACT/TYPESCRIPT POWERTOOLS ===
+    "bradlc.vscode-tailwindcss",
+    "ms-vscode.vscode-typescript-next",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "formulahendry.auto-rename-tag",
+    "christian-kohler.path-intellisense",
+    "ms-vscode.vscode-json",
+    
+    // === PRODUCTIVITY BOOSTERS ===
+    "ms-vsliveshare.vsliveshare",
+    "eamodio.gitlens",
+    "ms-vscode.hexeditor",
+    "ms-vscode.live-server",
+    "ritwickdey.liveserver",
+    
+    // === REACT SPECIFIC ===
+    "dsznajder.es7-react-js-snippets",
+    "rodrigovallades.es7-react-js-snippets",
+    "ms-vscode.vscode-react-native",
+    
+    // === DEBUGGING & TESTING ===
+    "ms-vscode.js-debug",
+    "hbenl.vscode-test-explorer",
+    "orta.vscode-jest",
+    
+    // === UI/UX HELPERS ===
+    "pkief.material-icon-theme",
+    "ms-vscode.theme-tomorrowkit",
+    "zhuangtongfa.material-theme",
+    
+    // === CODE QUALITY ===
+    "streetsidesoftware.code-spell-checker",
+    "ms-vscode.wordcount",
+    "oderwat.indent-rainbow",
+    "ms-vscode.bracket-pair-colorizer-2",
+    
+    // === MARKDOWN & DOCS ===
+    "yzhang.markdown-all-in-one",
+    "davidanson.vscode-markdownlint",
+    
+    // === ADVANCED TOOLS ===
+    "ms-vscode-remote.remote-containers",
+    "ms-azuretools.vscode-docker",
+    "redhat.vscode-yaml"
+  ]
+}

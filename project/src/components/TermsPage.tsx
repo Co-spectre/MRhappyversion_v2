@@ -31,9 +31,9 @@ const TermsPage: React.FC = () => {
                 <p>{t('terms.general.text1')}</p>
                 <p>{t('terms.general.text2')}</p>
                 <div className="bg-green-900/20 rounded-xl p-4 border border-green-800/30">
-                  <p className="text-sm"><strong>{t('terms.general.company')}:</strong> Mr.Happy GmbH, Musterstraße 123, 28199 Bremen</p>
-                  <p className="text-sm"><strong>{t('terms.general.registration')}:</strong> HRB 12345, Amtsgericht Bremen</p>
-                  <p className="text-sm"><strong>{t('terms.general.vat')}:</strong> DE123456789</p>
+                  <p className="text-sm"><strong>{t('terms.general.company')}:</strong> Mr Happy Burger, Zum alten speicher 2, 28759 Bremen-Vegesack</p>
+                  <p className="text-sm"><strong>{t('terms.general.registration')}:</strong> Einzelunternehmen (nicht registrierungspflichtig)</p>
+                  <p className="text-sm"><strong>Steuernummer:</strong> 47926840315</p>
                 </div>
               </div>
             </section>
@@ -269,7 +269,7 @@ const TermsPage: React.FC = () => {
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2 text-green-300">
                         <MapPin className="w-4 h-4" />
-                        <span className="text-sm">Mr.Happy GmbH<br />Musterstraße 123<br />28199 Bremen</span>
+                        <span className="text-sm">Mr Happy Burger<br />Zum alten speicher 2<br />28759 Bremen-Vegesack</span>
                       </div>
                     </div>
                   </div>
@@ -278,11 +278,11 @@ const TermsPage: React.FC = () => {
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2 text-green-300">
                         <Phone className="w-4 h-4" />
-                        <span className="text-sm">+49 (0) 421 123 456</span>
+                        <span className="text-sm">04209/8989990</span>
                       </div>
                       <div className="flex items-center space-x-2 text-green-300">
                         <Mail className="w-4 h-4" />
-                        <span className="text-sm">info@mrhappy-bremen.de</span>
+                        <span className="text-sm">mrhappydoner54@hotmail.com</span>
                       </div>
                     </div>
                   </div>

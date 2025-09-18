@@ -44,28 +44,29 @@ const PrivacyPolicyPage: React.FC = () => {
               <div className="bg-gray-900/50 rounded-xl p-6 border border-gray-700">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <p className="text-white font-semibold">Mr.Happy GmbH</p>
+                    <p className="text-white font-semibold">Mr Happy Burger</p>
                     <div className="flex items-center space-x-2 text-gray-300 mt-2">
                       <MapPin className="w-4 h-4 text-blue-400" />
-                      <span>Musterstraße 123, 28199 Bremen</span>
+                      <span>Zum alten speicher 2, 28759 Bremen-Vegesack</span>
                     </div>
                     <div className="flex items-center space-x-2 text-gray-300 mt-1">
                       <Phone className="w-4 h-4 text-blue-400" />
-                      <span>+49 (0) 421 123 456</span>
+                      <span>04209/8989990</span>
                     </div>
                     <div className="flex items-center space-x-2 text-gray-300 mt-1">
                       <Mail className="w-4 h-4 text-blue-400" />
-                      <span>datenschutz@mrhappy-bremen.de</span>
+                      <span>mrhappydoner54@hotmail.com</span>
                     </div>
                   </div>
                   <div>
                     <p className="text-gray-300 text-sm">
                       {t('privacy.controller.representative')}
                     </p>
-                    <p className="text-white font-medium mt-1">Max Mustermann</p>
+                    <p className="text-white font-medium mt-1">Meryem Tekin</p>
                     <p className="text-gray-300 text-sm mt-2">
                       {t('privacy.controller.dpo')}
                     </p>
+                    <p className="text-white text-sm">Kein externer Datenschutzbeauftragter bestellt</p>
                   </div>
                 </div>
               </div>

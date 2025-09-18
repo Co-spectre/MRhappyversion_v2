@@ -325,8 +325,8 @@ const CookiePolicyPage: React.FC = () => {
                   {t('cookies.contact.description')}
                 </p>
                 <div className="text-orange-300">
-                  <p>📧 datenschutz@mrhappy-bremen.de</p>
-                  <p>📞 +49 (0) 421 123 456</p>
+                  <p>📧 mrhappydoner54@hotmail.com</p>
+                  <p>📞 04209/8989990</p>
                 </div>
               </div>
             </section>

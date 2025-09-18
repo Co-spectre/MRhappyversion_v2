@@ -28,23 +28,23 @@ const ImpressumPage: React.FC = () => {
               <div className="bg-gray-900 rounded-lg p-6 space-y-3">
                 <div>
                   <span className="text-gray-400">Firmenname:</span>
-                  <span className="text-white ml-2 font-medium">Mr.Happy Restaurants GmbH</span>
+                  <span className="text-white ml-2 font-medium">Mr Happy Burger</span>
                 </div>
                 <div>
                   <span className="text-gray-400">Rechtsform:</span>
-                  <span className="text-white ml-2">Gesellschaft mit beschränkter Haftung (GmbH)</span>
+                  <span className="text-white ml-2">Einzelunternehmen</span>
                 </div>
                 <div>
                   <span className="text-gray-400">Registergericht:</span>
-                  <span className="text-white ml-2">Amtsgericht Bremen</span>
+                  <span className="text-white ml-2">Nicht zutreffend (Einzelunternehmen)</span>
                 </div>
                 <div>
                   <span className="text-gray-400">Handelsregisternummer:</span>
-                  <span className="text-white ml-2">HRB 12345 B</span>
+                  <span className="text-white ml-2">Nicht zutreffend (Einzelunternehmen)</span>
                 </div>
                 <div>
-                  <span className="text-gray-400">Umsatzsteuer-ID:</span>
-                  <span className="text-white ml-2">DE123456789</span>
+                  <span className="text-gray-400">Steuernummer:</span>
+                  <span className="text-white ml-2">47926840315</span>
                 </div>
               </div>
             </section>
@@ -61,9 +61,9 @@ const ImpressumPage: React.FC = () => {
                   <div>
                     <span className="text-gray-400">Anschrift:</span>
                     <div className="text-white ml-2">
-                      Mr.Happy Restaurants GmbH<br />
-                      Zum Alten Speicher 1<br />
-                      28759 Bremen<br />
+                      Mr Happy Burger<br />
+                      Zum alten speicher 2<br />
+                      28759 Bremen-Vegesack<br />
                       Deutschland
                     </div>
                   </div>
@@ -72,8 +72,8 @@ const ImpressumPage: React.FC = () => {
                   <Phone className="w-4 h-4 text-red-400" />
                   <div>
                     <span className="text-gray-400">Telefon:</span>
-                    <a href="tel:+4942112345" className="text-white ml-2 hover:text-red-400 transition-colors">
-                      +49 421 12345
+                    <a href="tel:+4942098989990" className="text-white ml-2 hover:text-red-400 transition-colors">
+                      04209/8989990
                     </a>
                   </div>
                 </div>
@@ -81,8 +81,8 @@ const ImpressumPage: React.FC = () => {
                   <Mail className="w-4 h-4 text-red-400" />
                   <div>
                     <span className="text-gray-400">E-Mail:</span>
-                    <a href="mailto:info@mrhappy.de" className="text-white ml-2 hover:text-red-400 transition-colors">
-                      info@mrhappy.de
+                    <a href="mailto:mrhappydoner54@hotmail.com" className="text-white ml-2 hover:text-red-400 transition-colors">
+                      mrhappydoner54@hotmail.com
                     </a>
                   </div>
                 </div>
@@ -97,8 +97,7 @@ const ImpressumPage: React.FC = () => {
               </div>
               <div className="bg-gray-900 rounded-lg p-6">
                 <div className="text-white">
-                  Max Mustermann<br />
-                  Anna Musterfrau
+                  Meryem Tekin
                 </div>
               </div>
             </section>
@@ -108,9 +107,9 @@ const ImpressumPage: React.FC = () => {
               <h2 className="text-xl font-semibold text-white mb-4">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
               <div className="bg-gray-900 rounded-lg p-6">
                 <div className="text-white">
-                  Max Mustermann<br />
-                  Zum Alten Speicher 1<br />
-                  28759 Bremen
+                  Meryem Tekin<br />
+                  Zum alten speicher 2<br />
+                  28759 Bremen-Vegesack
                 </div>
               </div>
             </section>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, UtensilsCrossed, Beef, ChefHat, Facebook, Instagram, Twitter } from 'lucide-react';
+import { ArrowRight, UtensilsCrossed, Beef, ChefHat, Facebook, Instagram, Twitter, MapPin, Clock } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 interface ParallaxHeroProps {
@@ -90,7 +90,7 @@ const ParallaxHero: React.FC<ParallaxHeroProps> = ({ onRestaurantSelect }) => {
           
           {/* Enhanced and Responsive Restaurant Cards */}
           <div 
-            className={`grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mt-12 md:mt-16 px-2 md:px-0 transform transition-all duration-1000 ease-out ${
+            className={`grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10 mt-12 md:mt-16 px-2 md:px-0 transform transition-all duration-1000 ease-out ${
               isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
             }`}
             style={{ 
@@ -99,61 +99,94 @@ const ParallaxHero: React.FC<ParallaxHeroProps> = ({ onRestaurantSelect }) => {
             }}
           >
             <div 
-              className="group cursor-pointer transition-all duration-300 hover:scale-105 md:hover:scale-110"
+              className="group cursor-pointer transition-all duration-300 hover:scale-105"
               onClick={() => onRestaurantSelect?.('doner')}
             >
-              <div className="bg-gray-800/60 backdrop-blur-md border border-gray-600/50 rounded-3xl p-6 md:p-8 hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/30 transition-all duration-300 hover:bg-gray-700/70">
-                <div className="mb-4 md:mb-6 transition-transform duration-300 group-hover:scale-110 md:group-hover:scale-125 flex justify-center">
-                  <div className="w-12 h-12 md:w-16 md:h-16 bg-red-500/30 rounded-2xl md:rounded-3xl flex items-center justify-center group-hover:bg-red-500/40 transition-colors">
-                    <UtensilsCrossed className="w-6 h-6 md:w-8 md:h-8 text-red-400" />
+              <div className="bg-gray-800/70 backdrop-blur-md border border-gray-600/50 rounded-3xl p-8 md:p-10 hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/30 transition-all duration-300 hover:bg-gray-700/80 h-full">
+                <div className="mb-6 md:mb-8 transition-transform duration-300 group-hover:scale-110 flex justify-center">
+                  <div className="w-16 h-16 md:w-20 md:h-20 bg-red-500/30 rounded-3xl md:rounded-4xl flex items-center justify-center group-hover:bg-red-500/40 transition-colors">
+                    <UtensilsCrossed className="w-8 h-8 md:w-10 md:h-10 text-red-400" />
                   </div>
                 </div>
-                <h3 className="text-xl md:text-2xl font-light text-white mb-2 md:mb-3 group-hover:text-red-100 transition-colors">{t('restaurant.doner.name')}</h3>
-                <p className="text-gray-300 text-sm md:text-base mb-4 md:mb-6 leading-relaxed">
+                <h3 className="text-2xl md:text-3xl font-light text-white mb-3 md:mb-4 group-hover:text-red-100 transition-colors text-center">{t('restaurant.doner.name')}</h3>
+                <p className="text-gray-300 text-base md:text-lg mb-6 md:mb-8 leading-relaxed text-center">
                   {t('restaurant.doner.desc')}
                 </p>
-                <div className="flex items-center justify-center text-red-400 text-sm md:text-base font-medium group-hover:text-red-300 transition-colors">
-                  {t('hero.explore')} <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-1 md:ml-2 group-hover:translate-x-1 md:group-hover:translate-x-2 transition-transform" />
+                <div className="text-center mb-6">
+                  <div className="flex items-center justify-center space-x-2 text-gray-400 text-sm mb-2">
+                    <MapPin className="w-4 h-4 text-red-400" />
+                    <span>Bremen Vegesack Kaufland</span>
+                  </div>
+                  <div className="text-gray-500 text-sm">Zum Alten Speicher 1 · 28759 Bremen</div>
+                  <div className="flex items-center justify-center space-x-2 text-gray-400 text-sm mt-2">
+                    <Clock className="w-4 h-4 text-green-400" />
+                    <span>Daily 08:00 - 20:00</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center text-red-400 text-base md:text-lg font-medium group-hover:text-red-300 transition-colors">
+                  {t('hero.explore')} <ArrowRight className="w-5 h-5 md:w-6 md:h-6 ml-2 group-hover:translate-x-2 transition-transform" />
                 </div>
               </div>
             </div>
             
             <div 
-              className="group cursor-pointer transition-all duration-300 hover:scale-105 md:hover:scale-110"
+              className="group cursor-pointer transition-all duration-300 hover:scale-105"
               onClick={() => onRestaurantSelect?.('burger')}
             >
-              <div className="bg-gray-800/60 backdrop-blur-md border border-gray-600/50 rounded-3xl p-6 md:p-8 hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/30 transition-all duration-300 hover:bg-gray-700/70">
-                <div className="mb-4 md:mb-6 transition-transform duration-300 group-hover:scale-110 md:group-hover:scale-125 flex justify-center">
-                  <div className="w-12 h-12 md:w-16 md:h-16 bg-red-500/30 rounded-2xl md:rounded-3xl flex items-center justify-center group-hover:bg-red-500/40 transition-colors">
-                    <Beef className="w-6 h-6 md:w-8 md:h-8 text-red-400" />
+              <div className="bg-gray-800/70 backdrop-blur-md border border-gray-600/50 rounded-3xl p-8 md:p-10 hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/30 transition-all duration-300 hover:bg-gray-700/80 h-full">
+                <div className="mb-6 md:mb-8 transition-transform duration-300 group-hover:scale-110 flex justify-center">
+                  <div className="w-16 h-16 md:w-20 md:h-20 bg-red-500/30 rounded-3xl md:rounded-4xl flex items-center justify-center group-hover:bg-red-500/40 transition-colors">
+                    <Beef className="w-8 h-8 md:w-10 md:h-10 text-red-400" />
                   </div>
                 </div>
-                <h3 className="text-xl md:text-2xl font-light text-white mb-2 md:mb-3 group-hover:text-red-100 transition-colors">{t('restaurant.burger.name')}</h3>
-                <p className="text-gray-300 text-sm md:text-base mb-4 md:mb-6 leading-relaxed">
+                <h3 className="text-2xl md:text-3xl font-light text-white mb-3 md:mb-4 group-hover:text-red-100 transition-colors text-center">{t('restaurant.burger.name')}</h3>
+                <p className="text-gray-300 text-base md:text-lg mb-6 md:mb-8 leading-relaxed text-center">
                   {t('restaurant.burger.desc')}
                 </p>
-                <div className="flex items-center justify-center text-red-400 text-sm md:text-base font-medium group-hover:text-red-300 transition-colors">
-                  {t('hero.explore')} <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-1 md:ml-2 group-hover:translate-x-1 md:group-hover:translate-x-2 transition-transform" />
+                <div className="text-center mb-6">
+                  <div className="flex items-center justify-center space-x-2 text-gray-400 text-sm mb-2">
+                    <MapPin className="w-4 h-4 text-red-400" />
+                    <span>Bremen Vegesack Kaufland</span>
+                  </div>
+                  <div className="text-gray-500 text-sm">Zum Alten Speicher 1 · 28759 Bremen</div>
+                  <div className="flex items-center justify-center space-x-2 text-gray-400 text-sm mt-2">
+                    <Clock className="w-4 h-4 text-green-400" />
+                    <span>Daily 08:00 - 20:00</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center text-red-400 text-base md:text-lg font-medium group-hover:text-red-300 transition-colors">
+                  {t('hero.explore')} <ArrowRight className="w-5 h-5 md:w-6 md:h-6 ml-2 group-hover:translate-x-2 transition-transform" />
                 </div>
               </div>
             </div>
             
             <div 
-              className="group cursor-pointer transition-all duration-300 hover:scale-105 md:hover:scale-110"
-              onClick={() => onRestaurantSelect?.('restaurant')}
+              className="group cursor-pointer transition-all duration-300 hover:scale-105"
+              onClick={() => onRestaurantSelect?.('doner-pizza')}
             >
-              <div className="bg-gray-800/60 backdrop-blur-md border border-gray-600/50 rounded-3xl p-6 md:p-8 hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/30 transition-all duration-300 hover:bg-gray-700/70">
-                <div className="mb-4 md:mb-6 transition-transform duration-300 group-hover:scale-110 md:group-hover:scale-125 flex justify-center">
-                  <div className="w-12 h-12 md:w-16 md:h-16 bg-red-500/30 rounded-2xl md:rounded-3xl flex items-center justify-center group-hover:bg-red-500/40 transition-colors">
-                    <ChefHat className="w-6 h-6 md:w-8 md:h-8 text-red-400" />
+              <div className="bg-gray-800/70 backdrop-blur-md border border-gray-600/50 rounded-3xl p-8 md:p-10 hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/30 transition-all duration-300 hover:bg-gray-700/80 h-full">
+                <div className="mb-6 md:mb-8 transition-transform duration-300 group-hover:scale-110 flex justify-center">
+                  <div className="w-16 h-16 md:w-20 md:h-20 bg-red-500/30 rounded-3xl md:rounded-4xl flex items-center justify-center group-hover:bg-red-500/40 transition-colors">
+                    <ChefHat className="w-8 h-8 md:w-10 md:h-10 text-red-400" />
                   </div>
                 </div>
-                <h3 className="text-xl md:text-2xl font-light text-white mb-2 md:mb-3 group-hover:text-red-100 transition-colors">{t('restaurant.restaurant.name')}</h3>
-                <p className="text-gray-300 text-sm md:text-base mb-4 md:mb-6 leading-relaxed">
-                  {t('restaurant.restaurant.desc')}
+                <h3 className="text-2xl md:text-3xl font-light text-white mb-3 md:mb-4 group-hover:text-red-100 transition-colors text-center">{t('restaurant.doner-pizza.name')}</h3>
+                <p className="text-gray-300 text-base md:text-lg mb-6 md:mb-8 leading-relaxed text-center">
+                  {t('restaurant.doner-pizza.desc')}
                 </p>
-                <div className="flex items-center justify-center text-red-400 text-sm md:text-base font-medium group-hover:text-red-300 transition-colors">
-                  {t('hero.explore')} <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-1 md:ml-2 group-hover:translate-x-1 md:group-hover:translate-x-2 transition-transform" />
+                <div className="text-center mb-6">
+                  <div className="flex items-center justify-center space-x-2 text-gray-400 text-sm mb-2">
+                    <MapPin className="w-4 h-4 text-red-400" />
+                    <span>Bremen-Heidkamp</span>
+                  </div>
+                  <div className="text-gray-500 text-sm">Bremen-Heidkamp 25 · 28790 Schwanewede</div>
+                  <div className="flex items-center justify-center space-x-2 text-gray-400 text-sm mt-2">
+                    <Clock className="w-4 h-4 text-green-400" />
+                    <span>Daily 11:00 - 22:00</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center text-red-400 text-base md:text-lg font-medium group-hover:text-red-300 transition-colors">
+                  {t('hero.explore')} <ArrowRight className="w-5 h-5 md:w-6 md:h-6 ml-2 group-hover:translate-x-2 transition-transform" />
                 </div>
               </div>
             </div>

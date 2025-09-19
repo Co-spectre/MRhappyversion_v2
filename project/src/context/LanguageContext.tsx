@@ -41,8 +41,8 @@ const translations = {
     'restaurant.doner.desc': 'Authentic Turkish flavors',
     'restaurant.burger.name': 'Burger',
     'restaurant.burger.desc': 'Premium American classics',
-    'restaurant.restaurant.name': 'Restaurant',
-    'restaurant.restaurant.desc': 'Fine dining experience',
+    'restaurant.doner-pizza.name': 'Restaurant',
+    'restaurant.doner-pizza.desc': 'Fine dining experience',
     'restaurant.viewMenu': 'View Menu',
     'restaurant.cantDecide': "Can't decide? Each restaurant offers a unique experience worth exploring.",
     
@@ -682,8 +682,8 @@ const translations = {
     'restaurant.doner.desc': 'Authentische türkische Aromen',
     'restaurant.burger.name': 'Burger',
     'restaurant.burger.desc': 'Premium amerikanische Klassiker',
-    'restaurant.restaurant.name': 'Restaurant',
-    'restaurant.restaurant.desc': 'Gehobene Küche',
+    'restaurant.doner-pizza.name': 'Restaurant',
+    'restaurant.doner-pizza.desc': 'Gehobene Küche',
     'restaurant.viewMenu': 'Speisekarte ansehen',
     'restaurant.cantDecide': 'Können Sie sich nicht entscheiden? Jedes Restaurant bietet ein einzigartiges Erlebnis.',
     
@@ -1326,8 +1326,8 @@ const translations = {
     'restaurant.doner.desc': 'Otantik Türk lezzetleri',
     'restaurant.burger.name': 'Burger',
     'restaurant.burger.desc': 'Premium Amerikan klasikleri',
-    'restaurant.restaurant.name': 'Restoran',
-    'restaurant.restaurant.desc': 'Kaliteli yemek deneyimi',
+    'restaurant.doner-pizza.name': 'Restoran',
+    'restaurant.doner-pizza.desc': 'Kaliteli yemek deneyimi',
     'restaurant.viewMenu': 'Menüyü Görüntüle',
     'restaurant.cantDecide': 'Karar veremiyorsunuz mu? Her restoran keşfedilmeye değer benzersiz bir deneyim sunar.',
     

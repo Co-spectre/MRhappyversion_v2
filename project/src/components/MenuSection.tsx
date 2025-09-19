@@ -121,7 +121,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = fal
           <h2 className="text-4xl font-bold text-white mb-4">
             {restaurantId === 'doner' && 'Mr.Happy Doner Menu'}
             {restaurantId === 'burger' && 'Mr.Happy Burger Menu'}
-            {restaurantId === 'restaurant' && 'Mr.Happy Restaurant Menu'}
+            {restaurantId === 'doner-pizza' && 'Mr.Happy Döner&Pizza Menu'}
           </h2>
           <p className="text-xl text-gray-400">
             Discover our carefully crafted dishes and customize them to your taste

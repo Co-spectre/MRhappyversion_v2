@@ -61,6 +61,13 @@ const Header: React.FC<HeaderProps> = ({ currentRestaurant, onRestaurantChange, 
     { id: 'doner-pizza', name: 'Döner&Pizza', icon: <ChefHat className="w-4 h-4" /> }
   ];
 
+  // 🚨 TEMPORARY DEBUG FUNCTION
+  const debugNavToBurger = () => {
+    console.log('🚨 DEBUG: Navigating to burger restaurant');
+    onViewChange('menu');
+    onRestaurantChange('burger');
+  };
+
   const languages = [
     { 
       code: 'en' as Language, 
@@ -394,6 +401,15 @@ const Header: React.FC<HeaderProps> = ({ currentRestaurant, onRestaurantChange, 
                 </div>
               )}
             </div>
+
+            {/* DEBUG BUTTON - TEMPORARY */}
+            <button 
+              onClick={debugNavToBurger}
+              className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded transition-colors"
+              style={{ fontSize: '10px' }}
+            >
+              🍔TEST
+            </button>
 
             {/* Cart */}
             <button 

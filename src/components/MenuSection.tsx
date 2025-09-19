@@ -12,6 +12,8 @@ interface MenuSectionProps {
 }
 
 const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = false }) => {
+  console.log('🚨 MenuSection rendered with restaurantId:', restaurantId);
+  
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [dietaryFilters, setDietaryFilters] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');

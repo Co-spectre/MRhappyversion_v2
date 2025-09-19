@@ -74,6 +74,14 @@ export interface MenuItem {
   }[];
 }
 
+export interface Customization {
+  stepId: string;
+  optionId: string;
+  name: string;
+  description?: string;
+  price: number;
+}
+
 export interface CartItem {
   id: string;
   menuItem: MenuItem;

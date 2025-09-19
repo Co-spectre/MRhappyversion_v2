@@ -17,9 +17,19 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item, onCustomizeCli
   const [showNutrition, setShowNutrition] = useState(false);
 
   const handleAddToCart = () => {
-    if (item.customizable && onCustomizeClick) {
+    console.log('🚨 MenuItemCard handleAddToCart clicked!', { 
+      itemName: item.name, 
+      restaurantId: item.restaurantId, 
+      customizable: item.customizable,
+      onCustomizeClick: !!onCustomizeClick 
+    });
+    
+    // Always show customization for burger restaurant items OR if item is customizable
+    if ((item.restaurantId === 'burger' || item.customizable) && onCustomizeClick) {
+      console.log('🚨 Calling onCustomizeClick for burger/customizable item');
       onCustomizeClick(item);
     } else {
+      console.log('🚨 Adding directly to cart (no customization)');
       addToCart(item);
     }
   };
@@ -219,7 +229,7 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item, onCustomizeCli
               className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 group"
             >
               <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
-              {t('addToCart')}
+              {(item.restaurantId === 'burger' || item.customizable) ? t('menu.customize') : t('addToCart')}
             </button>
           </div>
         </div>

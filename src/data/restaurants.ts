@@ -117,7 +117,31 @@ export const ingredients: Ingredient[] = [
   { id: 'mayo', name: 'Mayo', basePrice: 0, extraPrice: 1.00, doublePrice: 1.00, category: 'sauce', isPremium: false },
 
   // Extras
-  { id: 'pommes', name: 'Pommes', basePrice: 0, extraPrice: 3.00, doublePrice: 3.00, category: 'topping', isPremium: false }
+  { id: 'pommes', name: 'Pommes', basePrice: 0, extraPrice: 3.00, doublePrice: 3.00, category: 'topping', isPremium: false },
+
+  // Burger-specific ingredients
+  { id: 'beef', name: 'Premium Beef', basePrice: 0, extraPrice: 4.50, doublePrice: 8.50, category: 'protein', isPremium: true },
+  { id: 'chicken', name: 'Grilled Chicken', basePrice: 0, extraPrice: 3.50, doublePrice: 6.50, category: 'protein', isPremium: false },
+  { id: 'lamb', name: 'Lamb', basePrice: 0, extraPrice: 5.00, doublePrice: 9.50, category: 'protein', isPremium: true },
+  { id: 'turkey', name: 'Turkey', basePrice: 0, extraPrice: 3.00, doublePrice: 5.50, category: 'protein', isPremium: false },
+  { id: 'bacon', name: 'Crispy Bacon', basePrice: 0, extraPrice: 2.50, doublePrice: 4.50, category: 'protein', isPremium: false },
+  { id: 'lettuce', name: 'Fresh Lettuce', basePrice: 0, extraPrice: 0.50, doublePrice: 1.00, category: 'vegetable', isPremium: false },
+  { id: 'tomato', name: 'Tomatoes', basePrice: 0, extraPrice: 0.75, doublePrice: 1.25, category: 'vegetable', isPremium: false },
+  { id: 'jalapenos', name: 'Jalapeños', basePrice: 0, extraPrice: 0.75, doublePrice: 1.25, category: 'vegetable', isPremium: false },
+  { id: 'onion', name: 'Red Onions', basePrice: 0, extraPrice: 0.50, doublePrice: 0.90, category: 'vegetable', isPremium: false },
+  { id: 'pickles', name: 'Pickles', basePrice: 0, extraPrice: 0.50, doublePrice: 0.90, category: 'vegetable', isPremium: false },
+  { id: 'swiss', name: 'Swiss Cheese', basePrice: 0, extraPrice: 2.00, doublePrice: 3.50, category: 'cheese', isPremium: true },
+  { id: 'blue-cheese', name: 'Blue Cheese', basePrice: 0, extraPrice: 2.50, doublePrice: 4.50, category: 'cheese', isPremium: true },
+  
+  // Burger sauces
+  { id: 'ranch-sauce', name: 'Ranch', basePrice: 0, extraPrice: 1.00, doublePrice: 2.00, category: 'sauce', isPremium: false },
+  { id: 'curry-sauce', name: 'Curry', basePrice: 0, extraPrice: 1.00, doublePrice: 2.00, category: 'sauce', isPremium: false },
+  { id: 'chilli-cheese-sauce', name: 'Chilli Cheese', basePrice: 0, extraPrice: 1.00, doublePrice: 2.00, category: 'sauce', isPremium: false },
+  { id: 'burger-sauce', name: 'Burgersauce', basePrice: 0, extraPrice: 1.00, doublePrice: 2.00, category: 'sauce', isPremium: false },
+  { id: 'ketchup-sauce', name: 'Ketchup', basePrice: 0, extraPrice: 0.50, doublePrice: 1.00, category: 'sauce', isPremium: false },
+  { id: 'mayonnaise-sauce', name: 'Mayonnaise', basePrice: 0, extraPrice: 0.50, doublePrice: 1.00, category: 'sauce', isPremium: false },
+  { id: 'bbq-sauce', name: 'BBQ', basePrice: 0, extraPrice: 0.50, doublePrice: 1.00, category: 'sauce', isPremium: false },
+  { id: 'sweet-sour-sauce', name: 'Süss-Sauer', basePrice: 0, extraPrice: 0.50, doublePrice: 1.00, category: 'sauce', isPremium: false }
 ];
 
 export const menuItems: MenuItem[] = [
@@ -135,7 +159,7 @@ export const menuItems: MenuItem[] = [
     calories: 650,
     ingredients: ['doner-fleisch', 'tomate', 'rote-zwiebeln', 'tzaziki'],
     customizable: true,
-    requiresCustomization: true,
+
     popular: true,
     preparationTime: '8-12 min',
     origin: 'Türkische Tradition'
@@ -153,7 +177,7 @@ export const menuItems: MenuItem[] = [
     calories: 720,
     ingredients: ['doner-fleisch', 'chili-cheese', 'tomate', 'rote-zwiebeln'],
     customizable: true,
-    requiresCustomization: true,
+
     popular: true,
     preparationTime: '8-12 min',
     origin: 'Türkische Tradition'
@@ -171,7 +195,7 @@ export const menuItems: MenuItem[] = [
     calories: 580,
     ingredients: ['tomate', 'rote-zwiebeln', 'tzaziki', 'feta', 'mais', 'paprika'],
     customizable: true,
-    requiresCustomization: true,
+
     popular: false,
     preparationTime: '8-12 min',
     origin: 'Vegetarische Option'
@@ -189,7 +213,7 @@ export const menuItems: MenuItem[] = [
     calories: 620,
     ingredients: ['falafel', 'tomate', 'rote-zwiebeln', 'tzaziki'],
     customizable: true,
-    requiresCustomization: true,
+
     popular: true,
     preparationTime: '8-12 min',
     origin: 'Vegetarische Option'
@@ -207,7 +231,7 @@ export const menuItems: MenuItem[] = [
     calories: 750,
     ingredients: ['doner-fleisch', 'pommes', 'tzaziki'],
     customizable: true,
-    requiresCustomization: true,
+
     popular: true,
     preparationTime: '10-15 min',
     origin: 'Türkische Tradition'
@@ -225,7 +249,7 @@ export const menuItems: MenuItem[] = [
     calories: 680,
     ingredients: ['doner-fleisch', 'tomate', 'rote-zwiebeln', 'tzaziki'],
     customizable: true,
-    requiresCustomization: true,
+
     popular: true,
     preparationTime: '10-15 min',
     origin: 'Türkische Tradition'
@@ -243,7 +267,7 @@ export const menuItems: MenuItem[] = [
     calories: 850,
     ingredients: ['doner-fleisch', 'pommes', 'tzaziki'],
     customizable: true,
-    requiresCustomization: true,
+
     popular: true,
     preparationTime: '12-18 min',
     origin: 'Türkische Tradition'
@@ -263,7 +287,7 @@ export const menuItems: MenuItem[] = [
     calories: 620,
     ingredients: ['doner-fleisch', 'tomate', 'rote-zwiebeln', 'tzaziki'],
     customizable: true,
-    requiresCustomization: true,
+
     popular: true,
     preparationTime: '10-15 min',
     origin: 'Türkische Tradition'
@@ -281,7 +305,7 @@ export const menuItems: MenuItem[] = [
     calories: 650,
     ingredients: ['sucuk', 'tomate', 'rote-zwiebeln', 'tzaziki'],
     customizable: true,
-    requiresCustomization: true,
+
     popular: true,
     preparationTime: '10-15 min',
     origin: 'Türkische Tradition'
@@ -299,7 +323,7 @@ export const menuItems: MenuItem[] = [
     calories: 590,
     ingredients: ['tonno', 'tomate', 'rote-zwiebeln', 'tzaziki'],
     customizable: true,
-    requiresCustomization: true,
+
     popular: false,
     preparationTime: '10-15 min',
     origin: 'Türkische Tradition'
@@ -317,7 +341,7 @@ export const menuItems: MenuItem[] = [
     calories: 550,
     ingredients: ['tomate', 'rote-zwiebeln', 'tzaziki', 'feta', 'mais', 'paprika'],
     customizable: true,
-    requiresCustomization: true,
+
     popular: false,
     preparationTime: '10-15 min',
     origin: 'Vegetarische Option'
@@ -1124,5 +1148,329 @@ export const menuItems: MenuItem[] = [
     popular: true,
     preparationTime: '1-2 min',
     origin: 'Türkische Tradition'
+  },
+
+  // === MR HAPPY BURGER ITEMS ===
+  // Burgers - All Customizable
+  {
+    id: 'smash-cheese',
+    name: 'Smash Cheese',
+    description: 'Smashed beef patty with melted cheese',
+    basePrice: 6.90,
+    image: '/images/cheeseburger.jpeg',
+    category: 'Burgers',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 0, halal: true },
+    allergens: ['gluten', 'dairy'],
+    calories: 580,
+    ingredients: ['beef', 'cheddar'],
+    customizable: true,
+    popular: true,
+    preparationTime: '8-10 min',
+    origin: 'Smash Style'
+  },
+  {
+    id: 'smash-chili-cheese',
+    name: 'Smash Chili Cheese',
+    description: 'Smashed beef patty with chili cheese sauce',
+    basePrice: 7.90,
+    image: '/images/smash chilli cheese burger.jpeg',
+    category: 'Burgers',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 2, halal: true },
+    allergens: ['gluten', 'dairy'],
+    calories: 620,
+    ingredients: ['beef', 'cheddar', 'jalapenos'],
+    customizable: true,
+
+    popular: true,
+    preparationTime: '8-12 min',
+    origin: 'Spicy Smash'
+  },
+  {
+    id: 'nashville-chicken',
+    name: 'Nashville Chicken',
+    description: 'Nashville-style chicken with signature spices',
+    basePrice: 8.50,
+    image: '/images/nashvillie chiecken burger.jpeg',
+    category: 'Burgers',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 2, halal: true },
+    allergens: ['gluten', 'eggs'],
+    calories: 590,
+    ingredients: ['chicken', 'lettuce'],
+    customizable: true,
+
+    popular: true,
+    preparationTime: '12-15 min',
+    origin: 'Nashville Style'
+  },
+  {
+    id: 'nashville-hot-chicken',
+    name: 'Nashville Hot Chicken',
+    description: 'Extra spicy Nashville-style hot chicken',
+    basePrice: 9.50,
+    image: '/images/nashvillie hot chicken burger.jpeg',
+    category: 'Burgers',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 4, halal: true },
+    allergens: ['gluten', 'eggs'],
+    calories: 610,
+    ingredients: ['chicken', 'lettuce', 'jalapenos'],
+    customizable: true,
+
+    popular: true,
+    preparationTime: '12-15 min',
+    origin: 'Nashville Hot'
+  },
+  {
+    id: 'cheeseburger',
+    name: 'Cheeseburger',
+    description: 'Classic beef patty with cheese',
+    basePrice: 11.90,
+    image: '/images/cheeseburger.jpeg',
+    category: 'Burgers',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 0, halal: true },
+    allergens: ['gluten', 'dairy'],
+    calories: 650,
+    ingredients: ['beef', 'lettuce', 'tomato', 'cheddar'],
+    customizable: true,
+
+    popular: true,
+    preparationTime: '12-15 min',
+    origin: 'Classic'
+  },
+  {
+    id: 'veggie-burger',
+    name: 'Veggie Burger',
+    description: 'Plant-based patty with fresh vegetables',
+    basePrice: 8.50,
+    image: '/images/veggie buger .jpeg',
+    category: 'Burgers',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: true, vegan: true, glutenFree: false, spicy: 0, halal: true },
+    allergens: ['gluten', 'soy'],
+    calories: 420,
+    ingredients: ['lettuce', 'tomato'],
+    customizable: true,
+
+    popular: true,
+    preparationTime: '10-12 min',
+    origin: 'Plant-Based'
+  },
+  {
+    id: 'crispy-chicken-burger',
+    name: 'Crispy Chicken Burger',
+    description: 'Crispy fried chicken breast with lettuce',
+    basePrice: 8.90,
+    image: '/images/chicken burger.jpeg',
+    category: 'Burgers',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 0, halal: true },
+    allergens: ['gluten', 'eggs'],
+    calories: 620,
+    ingredients: ['chicken', 'lettuce'],
+    customizable: true,
+
+    popular: true,
+    preparationTime: '12-15 min',
+    origin: 'Crispy Style'
+  },
+
+  // Crispy Chicken - Non-Customizable Items
+  {
+    id: 'crispy-chicken-keulen',
+    name: 'Crispy Chicken Keulen',
+    description: 'Crispy chicken drumsticks - Choose your size',
+    basePrice: 9.90,
+    image: 'https://images.unsplash.com/photo-1608039755401-742074f0548d?auto=format&fit=crop&w=500&q=80',
+    category: 'Crispy Chicken',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 0, halal: true },
+    allergens: ['gluten', 'eggs'],
+    calories: 720,
+    ingredients: ['chicken'],
+    customizable: false,
+    popular: true,
+    preparationTime: '15-18 min',
+    origin: 'Crispy Style',
+    sizes: [
+      { name: '6 Stk.', priceMultiplier: 1.0 },
+      { name: '12 Stk.', priceMultiplier: 1.91 },
+      { name: '18 Stk.', priceMultiplier: 2.72 }
+    ]
+  },
+  {
+    id: 'crispy-chicken-wings',
+    name: 'Crispy Chicken Wings',
+    description: 'Crispy chicken wings - Choose your size',
+    basePrice: 8.90,
+    image: 'https://images.unsplash.com/photo-1527477396000-e27163b481c2?auto=format&fit=crop&w=500&q=80',
+    category: 'Crispy Chicken',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 0, halal: true },
+    allergens: ['gluten', 'eggs'],
+    calories: 480,
+    ingredients: [],
+    customizable: false,
+    popular: true,
+    preparationTime: '12-15 min',
+    origin: 'Crispy Style',
+    sizes: [
+      { name: '6 Stk.', priceMultiplier: 1.0 },
+      { name: '12 Stk.', priceMultiplier: 1.90 },
+      { name: '18 Stk.', priceMultiplier: 2.80 }
+    ]
+  },
+  {
+    id: 'crispy-chicken-strips',
+    name: 'Crispy Chicken Filet Strips',
+    description: 'Crispy chicken strips - Choose your size',
+    basePrice: 7.90,
+    image: 'https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=500&q=80',
+    category: 'Crispy Chicken',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 0, halal: true },
+    allergens: ['gluten', 'eggs'],
+    calories: 520,
+    ingredients: [],
+    customizable: false,
+    popular: true,
+    preparationTime: '10-12 min',
+    origin: 'Crispy Style',
+    sizes: [
+      { name: '4 Stk.', priceMultiplier: 1.0 },
+      { name: '8 Stk.', priceMultiplier: 1.89 },
+      { name: '12 Stk.', priceMultiplier: 2.77 }
+    ]
+  },
+  {
+    id: 'crispy-chicken-bites',
+    name: 'Crispy Chicken Filet Bites',
+    description: 'Crispy chicken bites - Choose your size',
+    basePrice: 6.90,
+    image: '/images/filet bites.jpeg',
+    category: 'Crispy Chicken',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 0, halal: true },
+    allergens: ['gluten', 'eggs'],
+    calories: 420,
+    ingredients: [],
+    customizable: false,
+    popular: true,
+    preparationTime: '8-10 min',
+    origin: 'Crispy Style',
+    sizes: [
+      { name: '8 Stk.', priceMultiplier: 1.0 },
+      { name: '12 Stk.', priceMultiplier: 1.43 },
+      { name: '24 Stk.', priceMultiplier: 2.74 }
+    ]
+  },
+
+  // Flavour Chicken - Non-Customizable Items
+  {
+    id: 'flavour-chicken-chili-cheese',
+    name: 'Flavour Chicken - Chili Cheese',
+    description: 'Crispy chicken with chili cheese flavour seasoning',
+    basePrice: 8.90,
+    image: '/images/chilli cheese chicken.jpeg',
+    category: 'Flavour Chicken',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 3, halal: true },
+    allergens: ['gluten', 'eggs', 'dairy'],
+    calories: 610,
+    ingredients: [],
+    customizable: false,
+    popular: true,
+    preparationTime: '12-15 min',
+    origin: 'Chili Cheese Flavour'
+  },
+  {
+    id: 'flavour-chicken-garlic-parmesan',
+    name: 'Flavour Chicken - Garlic Parmesan',
+    description: 'Crispy chicken with garlic parmesan flavour seasoning',
+    basePrice: 8.90,
+    image: '/images/garlic parmeasean chicken.jpeg',
+    category: 'Flavour Chicken',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 0, halal: true },
+    allergens: ['gluten', 'eggs', 'dairy'],
+    calories: 590,
+    ingredients: [],
+    customizable: false,
+    popular: true,
+    preparationTime: '12-15 min',
+    origin: 'Garlic Parmesan Flavour'
+  },
+  {
+    id: 'flavour-chicken-buffalo',
+    name: 'Flavour Chicken - Buffalo',
+    description: 'Crispy chicken with buffalo flavour seasoning',
+    basePrice: 8.90,
+    image: '/images/buffalo wings.jpeg',
+    category: 'Flavour Chicken',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 4, halal: true },
+    allergens: ['gluten', 'eggs'],
+    calories: 570,
+    ingredients: [],
+    customizable: false,
+    popular: true,
+    preparationTime: '12-15 min',
+    origin: 'Buffalo Flavour'
+  },
+  {
+    id: 'flavour-chicken-lemon-pepper',
+    name: 'Flavour Chicken - Lemon Pepper',
+    description: 'Crispy chicken with lemon pepper flavour seasoning',
+    basePrice: 8.90,
+    image: '/images/lemon pepper chicken.jpeg',
+    category: 'Flavour Chicken',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 1, halal: true },
+    allergens: ['gluten', 'eggs'],
+    calories: 560,
+    ingredients: [],
+    customizable: false,
+    popular: false,
+    preparationTime: '12-15 min',
+    origin: 'Lemon Pepper Flavour'
+  },
+
+  // Upgrades
+  {
+    id: 'chilli-cheese-fries',
+    name: 'Chilli Cheese Pommes',
+    description: 'Crispy fries with chilli cheese sauce',
+    basePrice: 2.50,
+    image: '/images/chilli cheese fries.jpeg',
+    category: 'Upgrades',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: true, vegan: false, glutenFree: true, spicy: 2, halal: true },
+    allergens: ['dairy'],
+    calories: 420,
+    ingredients: [],
+    customizable: false,
+    popular: true,
+    preparationTime: '5-8 min',
+    origin: 'Chilli Style'
+  },
+  {
+    id: 'garlic-parmesan-fries',
+    name: 'Garlic Parmesan Pommes',
+    description: 'Crispy fries with garlic parmesan seasoning',
+    basePrice: 2.50,
+    image: '/images/parmesean fries.jpeg',
+    category: 'Upgrades',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: true, vegan: false, glutenFree: true, spicy: 0, halal: true },
+    allergens: ['dairy'],
+    calories: 385,
+    ingredients: [],
+    customizable: false,
+    popular: true,
+    preparationTime: '5-8 min',
+    origin: 'Italian Style'
   }
 ];

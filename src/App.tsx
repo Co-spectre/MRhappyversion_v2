@@ -7,6 +7,7 @@ import { LanguageProvider } from './context/LanguageContext';
 import { FavoritesProvider } from './context/FavoritesContext';
 import { AdminProvider } from './context/AdminContext';
 import { NotificationProvider, useNotifications } from './context/NotificationContext';
+import { LocationProvider } from './context/LocationContext';
 import { orderGateway } from './services/OrderGateway';
 import Header from './components/Header';
 import ParallaxHero from './components/ParallaxHero';
@@ -62,7 +63,9 @@ function App() {
               <OrderProvider>
                 <CartProvider>
                   <AdminProvider>
-                    <AppContent />
+                    <LocationProvider>
+                      <AppContent />
+                    </LocationProvider>
                   </AdminProvider>
                 </CartProvider>
               </OrderProvider>

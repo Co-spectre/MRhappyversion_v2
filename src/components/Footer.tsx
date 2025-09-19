@@ -70,10 +70,11 @@ const Footer: React.FC<FooterProps> = ({ onViewChange }) => {
           {/* Company Info */}
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-2 mb-4">
-              <ChefHat className="w-8 h-8 text-red-500" />
-              <h3 className="text-2xl font-bold text-white">
-                Mr.<span className="text-red-500">Happy</span>
-              </h3>
+              <img 
+                src="/mr-happy-logo.png" 
+                alt="Mr. Happy Döner Logo" 
+                className="h-8 w-auto object-contain"
+              />
             </div>
             <p className="text-gray-400 mb-4 leading-relaxed">
               Three unique restaurant experiences delivering authentic flavors and exceptional service across Bremen.

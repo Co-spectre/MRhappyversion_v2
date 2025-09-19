@@ -75,9 +75,13 @@ const ParallaxHero: React.FC<ParallaxHeroProps> = ({ onRestaurantSelect }) => {
             }`}
             style={{ transform: `translateY(${scrollY * 0.1}px)` }}
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light text-white tracking-tight leading-none mb-4 md:mb-6 drop-shadow-2xl">
-              Mr.<span className="font-normal text-red-500 drop-shadow-lg">Happy</span>
-            </h1>
+            <div className="flex justify-center mb-4 md:mb-6">
+              <img 
+                src="/mr-happy-logo.png" 
+                alt="Mr. Happy Döner Logo" 
+                className="h-16 sm:h-20 md:h-24 lg:h-28 xl:h-32 w-auto object-contain drop-shadow-2xl"
+              />
+            </div>
             
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-200 font-light mb-8 md:mb-12 lg:mb-16 max-w-xl md:max-w-2xl mx-auto drop-shadow-lg px-4">
               {t('hero.subtitle')}

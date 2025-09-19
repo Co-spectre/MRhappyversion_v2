@@ -145,9 +145,13 @@ const Header: React.FC<HeaderProps> = ({ currentRestaurant, onRestaurantChange, 
           <div className="flex items-center">
             <button 
               onClick={() => onViewChange('home')}
-              className="text-2xl font-light text-white hover:text-red-400 transition-colors"
+              className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
             >
-              Mr.<span className="text-red-500 font-normal">Happy</span>
+              <img 
+                src="/mr-happy-logo.png" 
+                alt="Mr. Happy Döner Logo" 
+                className="h-8 w-auto md:h-10 object-contain"
+              />
             </button>
           </div>
 

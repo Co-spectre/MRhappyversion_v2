@@ -55,7 +55,7 @@ const CookiePolicyPage: React.FC = () => {
               <h1 className="text-3xl font-light text-white">{t('cookies.title')}</h1>
             </div>
             <p className="text-orange-200 text-lg">{t('cookies.subtitle')}</p>
-            <p className="text-gray-300 text-sm mt-2">{t('cookies.lastUpdated')}: 21. August 2025</p>
+            <p className="text-gray-300 text-sm mt-2">{t('cookies.lastUpdated')}: 20. September 2025</p>
           </div>
 
           {/* Content */}

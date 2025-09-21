@@ -21,6 +21,7 @@ const AuthContext = createContext<{
   register: (email: string, password: string, name: string) => Promise<boolean>;
   logout: () => void;
   updateProfile: (updates: Partial<AuthUser>) => void;
+  checkProfileComplete: () => boolean;
 } | undefined>(undefined);
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
@@ -202,6 +203,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const checkProfileComplete = (): boolean => {
+    if (!state.user) return false;
+    
+    // Check if all required profile fields are filled
+    const requiredFields = ['name', 'email', 'phone'];
+    return requiredFields.every(field => {
+      const value = state.user![field as keyof AuthUser];
+      return value && value.toString().trim().length > 0;
+    });
+  };
+
   return (
     <AuthContext.Provider value={{
       state,
@@ -209,7 +221,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       login,
       register,
       logout,
-      updateProfile
+      updateProfile,
+      checkProfileComplete
     }}>
       {children}
     </AuthContext.Provider>

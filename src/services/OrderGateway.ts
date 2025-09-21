@@ -196,6 +196,13 @@ export class OrderNotificationGateway {
   public getOrder(orderId: string): Order | undefined {
     return this.orderStorage.get(orderId);
   }
+
+  // Clear all orders - for admin fresh start
+  public clearAllOrders(): void {
+    this.orderStorage.clear();
+    this.saveOrdersToStorage();
+    console.log('All orders cleared from OrderGateway');
+  }
 }
 
 // Export singleton instance

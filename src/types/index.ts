@@ -126,7 +126,7 @@ export interface Order {
   tip: number;
   total: number;
   status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'completed' | 'cancelled';
-  orderType: 'pickup';
+  orderType: 'pickup' | 'delivery';
   scheduledTime?: Date;
   pickupLocation?: string;
   estimatedTime?: string;

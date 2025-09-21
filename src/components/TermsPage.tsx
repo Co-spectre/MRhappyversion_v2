@@ -16,7 +16,7 @@ const TermsPage: React.FC = () => {
               <h1 className="text-3xl font-light text-white">{t('terms.title')}</h1>
             </div>
             <p className="text-green-200 text-lg">{t('terms.subtitle')}</p>
-            <p className="text-gray-300 text-sm mt-2">{t('terms.lastUpdated')}: 21. August 2025</p>
+            <p className="text-gray-300 text-sm mt-2">{t('terms.lastUpdated')}: 20. September 2025</p>
           </div>
 
           {/* Content */}
@@ -31,9 +31,11 @@ const TermsPage: React.FC = () => {
                 <p>{t('terms.general.text1')}</p>
                 <p>{t('terms.general.text2')}</p>
                 <div className="bg-green-900/20 rounded-xl p-4 border border-green-800/30">
-                  <p className="text-sm"><strong>{t('terms.general.company')}:</strong> Mr.Happy GmbH, Musterstraße 123, 28199 Bremen</p>
-                  <p className="text-sm"><strong>{t('terms.general.registration')}:</strong> HRB 12345, Amtsgericht Bremen</p>
-                  <p className="text-sm"><strong>{t('terms.general.vat')}:</strong> DE123456789</p>
+                  <p className="text-sm"><strong>{t('terms.general.company')}:</strong> Mr Happy Burger, Einzelunternehmen</p>
+                  <p className="text-sm"><strong>Inhaber:</strong> Meryem Tekin</p>
+                  <p className="text-sm"><strong>Adresse:</strong> Zum Alten Speicher 2, 28759 Bremen</p>
+                  <p className="text-sm"><strong>{t('terms.general.tax')}:</strong> 47926840315</p>
+                  <p className="text-sm"><strong>Lieferando Partner:</strong> 2076138</p>
                 </div>
               </div>
             </section>
@@ -269,7 +271,7 @@ const TermsPage: React.FC = () => {
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2 text-green-300">
                         <MapPin className="w-4 h-4" />
-                        <span className="text-sm">Mr.Happy GmbH<br />Musterstraße 123<br />28199 Bremen</span>
+                        <span className="text-sm">Mr Happy Burger<br />Zum Alten Speicher 2<br />28759 Bremen</span>
                       </div>
                     </div>
                   </div>
@@ -278,11 +280,11 @@ const TermsPage: React.FC = () => {
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2 text-green-300">
                         <Phone className="w-4 h-4" />
-                        <span className="text-sm">+49 (0) 421 123 456</span>
+                        <span className="text-sm">04209/8989990</span>
                       </div>
                       <div className="flex items-center space-x-2 text-green-300">
                         <Mail className="w-4 h-4" />
-                        <span className="text-sm">info@mrhappy-bremen.de</span>
+                        <span className="text-sm">mrhappydoner54@hotmail.com</span>
                       </div>
                     </div>
                   </div>

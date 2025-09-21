@@ -5,24 +5,25 @@ export const restaurants: Restaurant[] = [
     id: 'doner',
     name: 'Mr. Happy Döner',
     type: 'doner',
-    description: 'Authentische türkische Döner-Spezialitäten mit frischen Zutaten',
+    description: 'Authentische türkische Döner-Spezialitäten mit frischen Zutaten - 100% HALAL zertifiziert',
     image: 'https://images.unsplash.com/photo-1552566067-b4c7ca78de73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     specialties: ['Döner im Fladenbrot', 'Döner Yufka', 'Döner Teller', 'Döner Box'],
     rating: 4.8,
     deliveryTime: '25-40 min',
     deliveryFee: 2.99,
-    location: 'Berlin Mitte',
-    phone: '+49 30 12345678',
-    address: 'Musterstraße 123, 12345 Berlin',
+    location: 'Bremen Vegesack',
+    phone: '04209/8989990',
+    address: 'Zum Alten Speicher 1-2, 28759 Bremen Vegesack',
     openingHours: {
-      monday: '11:00-23:00',
-      tuesday: '11:00-23:00',
-      wednesday: '11:00-23:00',
-      thursday: '11:00-23:00',
-      friday: '11:00-24:00',
-      saturday: '11:00-24:00',
-      sunday: '12:00-22:00'
-    }
+      monday: '11:00-22:00',
+      tuesday: '11:00-22:00',
+      wednesday: '11:00-22:00',
+      thursday: '11:00-22:00',
+      friday: '11:00-22:00',
+      saturday: '11:00-22:00',
+      sunday: '11:00-22:00'
+    },
+    certifications: ['HALAL']
   },
   {
     id: 'burger',
@@ -34,32 +35,9 @@ export const restaurants: Restaurant[] = [
     rating: 4.7,
     deliveryTime: '20-35 min',
     deliveryFee: 2.99,
-    location: 'Berlin Mitte',
-    phone: '+49 30 12345678',
-    address: 'Musterstraße 123, 12345 Berlin',
-    openingHours: {
-      monday: '11:00-23:00',
-      tuesday: '11:00-23:00',
-      wednesday: '11:00-23:00',
-      thursday: '11:00-23:00',
-      friday: '11:00-24:00',
-      saturday: '11:00-24:00',
-      sunday: '12:00-22:00'
-    }
-  },
-  {
-    id: 'doner-pizza',
-    name: 'Mr. Happy Döner&Pizza',
-    type: 'restaurant',
-    description: 'Vielfältige Pizza-Auswahl und türkische Hauptgerichte',
-    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    specialties: ['Pizza Margherita', 'Pizza Salami', 'Pizza Sucuk', 'Türkische Hauptgerichte'],
-    rating: 4.9,
-    deliveryTime: '30-45 min',
-    deliveryFee: 2.99,
-    location: 'Bremen-Heidkamp 25, 28790 Schwanewede',
-    phone: '+49 421 123458',
-    address: 'Bremen-Heidkamp 25, 28790 Schwanewede',
+    location: 'Bremen Vegesack',
+    phone: '04209/8989991',
+    address: 'Zum Alten Speicher 2, 28759 Bremen Vegesack',
     openingHours: {
       monday: '11:00-22:00',
       tuesday: '11:00-22:00',
@@ -69,6 +47,30 @@ export const restaurants: Restaurant[] = [
       saturday: '11:00-22:00',
       sunday: '11:00-22:00'
     }
+  },
+  {
+    id: 'doner-pizza',
+    name: 'Mr. Happy Döner & Pizza',
+    type: 'restaurant',
+    description: 'Vielfältige Pizza-Auswahl und türkische Hauptgerichte - Döner 100% HALAL zertifiziert',
+    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    specialties: ['Pizza Margherita', 'Pizza Salami', 'Pizza Sucuk', 'Türkische Hauptgerichte'],
+    rating: 4.9,
+    deliveryTime: '30-45 min',
+    deliveryFee: 2.99,
+    location: 'Schwanewede',
+    phone: '042098989992',
+    address: 'Heidkamp 25, 28790 Schwanewede',
+    openingHours: {
+      monday: '11:00-22:00',
+      tuesday: '11:00-22:00',
+      wednesday: '11:00-22:00',
+      thursday: '11:00-22:00',
+      friday: '11:00-22:00',
+      saturday: '11:00-22:00',
+      sunday: '11:00-22:00'
+    },
+    certifications: ['HALAL']
   }
 ];
 
@@ -335,41 +337,6 @@ export const menuItems: MenuItem[] = [
   },
 
   // SNACKS & BEILAGEN Section
-  {
-    id: 'pommes-klein',
-    name: 'Pommes Klein',
-    description: 'Kleine Portion goldene Pommes Frites',
-    basePrice: 4.50,
-    image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    category: 'SNACKS & BEILAGEN',
-    restaurantId: 'doner',
-    dietaryInfo: { vegetarian: true, vegan: true, glutenFree: true, spicy: 0, halal: true },
-    allergens: [],
-    calories: 320,
-    ingredients: ['pommes'],
-    customizable: true,
-    popular: true,
-    preparationTime: '5-8 min',
-    origin: 'Klassische Beilage'
-  },
-  // SNACKS & BEILAGEN Section
-  {
-    id: 'pommes-klein',
-    name: 'Pommes Klein',
-    description: 'Kleine Portion goldene Pommes Frites',
-    basePrice: 4.50,
-    image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    category: 'SNACKS & BEILAGEN',
-    restaurantId: 'doner',
-    dietaryInfo: { vegetarian: true, vegan: true, glutenFree: true, spicy: 0, halal: true },
-    allergens: [],
-    calories: 320,
-    ingredients: ['pommes'],
-    customizable: true,
-    popular: false,
-    preparationTime: '5-8 min',
-    origin: 'Klassische Beilage'
-  },
   {
     id: 'pommes-gross',
     name: 'Pommes Groß',
@@ -1787,7 +1754,7 @@ export const menuItems: MenuItem[] = [
     preparationTime: '15-18 min',
     origin: 'Crispy Style',
     sizes: [
-      { name: '6 Stk.', priceMultiplier: 1.0 },
+      { name: '8 Stk.', priceMultiplier: 1.0 },
       { name: '12 Stk.', priceMultiplier: 1.91 },
       { name: '18 Stk.', priceMultiplier: 2.72 }
     ]
@@ -1809,7 +1776,7 @@ export const menuItems: MenuItem[] = [
     preparationTime: '12-15 min',
     origin: 'Crispy Style',
     sizes: [
-      { name: '6 Stk.', priceMultiplier: 1.0 },
+      { name: '8 Stk.', priceMultiplier: 1.0 },
       { name: '12 Stk.', priceMultiplier: 1.90 },
       { name: '18 Stk.', priceMultiplier: 2.80 }
     ]
@@ -1831,9 +1798,9 @@ export const menuItems: MenuItem[] = [
     preparationTime: '10-12 min',
     origin: 'Crispy Style',
     sizes: [
-      { name: '4 Stk.', priceMultiplier: 1.0 },
-      { name: '8 Stk.', priceMultiplier: 1.89 },
-      { name: '12 Stk.', priceMultiplier: 2.77 }
+      { name: '8 Stk.', priceMultiplier: 1.0 },
+      { name: '12 Stk.', priceMultiplier: 1.89 },
+      { name: '18 Stk.', priceMultiplier: 2.77 }
     ]
   },
   {
@@ -1875,7 +1842,12 @@ export const menuItems: MenuItem[] = [
     customizable: false,
     popular: true,
     preparationTime: '12-15 min',
-    origin: 'Chili Cheese Flavour'
+    origin: 'Chili Cheese Flavour',
+    sizes: [
+      { name: '8 Stk.', priceMultiplier: 1.0 },
+      { name: '12 Stk.', priceMultiplier: 1.45 },
+      { name: '18 Stk.', priceMultiplier: 2.13 }
+    ]
   },
   {
     id: 'flavour-chicken-garlic-parmesan',
@@ -1892,7 +1864,12 @@ export const menuItems: MenuItem[] = [
     customizable: false,
     popular: true,
     preparationTime: '12-15 min',
-    origin: 'Garlic Parmesan Flavour'
+    origin: 'Garlic Parmesan Flavour',
+    sizes: [
+      { name: '8 Stk.', priceMultiplier: 1.0 },
+      { name: '12 Stk.', priceMultiplier: 1.45 },
+      { name: '18 Stk.', priceMultiplier: 2.13 }
+    ]
   },
   {
     id: 'flavour-chicken-buffalo',
@@ -1909,7 +1886,12 @@ export const menuItems: MenuItem[] = [
     customizable: false,
     popular: true,
     preparationTime: '12-15 min',
-    origin: 'Buffalo Flavour'
+    origin: 'Buffalo Flavour',
+    sizes: [
+      { name: '8 Stk.', priceMultiplier: 1.0 },
+      { name: '12 Stk.', priceMultiplier: 1.45 },
+      { name: '18 Stk.', priceMultiplier: 2.13 }
+    ]
   },
   {
     id: 'flavour-chicken-lemon-pepper',
@@ -1926,7 +1908,12 @@ export const menuItems: MenuItem[] = [
     customizable: false,
     popular: false,
     preparationTime: '12-15 min',
-    origin: 'Lemon Pepper Flavour'
+    origin: 'Lemon Pepper Flavour',
+    sizes: [
+      { name: '8 Stk.', priceMultiplier: 1.0 },
+      { name: '12 Stk.', priceMultiplier: 1.45 },
+      { name: '18 Stk.', priceMultiplier: 2.13 }
+    ]
   },
 
   // Upgrades
@@ -1964,59 +1951,6 @@ export const menuItems: MenuItem[] = [
     preparationTime: '5-8 min',
     origin: 'Italian Style'
   },
-
-  // German Menu Items - Special Customization
-  {
-    id: 'schnitzel-menu-wiener-art',
-    name: 'Schnitzel Menü "Wiener Art"',
-    description: 'Traditional Wiener schnitzel with sides and drink',
-    basePrice: 11.90,
-    image: '/food items/doner/Schnitzel.jpg',
-    category: 'German Specialties',
-    restaurantId: 'burger',
-    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 0, halal: true },
-    allergens: ['gluten', 'eggs'],
-    calories: 650,
-    ingredients: [],
-    customizable: true,
-    popular: true,
-    preparationTime: '15-18 min',
-    origin: 'Austrian Style'
-  },
-  {
-    id: 'half-chicken-menu',
-    name: '1/2 Hähnchen Menü',
-    description: 'Half grilled chicken with sides and drink',
-    basePrice: 13.50,
-    image: '/food items/doner/1 half H„hnchen Men�.webp',
-    category: 'German Specialties',
-    restaurantId: 'burger',
-    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: true, spicy: 0, halal: true },
-    allergens: [],
-    calories: 720,
-    ingredients: [],
-    customizable: true,
-    popular: true,
-    preparationTime: '20-25 min',
-    origin: 'German Style'
-  },
-  {
-    id: 'schnitzel-single',
-    name: 'Schnitzel',
-    description: 'Traditional schnitzel without sides',
-    basePrice: 6.00,
-    image: '/food items/doner/Schnitzel.jpg',
-    category: 'German Specialties',
-    restaurantId: 'burger',
-    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 0, halal: true },
-    allergens: ['gluten', 'eggs'],
-    calories: 450,
-    ingredients: [],
-    customizable: true,
-    popular: false,
-    preparationTime: '12-15 min',
-    origin: 'Austrian Style'
-  },
   {
     id: 'nuggets-5',
     name: 'Nuggets (5 Stück)',
@@ -2050,22 +1984,5 @@ export const menuItems: MenuItem[] = [
     popular: true,
     preparationTime: '10-12 min',
     origin: 'Crispy Style'
-  },
-  {
-    id: 'xl-currywurst',
-    name: 'XL Currywurst',
-    description: 'Extra large currywurst with curry sauce',
-    basePrice: 5.70,
-    image: '/food items/doner/Currywurst.jpg',
-    category: 'German Specialties',
-    restaurantId: 'burger',
-    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 1, halal: true },
-    allergens: ['gluten'],
-    calories: 480,
-    ingredients: [],
-    customizable: true,
-    popular: true,
-    preparationTime: '8-12 min',
-    origin: 'German Style'
   }
 ];

@@ -13,21 +13,21 @@ const Footer: React.FC<FooterProps> = ({ onViewChange }) => {
 
   const locations = [
     {
-      name: 'Mr.Happy Döner',
-      address: 'Bremen Vegesack Kaufland - Zum Alten Speicher 1 · 28759 Bremen',
-      phone: '+49 421 123456',
+      name: 'Mr.Happy Döner Vegesack',
+      address: 'Zum Alten Speicher 1-2, Vegesack, 28759 Bremen',
+      phone: '04209/8989990',
       icon: <UtensilsCrossed className="w-4 h-4" />
     },
     {
-      name: 'Mr.Happy Burger',
-      address: 'Bremen Vegesack Kaufland - Zum Alten Speicher 1 · 28759 Bremen',
-      phone: '+49 421 123457',
+      name: 'Mr.Happy Burger Vegesack',
+      address: 'Zum Alten Speicher 2, Vegesack, 28759 Bremen',
+      phone: '04209/8989991',
       icon: <Beef className="w-4 h-4" />
     },
     {
       name: 'Mr.Happy Döner & Pizza',
-      address: 'Bremen-Heidkamp 25 · 28790 Schwanewede',
-      phone: '+49 421 123458',
+      address: 'Heidkamp 25, 28790 Schwanewede',
+      phone: '042098989992',
       icon: <Pizza className="w-4 h-4" />
     }
   ];
@@ -47,9 +47,9 @@ const Footer: React.FC<FooterProps> = ({ onViewChange }) => {
   ];
 
   const socialLinks = [
-    { name: 'Facebook', icon: <Facebook className="w-5 h-5" />, href: 'https://facebook.com/mrhappy' },
-    { name: 'Instagram', icon: <Instagram className="w-5 h-5" />, href: 'https://instagram.com/mrhappy' },
-    { name: 'Twitter', icon: <Twitter className="w-5 h-5" />, href: 'https://twitter.com/mrhappy' }
+    { name: 'Facebook', icon: <Facebook className="w-5 h-5" />, href: 'https://facebook.com/mrhappybremen' },
+    { name: 'Instagram', icon: <Instagram className="w-5 h-5" />, href: 'https://instagram.com/mr.happybremen' },
+    { name: 'TikTok', icon: <Twitter className="w-5 h-5" />, href: 'https://tiktok.com/@mr.happy.bremen' }
   ];
 
   const handleNavigation = (href: string) => {
@@ -81,14 +81,14 @@ const Footer: React.FC<FooterProps> = ({ onViewChange }) => {
             </p>
             <div className="flex items-center space-x-2 text-gray-400 mb-2">
               <Mail className="w-4 h-4 text-red-500" />
-              <a href="mailto:info@mrhappy.de" className="hover:text-white transition-colors">
-                info@mrhappy.de
+              <a href="mailto:mrhappydoner54@hotmail.com" className="hover:text-white transition-colors">
+                mrhappydoner54@hotmail.com
               </a>
             </div>
             <div className="flex items-center space-x-2 text-gray-400">
               <Phone className="w-4 h-4 text-red-500" />
-              <a href="tel:+4942112345" className="hover:text-white transition-colors">
-                +49 421 12345
+              <a href="tel:+4942098989990" className="hover:text-white transition-colors">
+                04209/8989990
               </a>
             </div>
           </div>

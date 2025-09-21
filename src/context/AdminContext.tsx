@@ -24,6 +24,7 @@ type AdminAction =
   | { type: 'SET_ORDERS'; payload: Order[] }
   | { type: 'ADD_ORDER'; payload: Order }
   | { type: 'UPDATE_ORDER'; payload: { id: string; updates: Partial<Order> } }
+  | { type: 'CLEAR_ALL_ORDERS' }
   | { type: 'SET_USERS'; payload: AuthUser[] }
   | { type: 'SET_INVENTORY'; payload: InventoryItem[] }
   | { type: 'UPDATE_INVENTORY_ITEM'; payload: { id: string; updates: Partial<InventoryItem> } }
@@ -98,6 +99,8 @@ function adminReducer(state: AdminState, action: AdminAction): AdminState {
       return { ...state, orders: action.payload };
     case 'ADD_ORDER':
       return { ...state, orders: [action.payload, ...state.orders] };
+    case 'CLEAR_ALL_ORDERS':
+      return { ...state, orders: [], selectedOrder: null };
     case 'UPDATE_ORDER':
       return {
         ...state,
@@ -137,6 +140,7 @@ function adminReducer(state: AdminState, action: AdminAction): AdminState {
 const AdminContext = createContext<{
   state: AdminState;
   dispatch: React.Dispatch<AdminAction>;
+  addOrder: (order: Order) => void;
   updateOrderStatus: (orderId: string, status: Order['status']) => void;
   updateInventoryStock: (itemId: string, newStock: number) => void;
   getFilteredOrders: () => Order[];
@@ -169,6 +173,10 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       type: 'UPDATE_ORDER',
       payload: { id: orderId, updates: { status } },
     });
+  };
+
+  const addOrder = (order: Order) => {
+    dispatch({ type: 'ADD_ORDER', payload: order });
   };
 
   const updateInventoryStock = (itemId: string, newStock: number) => {
@@ -226,6 +234,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     <AdminContext.Provider value={{
       state,
       dispatch,
+      addOrder,
       updateOrderStatus,
       updateInventoryStock,
       getFilteredOrders,

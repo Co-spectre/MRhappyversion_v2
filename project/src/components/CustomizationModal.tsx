@@ -122,6 +122,162 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           ]
         }
       ];
+    } else if (item.category === 'Burger' || item.category === 'Burgers') {
+      // Add menu-specific steps if burger menu is selected
+      const baseSteps: CustomizationStep[] = [
+        {
+          id: 'menu_option',
+          title: 'Choose Your Option',
+          required: true,
+          multiSelect: false,
+          options: [
+            { id: 'burger_only', name: '🔥 TEST - Burger Single', description: 'Just the burger' },
+            { id: 'burger_menu', name: '🔥 TEST - Burger Menü', price: 4.50, description: 'Burger + Pommes + Drink' }
+          ]
+        }
+      ];
+
+      // Check if burger menu is selected to add drink and fries steps
+      const isMenuSelected = selections['menu_option']?.includes('burger_menu');
+      
+      if (isMenuSelected) {
+        // Add fries, drinks, and sauces for menu option
+        baseSteps.push(
+          {
+            id: 'menu_fries_size',
+            title: 'Choose Your Fries Size (Included)',
+            required: true,
+            multiSelect: false,
+            options: [
+              { id: 'fries_small', name: 'Small Fries', description: 'Small portion fries' },
+              { id: 'fries_medium', name: 'Medium Fries', price: 1.0, description: 'Medium portion fries (+€1.00)' },
+              { id: 'fries_large', name: 'Large Fries', price: 2.0, description: 'Large portion fries (+€2.00)' }
+            ]
+          },
+          {
+            id: 'menu_drink',
+            title: 'Choose Your Drink (Included)',
+            required: true,
+            multiSelect: false,
+            options: [
+              // Fritz-Kola varieties
+              { id: 'fritz_kola_original', name: 'Fritz-Kola Original', description: 'Original Fritz Cola' },
+              { id: 'fritz_kola_zero', name: 'Fritz-Kola Super Zero', description: 'Sugar-free Fritz Cola' },
+              { id: 'fritz_kola_mischmasch', name: 'Fritz-Kola Mischmasch', description: 'Cola-Orange-Lemonade mix' },
+              
+              // Fritz-Limo varieties
+              { id: 'fritz_limo_orange', name: 'Fritz-Limo Orange', description: 'Orange lemonade' },
+              { id: 'fritz_limo_lemon', name: 'Fritz-Limo Lemon', description: 'Lemon lemonade' },
+              { id: 'fritz_limo_apple_cherry', name: 'Fritz-Limo Apple-Cherry-Elderberry', description: 'Apple-Cherry-Elderberry' },
+              { id: 'fritz_limo_honeydew', name: 'Fritz-Limo Honeydew Melon', description: 'Honeydew melon lemonade' },
+              { id: 'fritz_limo_ginger', name: 'Fritz-Limo Ginger-Lime', description: 'Ginger-lime lemonade' },
+              
+              // Fritz-Spritz varieties  
+              { id: 'fritz_spritz_apple', name: 'Fritz-Spritz Organic Cloudy Apple', description: 'Organic cloudy apple' },
+              { id: 'fritz_spritz_grape', name: 'Fritz-Spritz Organic Grape', description: 'Organic grape spritz' },
+              { id: 'fritz_spritz_rhubarb', name: 'Fritz-Spritz Organic Rhubarb', description: 'Organic rhubarb spritz' }
+            ]
+          },
+          {
+            id: 'burger_sauces',
+            title: 'Extra Sauces (Optional)',
+            required: false,
+            multiSelect: true,
+            maxSelections: 3,
+            options: [
+              { id: 'burger_sauce', name: 'Burger Sauce', price: 0.5, description: 'Classic burger sauce (+€0.50)' },
+              { id: 'ketchup', name: 'Ketchup', price: 0.5, description: 'Traditional tomato ketchup (+€0.50)' },
+              { id: 'mayo', name: 'Mayo', price: 0.5, description: 'Creamy mayonnaise (+€0.50)' },
+              { id: 'bbq', name: 'BBQ Sauce', price: 0.5, description: 'Smoky barbecue sauce (+€0.50)' },
+              { id: 'honey_mustard', name: 'Honey Mustard', price: 0.5, description: 'Sweet and tangy (+€0.50)' },
+              { id: 'ranch', name: 'Ranch', price: 0.5, description: 'Creamy ranch dressing (+€0.50)' }
+            ]
+          }
+        );
+      } else {
+        // If single option selected, add customization options
+        baseSteps.push(
+          {
+            id: 'burger_sauces',
+            title: 'Extra Sauces (Optional)',
+            required: false,
+            multiSelect: true,
+            maxSelections: 3,
+            options: [
+              { id: 'burger_sauce', name: 'Burger Sauce', price: 0.5, description: 'Classic burger sauce (+€0.50)' },
+              { id: 'ketchup', name: 'Ketchup', price: 0.5, description: 'Traditional tomato ketchup (+€0.50)' },
+              { id: 'mayo', name: 'Mayo', price: 0.5, description: 'Creamy mayonnaise (+€0.50)' },
+              { id: 'bbq', name: 'BBQ Sauce', price: 0.5, description: 'Smoky barbecue sauce (+€0.50)' },
+              { id: 'honey_mustard', name: 'Honey Mustard', price: 0.5, description: 'Sweet and tangy (+€0.50)' },
+              { id: 'ranch', name: 'Ranch', price: 0.5, description: 'Creamy ranch dressing (+€0.50)' }
+            ]
+          },
+          {
+            id: 'burger_toppings',
+            title: 'Remove Toppings (Select what you DON\'T want)',
+            required: false,
+            multiSelect: true,
+            options: [
+              { id: 'no_lettuce', name: 'No Lettuce', description: 'Remove lettuce from burger' },
+              { id: 'no_tomato', name: 'No Tomato', description: 'Remove tomato from burger' },
+              { id: 'no_onion', name: 'No Onion', description: 'Remove onion from burger' },
+              { id: 'no_pickles', name: 'No Pickles', description: 'Remove pickles from burger' },
+              { id: 'no_cheese', name: 'No Cheese', description: 'Remove cheese from burger' }
+            ]
+          },
+          {
+            id: 'burger_extras',
+            title: 'Add Extras (Optional)',
+            required: false,
+            multiSelect: true,
+            options: [
+              { id: 'extra_cheese', name: 'Extra Cheese', price: 1.5, description: 'Additional cheese slice (+€1.50)' },
+              { id: 'fried_onions', name: 'Fried Onions', price: 1.5, description: 'Crispy fried onions (+€1.50)' },
+              { id: 'jalapeños', name: 'Jalapeños', price: 1.0, description: 'Spicy jalapeño slices (+€1.00)' }
+            ]
+          }
+        );
+      }
+
+      return baseSteps;
+    } else if (item.category === 'Crispy Chicken') {
+      return [
+        {
+          id: 'piece_count',
+          title: 'Choose Piece Count',
+          required: true,
+          multiSelect: false,
+          options: [
+            { id: '8_pieces', name: '8 Pieces', description: 'Perfect for sharing or a hearty meal' },
+            { id: '12_pieces', name: '12 Pieces', price: 4.00, description: 'Great for larger groups (+€4.00)' },
+            { id: '18_pieces', name: '18 Pieces', price: 8.00, description: 'Party size portion (+€8.00)' }
+          ]
+        },
+        {
+          id: 'spice_level',
+          title: 'Spice Level',
+          required: true,
+          multiSelect: false,
+          options: [
+            { id: 'mild', name: 'Mild', description: 'Perfect for everyone' },
+            { id: 'medium', name: 'Medium', description: 'A bit of kick' },
+            { id: 'spicy', name: 'Spicy', description: 'For spice lovers' },
+            { id: 'extra_spicy', name: 'Extra Spicy', description: 'Only for the brave!' }
+          ]
+        },
+        {
+          id: 'extras',
+          title: 'Extra Sauces',
+          required: false,
+          multiSelect: true,
+          options: [
+            { id: 'bbq', name: 'BBQ Sauce', price: 0.5 },
+            { id: 'honey_mustard', name: 'Honey Mustard', price: 0.5 },
+            { id: 'ranch', name: 'Ranch Dressing', price: 0.5 },
+            { id: 'buffalo', name: 'Buffalo Sauce', price: 0.5 }
+          ]
+        }
+      ];
     } else {
       // For other items, show general extras
       return [
@@ -439,10 +595,10 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
               {currentStepData.options.map((option) => {
                 const isSelected = (selections[currentStepData.id] || []).includes(option.id);
                 const currentSelections = selections[currentStepData.id] || [];
-                const isAtMaxLimit = currentStepData.maxSelections && 
+                const isAtMaxLimit = Boolean(currentStepData.maxSelections && 
                                     currentSelections.length >= currentStepData.maxSelections && 
                                     !isSelected && 
-                                    currentStepData.multiSelect;
+                                    currentStepData.multiSelect);
                 
                 return (
                   <button

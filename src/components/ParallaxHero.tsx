@@ -65,32 +65,38 @@ const ParallaxHero: React.FC<ParallaxHeroProps> = ({ onRestaurantSelect }) => {
         />
       </div>
 
-      {/* Content - Properly centered accounting for navbar */}
-      <div className="relative z-10 flex items-center justify-center px-4" style={{ height: '100vh', paddingTop: '64px' }}>
-        <div className="text-center max-w-5xl mx-auto flex flex-col justify-center" style={{ minHeight: 'calc(100vh - 64px)' }}>
+      {/* Content - Properly centered and responsive */}
+      <div className="relative z-10 flex items-center justify-center px-4 py-8 sm:py-12 md:py-16" style={{ 
+        minHeight: '100vh',
+        paddingTop: 'max(80px, 5vh)', // Ensure space for header + buffer
+        paddingBottom: 'max(40px, 3vh)' // Ensure space at bottom
+      }}>
+        <div className="text-center max-w-7xl mx-auto flex flex-col justify-center" style={{ 
+          minHeight: 'calc(100vh - 120px)' // Account for header and padding
+        }}>
           {/* Enhanced and Responsive Main Logo/Title */}
           <div 
-            className={`transform transition-all duration-1000 ease-out ${
+            className={`transform transition-all duration-1000 ease-out mb-8 md:mb-12 lg:mb-16 ${
               isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
             }`}
             style={{ transform: `translateY(${scrollY * 0.1}px)` }}
           >
-            <div className="flex justify-center mb-4 md:mb-6">
+            <div className="flex justify-center mb-4 md:mb-6 lg:mb-8">
               <img 
                 src="/mr-happy-logo.png" 
                 alt="Mr. Happy Döner Logo" 
-                className="h-16 sm:h-20 md:h-24 lg:h-28 xl:h-32 w-auto object-contain drop-shadow-2xl"
+                className="h-20 sm:h-24 md:h-28 lg:h-32 xl:h-36 w-auto object-contain drop-shadow-2xl max-w-full"
               />
             </div>
             
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-200 font-light mb-8 md:mb-12 lg:mb-16 max-w-xl md:max-w-2xl mx-auto drop-shadow-lg px-4">
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-200 font-light max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto drop-shadow-lg px-4">
               {t('hero.subtitle')}
             </p>
           </div>
           
           {/* Enhanced and Responsive Restaurant Cards */}
           <div 
-            className={`grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10 mt-12 md:mt-16 px-2 md:px-0 transform transition-all duration-1000 ease-out ${
+            className={`grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10 px-4 sm:px-6 md:px-8 lg:px-0 transform transition-all duration-1000 ease-out ${
               isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
             }`}
             style={{ 
@@ -102,29 +108,31 @@ const ParallaxHero: React.FC<ParallaxHeroProps> = ({ onRestaurantSelect }) => {
               className="group cursor-pointer transition-all duration-300 hover:scale-105"
               onClick={() => onRestaurantSelect?.('doner')}
             >
-              <div className="bg-gray-800/70 backdrop-blur-md border border-gray-600/50 rounded-3xl p-8 md:p-10 hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/30 transition-all duration-300 hover:bg-gray-700/80 h-full">
-                <div className="mb-6 md:mb-8 transition-transform duration-300 group-hover:scale-110 flex justify-center">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-red-500/30 rounded-3xl md:rounded-4xl flex items-center justify-center group-hover:bg-red-500/40 transition-colors">
-                    <UtensilsCrossed className="w-8 h-8 md:w-10 md:h-10 text-red-400" />
+              <div className="bg-gray-800/70 backdrop-blur-md border border-gray-600/50 rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-10 hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/30 transition-all duration-300 hover:bg-gray-700/80 h-full flex flex-col">
+                <div className="mb-4 md:mb-6 lg:mb-8 transition-transform duration-300 group-hover:scale-110 flex justify-center flex-shrink-0">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 bg-red-500/30 rounded-2xl md:rounded-3xl flex items-center justify-center group-hover:bg-red-500/40 transition-colors">
+                    <UtensilsCrossed className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-10 lg:h-10 text-red-400" />
                   </div>
                 </div>
-                <h3 className="text-2xl md:text-3xl font-light text-white mb-3 md:mb-4 group-hover:text-red-100 transition-colors text-center">{t('restaurant.doner.name')}</h3>
-                <p className="text-gray-300 text-base md:text-lg mb-6 md:mb-8 leading-relaxed text-center">
-                  {t('restaurant.doner.desc')}
-                </p>
-                <div className="text-center mb-6">
-                  <div className="flex items-center justify-center space-x-2 text-gray-400 text-sm mb-2">
-                    <MapPin className="w-4 h-4 text-red-400" />
-                    <span>Bremen Vegesack Kaufland</span>
+                <div className="flex-grow flex flex-col">
+                  <h3 className="text-xl sm:text-2xl md:text-2xl lg:text-3xl font-light text-white mb-2 md:mb-3 lg:mb-4 group-hover:text-red-100 transition-colors text-center">{t('restaurant.doner.name')}</h3>
+                  <p className="text-gray-300 text-sm sm:text-base md:text-lg mb-4 md:mb-6 lg:mb-8 leading-relaxed text-center flex-grow">
+                    {t('restaurant.doner.desc')}
+                  </p>
+                  <div className="text-center mb-4 md:mb-6 flex-shrink-0">
+                    <div className="flex items-center justify-center space-x-2 text-gray-400 text-xs sm:text-sm mb-1 md:mb-2">
+                      <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-red-400 flex-shrink-0" />
+                      <span>Bremen Vegesack Kaufland</span>
+                    </div>
+                    <div className="text-gray-500 text-xs sm:text-sm mb-1 md:mb-2">Zum Alten Speicher 1 · 28759 Bremen</div>
+                    <div className="flex items-center justify-center space-x-2 text-gray-400 text-xs sm:text-sm">
+                      <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 flex-shrink-0" />
+                      <span>Daily 08:00 - 20:00</span>
+                    </div>
                   </div>
-                  <div className="text-gray-500 text-sm">Zum Alten Speicher 1 · 28759 Bremen</div>
-                  <div className="flex items-center justify-center space-x-2 text-gray-400 text-sm mt-2">
-                    <Clock className="w-4 h-4 text-green-400" />
-                    <span>Daily 08:00 - 20:00</span>
+                  <div className="flex items-center justify-center text-red-400 text-sm sm:text-base md:text-lg font-medium group-hover:text-red-300 transition-colors flex-shrink-0">
+                    {t('hero.explore')} <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 ml-2 group-hover:translate-x-2 transition-transform" />
                   </div>
-                </div>
-                <div className="flex items-center justify-center text-red-400 text-base md:text-lg font-medium group-hover:text-red-300 transition-colors">
-                  {t('hero.explore')} <ArrowRight className="w-5 h-5 md:w-6 md:h-6 ml-2 group-hover:translate-x-2 transition-transform" />
                 </div>
               </div>
             </div>
@@ -133,29 +141,31 @@ const ParallaxHero: React.FC<ParallaxHeroProps> = ({ onRestaurantSelect }) => {
               className="group cursor-pointer transition-all duration-300 hover:scale-105"
               onClick={() => onRestaurantSelect?.('burger')}
             >
-              <div className="bg-gray-800/70 backdrop-blur-md border border-gray-600/50 rounded-3xl p-8 md:p-10 hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/30 transition-all duration-300 hover:bg-gray-700/80 h-full">
-                <div className="mb-6 md:mb-8 transition-transform duration-300 group-hover:scale-110 flex justify-center">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-red-500/30 rounded-3xl md:rounded-4xl flex items-center justify-center group-hover:bg-red-500/40 transition-colors">
-                    <Beef className="w-8 h-8 md:w-10 md:h-10 text-red-400" />
+              <div className="bg-gray-800/70 backdrop-blur-md border border-gray-600/50 rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-10 hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/30 transition-all duration-300 hover:bg-gray-700/80 h-full flex flex-col">
+                <div className="mb-4 md:mb-6 lg:mb-8 transition-transform duration-300 group-hover:scale-110 flex justify-center flex-shrink-0">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 bg-red-500/30 rounded-2xl md:rounded-3xl flex items-center justify-center group-hover:bg-red-500/40 transition-colors">
+                    <Beef className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-10 lg:h-10 text-red-400" />
                   </div>
                 </div>
-                <h3 className="text-2xl md:text-3xl font-light text-white mb-3 md:mb-4 group-hover:text-red-100 transition-colors text-center">{t('restaurant.burger.name')}</h3>
-                <p className="text-gray-300 text-base md:text-lg mb-6 md:mb-8 leading-relaxed text-center">
-                  {t('restaurant.burger.desc')}
-                </p>
-                <div className="text-center mb-6">
-                  <div className="flex items-center justify-center space-x-2 text-gray-400 text-sm mb-2">
-                    <MapPin className="w-4 h-4 text-red-400" />
-                    <span>Bremen Vegesack Kaufland</span>
+                <div className="flex-grow flex flex-col">
+                  <h3 className="text-xl sm:text-2xl md:text-2xl lg:text-3xl font-light text-white mb-2 md:mb-3 lg:mb-4 group-hover:text-red-100 transition-colors text-center">{t('restaurant.burger.name')}</h3>
+                  <p className="text-gray-300 text-sm sm:text-base md:text-lg mb-4 md:mb-6 lg:mb-8 leading-relaxed text-center flex-grow">
+                    {t('restaurant.burger.desc')}
+                  </p>
+                  <div className="text-center mb-4 md:mb-6 flex-shrink-0">
+                    <div className="flex items-center justify-center space-x-2 text-gray-400 text-xs sm:text-sm mb-1 md:mb-2">
+                      <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-red-400 flex-shrink-0" />
+                      <span>Bremen Vegesack Kaufland</span>
+                    </div>
+                    <div className="text-gray-500 text-xs sm:text-sm mb-1 md:mb-2">Zum Alten Speicher 1 · 28759 Bremen</div>
+                    <div className="flex items-center justify-center space-x-2 text-gray-400 text-xs sm:text-sm">
+                      <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 flex-shrink-0" />
+                      <span>Daily 08:00 - 20:00</span>
+                    </div>
                   </div>
-                  <div className="text-gray-500 text-sm">Zum Alten Speicher 1 · 28759 Bremen</div>
-                  <div className="flex items-center justify-center space-x-2 text-gray-400 text-sm mt-2">
-                    <Clock className="w-4 h-4 text-green-400" />
-                    <span>Daily 08:00 - 20:00</span>
+                  <div className="flex items-center justify-center text-red-400 text-sm sm:text-base md:text-lg font-medium group-hover:text-red-300 transition-colors flex-shrink-0">
+                    {t('hero.explore')} <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 ml-2 group-hover:translate-x-2 transition-transform" />
                   </div>
-                </div>
-                <div className="flex items-center justify-center text-red-400 text-base md:text-lg font-medium group-hover:text-red-300 transition-colors">
-                  {t('hero.explore')} <ArrowRight className="w-5 h-5 md:w-6 md:h-6 ml-2 group-hover:translate-x-2 transition-transform" />
                 </div>
               </div>
             </div>
@@ -164,29 +174,31 @@ const ParallaxHero: React.FC<ParallaxHeroProps> = ({ onRestaurantSelect }) => {
               className="group cursor-pointer transition-all duration-300 hover:scale-105"
               onClick={() => onRestaurantSelect?.('doner-pizza')}
             >
-              <div className="bg-gray-800/70 backdrop-blur-md border border-gray-600/50 rounded-3xl p-8 md:p-10 hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/30 transition-all duration-300 hover:bg-gray-700/80 h-full">
-                <div className="mb-6 md:mb-8 transition-transform duration-300 group-hover:scale-110 flex justify-center">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-red-500/30 rounded-3xl md:rounded-4xl flex items-center justify-center group-hover:bg-red-500/40 transition-colors">
-                    <ChefHat className="w-8 h-8 md:w-10 md:h-10 text-red-400" />
+              <div className="bg-gray-800/70 backdrop-blur-md border border-gray-600/50 rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-10 hover:border-red-500/70 hover:shadow-2xl hover:shadow-red-500/30 transition-all duration-300 hover:bg-gray-700/80 h-full flex flex-col">
+                <div className="mb-4 md:mb-6 lg:mb-8 transition-transform duration-300 group-hover:scale-110 flex justify-center flex-shrink-0">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 bg-red-500/30 rounded-2xl md:rounded-3xl flex items-center justify-center group-hover:bg-red-500/40 transition-colors">
+                    <ChefHat className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-10 lg:h-10 text-red-400" />
                   </div>
                 </div>
-                <h3 className="text-2xl md:text-3xl font-light text-white mb-3 md:mb-4 group-hover:text-red-100 transition-colors text-center">{t('restaurant.doner-pizza.name')}</h3>
-                <p className="text-gray-300 text-base md:text-lg mb-6 md:mb-8 leading-relaxed text-center">
-                  {t('restaurant.doner-pizza.desc')}
-                </p>
-                <div className="text-center mb-6">
-                  <div className="flex items-center justify-center space-x-2 text-gray-400 text-sm mb-2">
-                    <MapPin className="w-4 h-4 text-red-400" />
-                    <span>Bremen-Heidkamp</span>
+                <div className="flex-grow flex flex-col">
+                  <h3 className="text-xl sm:text-2xl md:text-2xl lg:text-3xl font-light text-white mb-2 md:mb-3 lg:mb-4 group-hover:text-red-100 transition-colors text-center">{t('restaurant.doner-pizza.name')}</h3>
+                  <p className="text-gray-300 text-sm sm:text-base md:text-lg mb-4 md:mb-6 lg:mb-8 leading-relaxed text-center flex-grow">
+                    {t('restaurant.doner-pizza.desc')}
+                  </p>
+                  <div className="text-center mb-4 md:mb-6 flex-shrink-0">
+                    <div className="flex items-center justify-center space-x-2 text-gray-400 text-xs sm:text-sm mb-1 md:mb-2">
+                      <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-red-400 flex-shrink-0" />
+                      <span>Bremen-Heidkamp</span>
+                    </div>
+                    <div className="text-gray-500 text-xs sm:text-sm mb-1 md:mb-2">Bremen-Heidkamp 25 · 28790 Schwanewede</div>
+                    <div className="flex items-center justify-center space-x-2 text-gray-400 text-xs sm:text-sm">
+                      <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 flex-shrink-0" />
+                      <span>Daily 11:00 - 22:00</span>
+                    </div>
                   </div>
-                  <div className="text-gray-500 text-sm">Bremen-Heidkamp 25 · 28790 Schwanewede</div>
-                  <div className="flex items-center justify-center space-x-2 text-gray-400 text-sm mt-2">
-                    <Clock className="w-4 h-4 text-green-400" />
-                    <span>Daily 11:00 - 22:00</span>
+                  <div className="flex items-center justify-center text-red-400 text-sm sm:text-base md:text-lg font-medium group-hover:text-red-300 transition-colors flex-shrink-0">
+                    {t('hero.explore')} <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 ml-2 group-hover:translate-x-2 transition-transform" />
                   </div>
-                </div>
-                <div className="flex items-center justify-center text-red-400 text-base md:text-lg font-medium group-hover:text-red-300 transition-colors">
-                  {t('hero.explore')} <ArrowRight className="w-5 h-5 md:w-6 md:h-6 ml-2 group-hover:translate-x-2 transition-transform" />
                 </div>
               </div>
             </div>

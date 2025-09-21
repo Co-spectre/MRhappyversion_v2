@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
+import { orderGateway } from '../services/OrderGateway';
 
 export type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
@@ -84,6 +85,16 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       }, newNotification.duration);
     }
   };
+
+  // Register with OrderGateway for order notifications
+  useEffect(() => {
+    // Register for all users since we'll filter by user ID in the gateway
+    orderGateway.registerListener('all-users', addNotification);
+
+    return () => {
+      orderGateway.unregisterListener('all-users');
+    };
+  }, []);
 
   const removeNotification = (id: string) => {
     dispatch({ type: 'REMOVE_NOTIFICATION', payload: id });

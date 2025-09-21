@@ -3,6 +3,7 @@ import { X, MapPin, Phone, Check, Mail, ArrowLeft, ArrowRight, Loader2 } from 'l
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useOrder } from '../context/OrderContext';
+import PayPalPayment from './PayPalPayment';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -37,6 +38,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // Order Type
+  const [orderType, setOrderType] = useState<'delivery' | 'pickup'>('pickup');
   
   // Customer Information
   const [customerInfo, setCustomerInfo] = useState({
@@ -153,7 +157,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
   const calculateTotal = () => {
     const subtotal = getTotalPrice();
     const tax = subtotal * 0.19; // 19% VAT in Germany
-    const deliveryFee = subtotal > 25 ? 0 : 3.50; // Free delivery over €25
+    const deliveryFee = orderType === 'delivery' ? 2.00 : 0; // €2 for delivery, free for pickup
     const total = subtotal + tax + deliveryFee + tipAmount;
     
     return {
@@ -221,10 +225,16 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
 
     setIsLoading(true);
     try {
-      // In a real implementation, you would send orderData to your backend
-      // const orderData = { customerInfo, deliveryAddress: useNewAddress ? newAddress : selectedAddress, paymentMethod: selectedPayment, items: cartState.items, pricing: calculateTotal(), deliveryTime, orderNotes, tipAmount };
-
-      await createOrder(cartState.items, authState.user!.id);
+      const totals = calculateTotal();
+      
+      // Create order with full customer information
+      await createOrder(cartState.items, authState.user!.id, {
+        customerInfo,
+        orderType,
+        deliveryFee: totals.deliveryFee,
+        tip: totals.tip,
+        total: totals.total
+      });
       
       // Clear cart
       cartDispatch({ type: 'CLEAR_CART' });
@@ -480,6 +490,43 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     <div className="space-y-6">
       <h3 className="text-xl font-semibold text-white mb-4">Payment & Review</h3>
       
+      {/* Order Type Selection */}
+      <div>
+        <h4 className="text-lg font-medium text-gray-300 mb-3">Order Type</h4>
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            onClick={() => setOrderType('delivery')}
+            className={`p-4 border rounded-lg transition-all ${
+              orderType === 'delivery'
+                ? 'border-red-600 bg-red-900/20 text-white'
+                : 'border-gray-700 bg-gray-800/50 text-gray-300 hover:bg-gray-700'
+            }`}
+          >
+            <div className="text-center">
+              <div className="text-2xl mb-2">🚚</div>
+              <div className="font-medium">Delivery</div>
+              <div className="text-sm opacity-75">We'll deliver to your address</div>
+              <div className="text-sm font-bold text-red-400 mt-1">+€2.00</div>
+            </div>
+          </button>
+          <button
+            onClick={() => setOrderType('pickup')}
+            className={`p-4 border rounded-lg transition-all ${
+              orderType === 'pickup'
+                ? 'border-red-600 bg-red-900/20 text-white'
+                : 'border-gray-700 bg-gray-800/50 text-gray-300 hover:bg-gray-700'
+            }`}
+          >
+            <div className="text-center">
+              <div className="text-2xl mb-2">🏪</div>
+              <div className="font-medium">Pickup</div>
+              <div className="text-sm opacity-75">Pick up from our restaurant</div>
+              <div className="text-sm font-bold text-green-400 mt-1">FREE</div>
+            </div>
+          </button>
+        </div>
+      </div>
+      
       {/* Payment Methods */}
       <div>
         <h4 className="text-lg font-medium text-gray-300 mb-3">Payment Method</h4>
@@ -570,7 +617,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
                   <span>€{totals.tax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-300">
-                  <span>Delivery Fee</span>
+                  <span>Delivery Fee ({orderType === 'pickup' ? 'Pickup' : 'Delivery'})</span>
                   <span>{totals.deliveryFee === 0 ? 'FREE' : `€${totals.deliveryFee.toFixed(2)}`}</span>
                 </div>
                 {tipAmount > 0 && (
@@ -607,7 +654,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
       
       <div>
         <h3 className="text-2xl font-bold text-white mb-2">Order Placed Successfully!</h3>
-        <p className="text-gray-300">Thank you for your order. We'll prepare it with care!</p>
+        <p className="text-gray-300 mb-2">Thank you for choosing Mr. Happy! Your order has been sent to our kitchen team.</p>
+        <p className="text-sm text-yellow-400">You'll receive notifications as your order progresses.</p>
       </div>
 
       <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
@@ -628,16 +676,27 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
         </div>
       </div>
 
+      {/* Encouragement Section */}
+      <div className="bg-gradient-to-r from-red-900/20 to-orange-900/20 rounded-lg p-4 border border-red-500/30">
+        <h4 className="text-lg font-medium text-white mb-2">Craving Something Else?</h4>
+        <p className="text-gray-300 text-sm mb-3">
+          Don't forget to explore our amazing menu! We have fresh döner, crispy chicken, delicious burgers, and refreshing Fritz drinks.
+        </p>
+        <p className="text-red-400 text-sm font-medium">
+          Try our popular items and build your favorites list!
+        </p>
+      </div>
+
       <div className="flex space-x-4">
         <button
           onClick={onClose}
-          className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg transition-colors"
+          className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg transition-colors font-medium"
         >
-          Continue Shopping
+          Browse Menu
         </button>
         <button
           onClick={() => {/* Navigate to order tracking */}}
-          className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg transition-colors"
+          className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg transition-colors"
         >
           Track Order
         </button>

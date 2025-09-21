@@ -16,25 +16,25 @@ const ChefShowcaseSection: React.FC = () => {
     },
     {
       id: 2,
-      name: 'Chef Emma Schmidt',
-      role: 'Burger Master',
-      image: 'https://images.unsplash.com/photo-1594736797933-d0cc4e042a8f?auto=format&fit=crop&w=500&q=80',
-      experience: '12+ Years',
-      specialty: 'American Grill & Fusion',
-      achievement: 'Bremen Burger Champion 2023',
-      description: 'Creating innovative burger experiences with locally sourced ingredients and creative combinations.',
-      signature: 'Hanseat Special Burger'
+      name: 'Chef Marcus Johnson',
+      role: 'Head Chef - Mr.Happy Burger',
+      image: 'https://images.pexels.com/photos/2102934/pexels-photo-2102934.jpeg?auto=compress&cs=tinysrgb&w=500',
+      experience: '15+ Years',
+      specialty: 'Gourmet Burgers & Premium Beef',
+      achievement: 'James Beard Nominee',
+      description: 'Former sous chef at Michelin-starred restaurants, specializing in elevated comfort food with premium ingredients.',
+      signature: 'Wagyu Beef with Truffle Aioli'
     },
     {
       id: 3,
-      name: 'Chef Marco Benedetti',
-      role: 'Fine Dining Chef',
-      image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=500&q=80',
-      experience: '18+ Years',
-      specialty: 'Mediterranean & Modern European',
-      achievement: 'Michelin Guide Recognition',
-      description: 'Elevating casual dining with sophisticated techniques and seasonal menu creations.',
-      signature: 'Truffle Mushroom Risotto'
+      name: 'Chef Maria Rodriguez',
+      role: 'Executive Chef - Mr.Happy Restaurant',
+      image: 'https://images.pexels.com/photos/2102933/pexels-photo-2102933.jpeg?auto=compress&cs=tinysrgb&w=500',
+      experience: '20+ Years',
+      specialty: 'Fine Dining & International Cuisine',
+      achievement: 'Michelin Star Recipient',
+      description: 'Culinary Institute graduate with expertise in international cuisine and innovative techniques.',
+      signature: 'Deconstructed Beef Wellington'
     }
   ];
 

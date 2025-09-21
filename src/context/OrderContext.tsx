@@ -25,7 +25,13 @@ type OrderAction =
 const OrderContext = createContext<{
   state: OrderState;
   dispatch: React.Dispatch<OrderAction>;
-  createOrder: (items: CartItem[], userId: string) => Promise<Order>;
+  createOrder: (items: CartItem[], userId: string, orderDetails?: {
+    customerInfo?: { firstName: string; lastName: string; email: string; phone: string };
+    orderType?: 'delivery' | 'pickup';
+    deliveryFee?: number;
+    tip?: number;
+    total?: number;
+  }) => Promise<Order>;
   getOrderHistory: (userId: string) => Order[];
   trackOrder: (orderId: string) => Order | null;
 } | undefined>(undefined);
@@ -83,11 +89,18 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     specialInstructions: ''
   });
 
-  const createOrder = async (items: CartItem[], userId: string): Promise<Order> => {
+  const createOrder = async (items: CartItem[], userId: string, orderDetails?: {
+    customerInfo?: { firstName: string; lastName: string; email: string; phone: string };
+    orderType?: 'delivery' | 'pickup';
+    deliveryFee?: number;
+    tip?: number;
+    total?: number;
+  }): Promise<Order> => {
     const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
-    const tax = 0; // No tax as requested
-    const deliveryFee = 0; // No delivery fee for pickup
-    const tip = 0; // Will be set during checkout
+    const tax = subtotal * 0.19; // 19% VAT in Germany
+    const deliveryFee = orderDetails?.deliveryFee ?? 0;
+    const tip = orderDetails?.tip ?? 0;
+    const total = orderDetails?.total ?? (subtotal + tax + deliveryFee + tip);
     
     const order: Order = {
       id: `ORD-${Date.now()}`,
@@ -97,18 +110,20 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       tax,
       deliveryFee,
       tip,
-      total: subtotal + tax + deliveryFee,
+      total,
       status: 'pending',
-      orderType: 'pickup',
+      orderType: orderDetails?.orderType ?? 'pickup',
       scheduledTime: state.scheduledTime || undefined,
       pickupLocation: state.pickupLocation,
       specialInstructions: state.specialInstructions,
       createdAt: new Date(),
       updatedAt: new Date(),
       customerInfo: {
-        name: 'Customer', // This will be filled from actual user data
-        phone: '+49 123 456789',
-        email: 'customer@email.com'
+        name: orderDetails?.customerInfo ? 
+          `${orderDetails.customerInfo.firstName} ${orderDetails.customerInfo.lastName}` : 
+          'Customer',
+        phone: orderDetails?.customerInfo?.phone ?? '+49 123 456789',
+        email: orderDetails?.customerInfo?.email ?? 'customer@email.com'
       }
     };
 

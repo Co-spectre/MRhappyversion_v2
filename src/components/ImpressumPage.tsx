@@ -28,23 +28,23 @@ const ImpressumPage: React.FC = () => {
               <div className="bg-gray-900 rounded-lg p-6 space-y-3">
                 <div>
                   <span className="text-gray-400">Firmenname:</span>
-                  <span className="text-white ml-2 font-medium">Mr.Happy Restaurants GmbH</span>
+                  <span className="text-white ml-2 font-medium">Mr Happy Burger</span>
                 </div>
                 <div>
                   <span className="text-gray-400">Rechtsform:</span>
-                  <span className="text-white ml-2">Gesellschaft mit beschränkter Haftung (GmbH)</span>
+                  <span className="text-white ml-2">Einzelunternehmen</span>
                 </div>
                 <div>
-                  <span className="text-gray-400">Registergericht:</span>
-                  <span className="text-white ml-2">Amtsgericht Bremen</span>
+                  <span className="text-gray-400">Geschäftsführer/Inhaber:</span>
+                  <span className="text-white ml-2">Meryem Tekin</span>
                 </div>
                 <div>
-                  <span className="text-gray-400">Handelsregisternummer:</span>
-                  <span className="text-white ml-2">HRB 12345 B</span>
+                  <span className="text-gray-400">Steuernummer:</span>
+                  <span className="text-white ml-2">47926840315</span>
                 </div>
                 <div>
-                  <span className="text-gray-400">Umsatzsteuer-ID:</span>
-                  <span className="text-white ml-2">DE123456789</span>
+                  <span className="text-gray-400">Lieferando Partnernummer:</span>
+                  <span className="text-white ml-2">2076138</span>
                 </div>
               </div>
             </section>
@@ -59,10 +59,10 @@ const ImpressumPage: React.FC = () => {
                 <div className="flex items-center space-x-3">
                   <MapPin className="w-4 h-4 text-red-400" />
                   <div>
-                    <span className="text-gray-400">Anschrift:</span>
+                    <span className="text-gray-400">Geschäftsadresse:</span>
                     <div className="text-white ml-2">
-                      Mr.Happy Restaurants GmbH<br />
-                      Zum Alten Speicher 1<br />
+                      Mr Happy Burger<br />
+                      Zum Alten Speicher 2<br />
                       28759 Bremen<br />
                       Deutschland
                     </div>
@@ -72,17 +72,19 @@ const ImpressumPage: React.FC = () => {
                   <Phone className="w-4 h-4 text-red-400" />
                   <div>
                     <span className="text-gray-400">Telefon:</span>
-                    <a href="tel:+4942112345" className="text-white ml-2 hover:text-red-400 transition-colors">
-                      +49 421 12345
-                    </a>
+                    <div className="text-white ml-2">
+                      <a href="tel:+4942098989990" className="hover:text-red-400 transition-colors block">04209/8989990</a>
+                      <a href="tel:+4942098989991" className="hover:text-red-400 transition-colors block">04209/8989991</a>
+                      <a href="tel:+4942098989992" className="hover:text-red-400 transition-colors block">042098989992</a>
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="w-4 h-4 text-red-400" />
                   <div>
                     <span className="text-gray-400">E-Mail:</span>
-                    <a href="mailto:info@mrhappy.de" className="text-white ml-2 hover:text-red-400 transition-colors">
-                      info@mrhappy.de
+                    <a href="mailto:mrhappydoner54@hotmail.com" className="text-white ml-2 hover:text-red-400 transition-colors">
+                      mrhappydoner54@hotmail.com
                     </a>
                   </div>
                 </div>
@@ -93,12 +95,50 @@ const ImpressumPage: React.FC = () => {
             <section>
               <div className="flex items-center space-x-2 mb-4">
                 <Shield className="w-5 h-5 text-red-400" />
-                <h2 className="text-xl font-semibold text-white">Vertretungsberechtigte Geschäftsführer</h2>
+                <h2 className="text-xl font-semibold text-white">Geschäftsführer/Inhaber</h2>
               </div>
               <div className="bg-gray-900 rounded-lg p-6">
                 <div className="text-white">
-                  Max Mustermann<br />
-                  Anna Musterfrau
+                  Meryem Tekin
+                </div>
+              </div>
+            </section>
+
+            {/* Restaurant Locations */}
+            <section>
+              <div className="flex items-center space-x-2 mb-4">
+                <MapPin className="w-5 h-5 text-red-400" />
+                <h2 className="text-xl font-semibold text-white">Standorte</h2>
+              </div>
+              <div className="bg-gray-900 rounded-lg p-6 space-y-4">
+                <div>
+                  <h3 className="text-white font-medium mb-2">Standort 1: Mr Happy Döner Vegesack</h3>
+                  <p className="text-gray-300">Zum Alten Speicher 1-2, Vegesack, 28759 Bremen</p>
+                </div>
+                <div>
+                  <h3 className="text-white font-medium mb-2">Standort 2: Mr Happy Burger Vegesack</h3>
+                  <p className="text-gray-300">Zum Alten Speicher 2, Vegesack, 28759 Bremen</p>
+                </div>
+                <div>
+                  <h3 className="text-white font-medium mb-2">Standort 3: Mr. Happy Döner and Pizza Schwanewede</h3>
+                  <p className="text-gray-300">Heidkamp 25, 28790 Schwanewede</p>
+                </div>
+              </div>
+            </section>
+
+            {/* Opening Hours */}
+            <section>
+              <div className="flex items-center space-x-2 mb-4">
+                <Building className="w-5 h-5 text-red-400" />
+                <h2 className="text-xl font-semibold text-white">Öffnungszeiten</h2>
+              </div>
+              <div className="bg-gray-900 rounded-lg p-6">
+                <div className="text-white">
+                  <p><strong>Mr Happy Döner and Pizza Schwanewede:</strong></p>
+                  <p className="text-gray-300 ml-2">Täglich: 11:00 - 22:00</p>
+                  <br />
+                  <p><strong>Abholzeiten:</strong></p>
+                  <p className="text-gray-300 ml-2">Täglich: 11:00 - 22:00 (Schwanewede)</p>
                 </div>
               </div>
             </section>
@@ -108,8 +148,8 @@ const ImpressumPage: React.FC = () => {
               <h2 className="text-xl font-semibold text-white mb-4">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
               <div className="bg-gray-900 rounded-lg p-6">
                 <div className="text-white">
-                  Max Mustermann<br />
-                  Zum Alten Speicher 1<br />
+                  Meryem Tekin<br />
+                  Zum Alten Speicher 2<br />
                   28759 Bremen
                 </div>
               </div>

@@ -20,6 +20,7 @@ export interface Restaurant {
     saturday: string;
     sunday: string;
   };
+  certifications?: string[];
 }
 
 export interface Ingredient {

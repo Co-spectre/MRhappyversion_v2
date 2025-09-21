@@ -36,72 +36,24 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 
   // Define steps based on item category
   const getCustomizationSteps = (): CustomizationStep[] => {
-    if (item.category === 'Döner' || item.category === 'MENÜ\'S') {
+    if (item.category === "Mac'n Cheese") {
       return [
         {
-          id: 'meat',
-          title: 'Choose Your Meat',
+          id: 'macncheese_type',
+          title: 'Wähle deine Variante',
           required: true,
           multiSelect: false,
           options: [
-            { id: 'chicken', name: 'Chicken', description: 'Tender grilled chicken' },
-            { id: 'beef', name: 'Beef', description: 'Seasoned beef döner' },
-            { id: 'mix', name: 'Mix (Chicken + Beef)', description: 'Best of both worlds' }
-          ]
-        },
-        {
-          id: 'sauces',
-          title: 'Select Your Sauces',
-          required: true,
-          multiSelect: true,
-          maxSelections: 2,
-          options: [
-            { id: 'cocktail', name: 'Cocktail', description: 'Creamy cocktail sauce' },
-            { id: 'tzatziki', name: 'Tzatziki', description: 'Greek yogurt with herbs' },
-            { id: 'curry', name: 'Curry', description: 'Spicy curry sauce' },
-            { id: 'ranch', name: 'Ranch', description: 'Classic ranch dressing' },
-            { id: 'garlic', name: 'Knoblauch', description: 'Garlic sauce' },
-            { id: 'hot', name: 'Scharfe Sauce', description: 'Spicy hot sauce' }
-          ]
-        },
-        {
-          id: 'salad',
-          title: 'Choose Your Salad',
-          required: true,
-          multiSelect: true,
-          options: [
-            { id: 'mixed', name: 'Mixed Salad', description: 'Lettuce, tomato, cucumber' },
-            { id: 'fresh', name: 'Fresh Garden', description: 'Crisp vegetables and herbs' },
-            { id: 'mediterranean', name: 'Mediterranean', description: 'Olives, peppers, onions' }
-          ]
-        },
-        {
-          id: 'extras',
-          title: 'Add Extras (Optional)',
-          required: false,
-          multiSelect: true,
-          options: [
-            { id: 'cheese', name: 'Extra Cheese', price: 1.5 },
-            { id: 'meat_extra', name: 'Extra Meat', price: 3.0 },
-            { id: 'onions', name: 'Grilled Onions', price: 1.0 },
-            { id: 'jalapenos', name: 'Jalapeños', price: 1.0 }
-          ]
-        },
-        {
-          id: 'sides',
-          title: 'Sides & Extra Sauces',
-          required: false,
-          multiSelect: true,
-          options: [
-            { id: 'extra_sauce', name: 'Extra Sauce Portion', price: 2.5, description: 'Additional portion of your chosen sauces' },
-            { id: 'fries', name: 'Pommes', price: 4.7, description: 'Crispy golden fries' },
-            { id: 'nuggets_fries', name: '6x Nuggets + Pommes', price: 8.7, description: 'Chicken nuggets with fries' },
-            { id: 'onion_rings', name: 'Onion Rings', price: 3.5, description: 'Crispy breaded onion rings' },
-            { id: 'mozzarella_sticks', name: 'Mozzarella Sticks', price: 5.2, description: 'Breaded mozzarella sticks (6 pieces)' },
-            { id: 'chicken_wings', name: 'Chicken Wings', price: 7.5, description: 'Spicy chicken wings (8 pieces)' },
-            { id: 'garlic_bread', name: 'Garlic Bread', price: 3.0, description: 'Toasted bread with garlic butter' }
+            { id: 'original', name: 'Original', price: 8.20 },
+            { id: 'mit_schnitzel', name: 'Mit Schnitzel Salat + Sauce', price: 12.90 },
+            { id: 'mit_doner', name: 'Mit Döner Salat + Sauce', price: 12.90 }
           ]
         }
+      ];
+    }
+    if (item.category === 'Döner' || item.category === 'MENÜ\'S') {
+      return [
+        // ...existing code for Döner...
       ];
     } else if (item.category === 'WRAP') {
       return [
@@ -248,16 +200,16 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           ]
         }
       ];
-    } else if (item.category === 'SNACKS & BEILAGEN') {
+    } else if (item.category === 'SNACKS & BEILAGEN' || (item.category === 'Sides' && item.name === 'Pommes')) {
       return [
         {
-          id: 'portion',
-          title: 'Choose Your Portion Size',
-          required: true,
-          multiSelect: false,
+          id: 'pommes_upgrade',
+          title: 'Upgrade Your Pommes',
+          required: false,
+          multiSelect: true,
           options: [
-            { id: 'regular', name: 'Regular', description: 'Standard portion' },
-            { id: 'large', name: 'Large', description: 'Extra large portion', price: 2.0 }
+            { id: 'chilli_cheese_pommes', name: 'Chilli Cheese Pommes', price: 2.0, description: 'Mit Chilli Cheese Sauce' },
+            { id: 'garlic_parmesan_pommes', name: 'Garlic Parmesan Pommes', price: 2.0, description: 'Mit Knoblauch-Parmesan' }
           ]
         },
         {
@@ -266,11 +218,11 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           required: false,
           multiSelect: true,
           options: [
-            { id: 'ketchup', name: 'Ketchup', description: 'Classic tomato ketchup' },
-            { id: 'mayo', name: 'Mayo', description: 'Creamy mayonnaise' },
-            { id: 'curry', name: 'Curry Sauce', description: 'Spiced curry sauce' },
-            { id: 'garlic', name: 'Garlic Sauce', description: 'Creamy garlic sauce' },
-            { id: 'tzatziki', name: 'Tzatziki', description: 'Greek yogurt dip' }
+            { id: 'ketchup', name: 'Ketchup', price: 1.0, description: 'Classic tomato ketchup (+€1.00)' },
+            { id: 'mayo', name: 'Mayo', price: 1.0, description: 'Creamy mayonnaise (+€1.00)' },
+            { id: 'curry', name: 'Curry Sauce', price: 1.0, description: 'Spiced curry sauce (+€1.00)' },
+            { id: 'garlic', name: 'Garlic Sauce', price: 1.0, description: 'Creamy garlic sauce (+€1.00)' },
+            { id: 'tzatziki', name: 'Tzatziki', price: 1.0, description: 'Greek yogurt dip (+€1.00)' }
           ]
         },
         {
@@ -313,8 +265,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           required: true,
           multiSelect: false,
           options: [
-            { id: 'burger_only', name: 'Burger Single', description: 'Just the burger' },
-            { id: 'burger_menu', name: 'Burger Menü', price: 4.50, description: 'Burger + Pommes + Drink' }
+            { id: 'burger_only', name: 'Burger Single', description: 'Just the burger', price: 0 },
+            { id: 'burger_menu', name: 'Burger Menü', price: 7.00, description: 'Burger + Pommes + Drink (+€7.00)' }
           ]
         }
       ];
@@ -323,19 +275,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
       const isMenuSelected = selections['menu_option']?.includes('burger_menu');
       
       if (isMenuSelected) {
-        // Add fries, drinks, and sauces for menu option
+        // Add drinks and sauces for menu option (no fries size)
         baseSteps.push(
-          {
-            id: 'menu_fries_size',
-            title: 'Choose Your Fries Size (Included)',
-            required: true,
-            multiSelect: false,
-            options: [
-              { id: 'fries_small', name: 'Small Fries', description: 'Small portion fries' },
-              { id: 'fries_medium', name: 'Medium Fries', price: 1.0, description: 'Medium portion fries (+€1.00)' },
-              { id: 'fries_large', name: 'Large Fries', price: 2.0, description: 'Large portion fries (+€2.00)' }
-            ]
-          },
           {
             id: 'menu_drink',
             title: 'Choose Your Drink (Included)',
@@ -367,14 +308,14 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             multiSelect: true,
             maxSelections: 3,
             options: [
-              { id: 'burger_sauce', name: 'Burger Sauce', price: 0.5, description: 'Classic burger sauce (+€0.50)' },
+              { id: 'burger_sauce', name: 'Burger Sauce', price: 1.0, description: 'Classic burger sauce (+€1.00)' },
               { id: 'ketchup', name: 'Ketchup', price: 0.5, description: 'Traditional tomato ketchup (+€0.50)' },
               { id: 'mayo', name: 'Mayo', price: 0.5, description: 'Creamy mayonnaise (+€0.50)' },
               { id: 'bbq', name: 'BBQ Sauce', price: 0.5, description: 'Smoky barbecue sauce (+€0.50)' },
-              { id: 'honey_mustard', name: 'Honey Mustard', price: 0.5, description: 'Sweet and tangy (+€0.50)' },
-              { id: 'ranch', name: 'Ranch', price: 0.5, description: 'Creamy ranch dressing (+€0.50)' },
-              { id: 'chilli_cheese', name: 'Chilli Cheese', price: 0.5, description: 'Spicy cheese sauce (+€0.50)' },
-              { id: 'mango_curry', name: 'Mango Curry', price: 0.5, description: 'Sweet and spicy mango curry sauce (+€0.50)' }
+              { id: 'ranch', name: 'Ranch', price: 1.0, description: 'Creamy ranch dressing (+€1.00)' },
+              { id: 'curry', name: 'Curry', price: 1.0, description: 'Traditional curry sauce (+€1.00)' },
+              { id: 'chilli_cheese', name: 'Chilli Cheese', price: 1.0, description: 'Spicy cheese sauce (+€1.00)' },
+              { id: 'suess_sauer', name: 'Süss-Sauer', price: 0.5, description: 'Sweet and sour sauce (+€0.50)' }
             ]
           }
         );
@@ -388,14 +329,14 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             multiSelect: true,
             maxSelections: 3,
             options: [
-              { id: 'burger_sauce', name: 'Burger Sauce', price: 0.5, description: 'Classic burger sauce (+€0.50)' },
+              { id: 'burger_sauce', name: 'Burger Sauce', price: 1.0, description: 'Classic burger sauce (+€1.00)' },
               { id: 'ketchup', name: 'Ketchup', price: 0.5, description: 'Traditional tomato ketchup (+€0.50)' },
               { id: 'mayo', name: 'Mayo', price: 0.5, description: 'Creamy mayonnaise (+€0.50)' },
               { id: 'bbq', name: 'BBQ Sauce', price: 0.5, description: 'Smoky barbecue sauce (+€0.50)' },
-              { id: 'honey_mustard', name: 'Honey Mustard', price: 0.5, description: 'Sweet and tangy (+€0.50)' },
-              { id: 'ranch', name: 'Ranch', price: 0.5, description: 'Creamy ranch dressing (+€0.50)' },
-              { id: 'chilli_cheese', name: 'Chilli Cheese', price: 0.5, description: 'Spicy cheese sauce (+€0.50)' },
-              { id: 'mango_curry', name: 'Mango Curry', price: 0.5, description: 'Sweet and spicy mango curry sauce (+€0.50)' }
+              { id: 'ranch', name: 'Ranch', price: 1.0, description: 'Creamy ranch dressing (+€1.00)' },
+              { id: 'curry', name: 'Curry', price: 1.0, description: 'Traditional curry sauce (+€1.00)' },
+              { id: 'chilli_cheese', name: 'Chilli Cheese', price: 1.0, description: 'Spicy cheese sauce (+€1.00)' },
+              { id: 'suess_sauer', name: 'Süss-Sauer', price: 0.5, description: 'Sweet and sour sauce (+€0.50)' }
             ]
           },
           {
@@ -426,6 +367,61 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
       }
 
       return baseSteps;
+    } else if (item.category === 'Flavour Chicken' || (item.category === 'Buckets' && item.customizable)) {
+      const steps = [];
+      // For Flavour Chicken, add piece count selection first with actual prices from the menu
+      if (item.category === 'Flavour Chicken') {
+        // Map actual prices for each Flavour Chicken type
+        let pieceOptions = [];
+        if (item.name.includes('Keulen')) {
+          pieceOptions = [
+            { id: '6_stk', name: '6 Stk.', price: 7.90 },
+            { id: '12_stk', name: '12 Stk.', price: 15.10 },
+            { id: '18_stk', name: '18 Stk.', price: 21.40 }
+          ];
+        } else if (item.name.includes('Wings')) {
+          pieceOptions = [
+            { id: '6_stk', name: '6 Stk.', price: 7.90 },
+            { id: '12_stk', name: '12 Stk.', price: 15.10 },
+            { id: '18_stk', name: '18 Stk.', price: 21.40 }
+          ];
+        } else if (item.name.includes('Strips')) {
+          pieceOptions = [
+            { id: '4_stk', name: '4 Stk.', price: 7.90 },
+            { id: '8_stk', name: '8 Stk.', price: 14.90 },
+            { id: '12_stk', name: '12 Stk.', price: 21.90 }
+          ];
+        } else if (item.name.includes('Bites')) {
+          pieceOptions = [
+            { id: '8_stk', name: '8 Stk.', price: 8.90 },
+            { id: '12_stk', name: '12 Stk.', price: 11.90 },
+            { id: '24_stk', name: '24 Stk.', price: 22.40 }
+          ];
+        }
+        steps.push({
+          id: 'piece_count',
+          title: 'Choose Piece Count',
+          required: true,
+          multiSelect: false,
+          options: pieceOptions
+        });
+      }
+      // Add flavour selection
+      steps.push({
+        id: 'flavour_choice',
+        title: 'Choose Your Flavour',
+        required: true,
+        multiSelect: false,
+        options: [
+          { id: 'bbq', name: 'BBQ', description: 'Classic smoky barbecue flavour' },
+          { id: 'mango', name: 'Mango', description: 'Sweet and tropical mango flavour' },
+          { id: 'chili_cheese', name: 'Chili Cheese', description: 'Spicy cheese flavouring' },
+          { id: 'garlic_parmesan', name: 'Garlic Parmesan', description: 'Savoury garlic and parmesan' },
+          { id: 'buffalo', name: 'Buffalo', description: 'Hot and tangy buffalo sauce' },
+          { id: 'lemon_pepper', name: 'Lemon Pepper', description: 'Zesty lemon with black pepper' }
+        ]
+      });
+      return steps;
     } else if (item.category === 'Crispy Chicken') {
       return [
         {
@@ -433,34 +429,15 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           title: 'Choose Piece Count',
           required: true,
           multiSelect: false,
-          options: [
-            { id: '8_pieces', name: '8 Pieces', description: 'Perfect for sharing or a hearty meal' },
-            { id: '12_pieces', name: '12 Pieces', price: 4.00, description: 'Great for larger groups (+€4.00)' },
-            { id: '18_pieces', name: '18 Pieces', price: 8.00, description: 'Party size portion (+€8.00)' }
-          ]
-        },
-        {
-          id: 'spice_level',
-          title: 'Spice Level',
-          required: true,
-          multiSelect: false,
-          options: [
-            { id: 'mild', name: 'Mild', description: 'Perfect for everyone' },
-            { id: 'medium', name: 'Medium', description: 'A bit of kick' },
-            { id: 'spicy', name: 'Spicy', description: 'For spice lovers' },
-            { id: 'extra_spicy', name: 'Extra Spicy', description: 'Only for the brave!' }
-          ]
-        },
-        {
-          id: 'extras',
-          title: 'Extra Sauces',
-          required: false,
-          multiSelect: true,
-          options: [
-            { id: 'bbq', name: 'BBQ Sauce', price: 0.5 },
-            { id: 'honey_mustard', name: 'Honey Mustard', price: 0.5 },
-            { id: 'ranch', name: 'Ranch Dressing', price: 0.5 },
-            { id: 'buffalo', name: 'Buffalo Sauce', price: 0.5 }
+          options: item.sizes ? item.sizes.map((size, index) => ({
+            id: `size_${index}`,
+            name: size.name,
+            price: index > 0 ? (item.basePrice * size.priceMultiplier) - item.basePrice : 0,
+            description: index === 0 ? 'Perfect for a quick meal' : index === 1 ? 'Great for sharing' : 'Party size portion'
+          })) : [
+            { id: '6_pieces', name: '6 Pieces', description: 'Perfect for a quick meal' },
+            { id: '12_pieces', name: '12 Pieces', price: 6.70, description: 'Great for sharing (+€6.70)' },
+            { id: '18_pieces', name: '18 Pieces', price: 13.00, description: 'Party size portion (+€13.00)' }
           ]
         }
       ];
@@ -528,47 +505,11 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           }, 800);
         } else if (multiSelect && currentStep < steps.length - 2) {
           // Multi-select steps (except the last one): auto-advance when max reached or after delay
-          const newCurrentSelections = newSelections[stepId] || [];
-          if (currentStepData.maxSelections && newCurrentSelections.length >= currentStepData.maxSelections) {
-            // Auto-advance when max selections reached
-            setIsAutoAdvancing(true);
-            setTimeout(() => {
-              setCurrentStep(currentStep + 1);
-              setIsAutoAdvancing(false);
-            }, 1200);
-          }
+          // ...existing code...
         }
       }
-
       return newSelections;
     });
-  };
-
-  const isStepComplete = (step: CustomizationStep): boolean => {
-    if (!step.required) return true;
-    const stepSelections = selections[step.id] || [];
-    return stepSelections.length > 0;
-  };
-
-  const canProceedToNext = (): boolean => {
-    return isStepComplete(steps[currentStep]);
-  };
-
-  const calculateTotalPrice = (): number => {
-    let total = item.basePrice * quantity;
-    
-    // Add extra costs
-    steps.forEach(step => {
-      const stepSelections = selections[step.id] || [];
-      stepSelections.forEach(selectionId => {
-        const option = step.options.find(opt => opt.id === selectionId);
-        if (option?.price) {
-          total += option.price * quantity;
-        }
-      });
-    });
-
-    return total;
   };
 
   const handleAddToCart = () => {
@@ -606,8 +547,56 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     }
   };
 
-  if (!isOpen) return null;
+  // Prevent customization for sauces and drinks
+  if (!isOpen || item.category === 'Sauces' || item.category === 'Drinks') return null;
 
+  // Helper: Calculate total price
+  const calculateTotalPrice = () => {
+    // Special logic for Mac'n Cheese: use only the selected variant's price
+    if (item.category === "Mac'n Cheese") {
+      const macStep = steps.find(s => s.id === 'macncheese_type');
+      if (macStep) {
+        const selected = selections['macncheese_type']?.[0];
+        const option = macStep.options.find(opt => opt.id === selected);
+        if (option?.price) {
+          return option.price * quantity;
+        }
+      }
+      return 0;
+    }
+    // Default: base price plus extras
+    let total = item.basePrice * quantity;
+    steps.forEach(step => {
+      const stepSelections = selections[step.id] || [];
+      stepSelections.forEach(selectionId => {
+        const option = step.options.find(opt => opt.id === selectionId);
+        if (option?.price) {
+          total += option.price * quantity;
+        }
+      });
+    });
+    return total;
+  };
+
+  // Helper: Can proceed to next step
+  const canProceedToNext = () => {
+    const step = steps[currentStep];
+    if (!step) return false;
+    const selected = selections[step.id] || [];
+    if (step.required) {
+      if (step.multiSelect) {
+        if (step.maxSelections) {
+          return selected.length > 0 && selected.length <= step.maxSelections;
+        }
+        return selected.length > 0;
+      }
+      return selected.length === 1;
+    }
+    return true;
+  };
+
+
+  // Get current step data for rendering
   const currentStepData = steps[currentStep];
 
   return (
@@ -877,6 +866,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         </div>
       </div>
     </div>
+
   );
 };
 

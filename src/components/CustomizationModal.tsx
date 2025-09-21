@@ -20,7 +20,7 @@ interface CustomizationModalProps {
   item: MenuItem;
   isOpen: boolean;
   onClose: () => void;
-  onAddToCart: (customizations: any[], quantity: number) => void;
+  onAddToCart: (customizations: { ingredientId: string; action: string; name: string; price: number }[], quantity: number) => void;
 }
 
 const CustomizationModal: React.FC<CustomizationModalProps> = ({
@@ -372,7 +372,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
       // For Flavour Chicken, add piece count selection first with actual prices from the menu
       if (item.category === 'Flavour Chicken') {
         // Map actual prices for each Flavour Chicken type
-        let pieceOptions = [];
+  let pieceOptions: { id: string; name: string; price: number }[] = [];
         if (item.name.includes('Keulen')) {
           pieceOptions = [
             { id: '6_stk', name: '6 Stk.', price: 7.90 },
@@ -514,8 +514,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 
   const handleAddToCart = () => {
     // Convert selections to customization format
-    const customizations: any[] = [];
-    
+    const customizations: { ingredientId: string; action: string; name: string; price: number }[] = [];
     steps.forEach(step => {
       const stepSelections = selections[step.id] || [];
       stepSelections.forEach(selectionId => {
@@ -530,7 +529,6 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         }
       });
     });
-
     onAddToCart(customizations, quantity);
     onClose();
   };

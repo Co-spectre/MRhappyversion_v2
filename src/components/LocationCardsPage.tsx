@@ -64,7 +64,7 @@ const LocationCardsPage: React.FC<LocationCardsPageProps> = ({ onRestaurantSelec
     },
     {
       id: 'doner-pizza-schwanewede',
-      name: 'Mr.Happy Döner & Pizza',
+  name: 'Doner&Pizza',
       address: 'Bremen - Heidkamp 25 · 28790 Schwanewede',
       coordinates: { lat: 53.2089, lng: 8.5614 },
       phone: '+49 421 11223344',

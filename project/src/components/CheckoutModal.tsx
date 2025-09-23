@@ -54,7 +54,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     city: '',
     zipCode: '',
     phone: '',
-    instructions: ''
+    instructions: '',
+    latitude: undefined as number | undefined,
+    longitude: undefined as number | undefined
   });
   const [useNewAddress, setUseNewAddress] = useState(false);
 
@@ -377,7 +379,30 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
       {useNewAddress && (
         <div className="space-y-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
           <h4 className="text-lg font-medium text-gray-300">New Delivery Address</h4>
-          
+          <button
+            type="button"
+            className="mb-2 px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-lg"
+            onClick={() => {
+              if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                  (position) => {
+                    setNewAddress(prev => ({
+                      ...prev,
+                      latitude: position.coords.latitude,
+                      longitude: position.coords.longitude
+                    }));
+                  },
+                  (error) => {
+                    alert('Unable to get your location. Please allow location access.');
+                  }
+                );
+              } else {
+                alert('Geolocation is not supported by your browser.');
+              }
+            }}
+          >
+            Use my current location
+          </button>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Street Address *
@@ -440,6 +465,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
               rows={3}
             />
           </div>
+          {(newAddress.latitude && newAddress.longitude) && (
+            <div className="text-green-400 text-sm mt-2">
+              Location set: {newAddress.latitude.toFixed(5)}, {newAddress.longitude.toFixed(5)}
+            </div>
+          )}
         </div>
       )}
 

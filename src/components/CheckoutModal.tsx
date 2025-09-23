@@ -387,7 +387,23 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
       {useNewAddress && (
         <div className="space-y-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
           <h4 className="text-lg font-medium text-gray-300">New Delivery Address</h4>
-          
+
+          {/* Bremen Vegesack autofill button */}
+          <button
+            type="button"
+            className="mb-2 bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded transition-colors"
+            onClick={() => setNewAddress({
+              name: 'Bremen Vegesack Restaurant',
+              street: 'Zum Alten Speicher 1-2',
+              city: 'Bremen',
+              zipCode: '28759',
+              phone: '',
+              instructions: ''
+            })}
+          >
+            Use Bremen Vegesack Restaurant Location
+          </button>
+
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Street Address *

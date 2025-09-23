@@ -23,7 +23,9 @@ export const restaurants: Restaurant[] = [
       saturday: '11:00-22:00',
       sunday: '11:00-22:00'
     },
-    certifications: ['HALAL']
+  certifications: ['HALAL'],
+  latitude: 53.1705, // Bremen Vegesack approx
+  longitude: 8.6141
   },
   {
     id: 'burger',
@@ -46,11 +48,13 @@ export const restaurants: Restaurant[] = [
       friday: '11:00-22:00',
       saturday: '11:00-22:00',
       sunday: '11:00-22:00'
-    }
+    },
+    latitude: 53.1705, // Bremen Vegesack approx
+    longitude: 8.6141
   },
   {
     id: 'doner-pizza',
-    name: 'Mr. Happy Döner & Pizza',
+  name: 'MR. Happy Doner&pizza',
     type: 'restaurant',
     description: 'Vielfältige Pizza-Auswahl und türkische Hauptgerichte - Döner 100% HALAL zertifiziert',
     image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
@@ -70,7 +74,9 @@ export const restaurants: Restaurant[] = [
       saturday: '11:00-22:00',
       sunday: '11:00-22:00'
     },
-    certifications: ['HALAL']
+  certifications: ['HALAL'],
+  latitude: 53.2422, // Schwanewede approx
+  longitude: 8.6106
   }
 ];
 

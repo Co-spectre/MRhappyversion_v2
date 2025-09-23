@@ -36,7 +36,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 
   // Define steps based on item category
   const getCustomizationSteps = (): CustomizationStep[] => {
-    if (item.category === "Mac'n Cheese") {
+  if (item.category === "Mac'n Cheese") {
       return [
         {
           id: 'macncheese_type',
@@ -51,10 +51,102 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         }
       ];
     }
-    if (item.category === 'Döner' || item.category === 'MENÜ\'S') {
-      return [
-        // ...existing code for Döner...
+    if (item.category === 'Döner' || item.category === 'MENÜ\'S' || item.category === 'Pizza') {
+      // Use the same customization steps as Burger/Burgers
+      const baseSteps: CustomizationStep[] = [
+        {
+          id: 'menu_option',
+          title: 'Choose Your Option',
+          required: true,
+          multiSelect: false,
+          options: [
+            { id: 'single_only', name: `${item.category} Single`, description: `Just the ${item.category.toLowerCase()}`, price: 0 },
+            { id: 'menu', name: `${item.category} Menü`, price: 7.00, description: `${item.category} + Pommes + Drink (+€7.00)` }
+          ]
+        }
       ];
+
+      const isMenuSelected = selections['menu_option']?.includes('menu');
+
+      if (isMenuSelected) {
+        baseSteps.push(
+          {
+            id: 'menu_drink',
+            title: 'Choose Your Drink (Included)',
+            required: true,
+            multiSelect: false,
+            options: [
+              { id: 'fritz_kola_original', name: 'Fritz-Kola Original', description: 'Original Fritz Cola' },
+              { id: 'fritz_kola_zero', name: 'Fritz-Kola Super Zero', description: 'Sugar-free Fritz Cola' },
+              { id: 'fritz_kola_mischmasch', name: 'Fritz-Kola Mischmasch', description: 'Cola-Orange-Lemonade mix' },
+              { id: 'fritz_limo_orange', name: 'Fritz-Limo Orange', description: 'Orange lemonade' },
+              { id: 'fritz_limo_lemon', name: 'Fritz-Limo Lemon', description: 'Lemon lemonade' },
+              { id: 'fritz_limo_apple_cherry', name: 'Fritz-Limo Apple-Cherry-Elderberry', description: 'Apple-Cherry-Elderberry' },
+              { id: 'fritz_limo_honeydew', name: 'Fritz-Limo Honeydew Melon', description: 'Honeydew melon lemonade' },
+              { id: 'fritz_limo_ginger', name: 'Fritz-Limo Ginger-Lime', description: 'Ginger-lime lemonade' },
+              { id: 'fritz_spritz_apple', name: 'Fritz-Spritz Organic Cloudy Apple', description: 'Organic cloudy apple' },
+              { id: 'fritz_spritz_grape', name: 'Fritz-Spritz Organic Grape', description: 'Organic grape spritz' },
+              { id: 'fritz_spritz_rhubarb', name: 'Fritz-Spritz Organic Rhubarb', description: 'Organic rhubarb spritz' }
+            ]
+          },
+          {
+            id: 'sauces',
+            title: 'Extra Sauces (Optional)',
+            required: false,
+            multiSelect: true,
+            maxSelections: 3,
+            options: [
+              { id: 'cocktail', name: 'Cocktail', price: 1.0, description: 'Creamy cocktail sauce (+€1.00)' },
+              { id: 'tzatziki', name: 'Tzatziki', price: 1.0, description: 'Greek yogurt with herbs (+€1.00)' },
+              { id: 'curry', name: 'Curry', price: 1.0, description: 'Spicy curry sauce (+€1.00)' },
+              { id: 'garlic', name: 'Knoblauch', price: 1.0, description: 'Garlic sauce (+€1.00)' },
+              { id: 'hot', name: 'Scharfe Sauce', price: 1.0, description: 'Spicy hot sauce (+€1.00)' }
+            ]
+          }
+        );
+      } else {
+        baseSteps.push(
+          {
+            id: 'sauces',
+            title: 'Extra Sauces (Optional)',
+            required: false,
+            multiSelect: true,
+            maxSelections: 3,
+            options: [
+              { id: 'cocktail', name: 'Cocktail', price: 1.0, description: 'Creamy cocktail sauce (+€1.00)' },
+              { id: 'tzatziki', name: 'Tzatziki', price: 1.0, description: 'Greek yogurt with herbs (+€1.00)' },
+              { id: 'curry', name: 'Curry', price: 1.0, description: 'Spicy curry sauce (+€1.00)' },
+              { id: 'garlic', name: 'Knoblauch', price: 1.0, description: 'Garlic sauce (+€1.00)' },
+              { id: 'hot', name: 'Scharfe Sauce', price: 1.0, description: 'Spicy hot sauce (+€1.00)' }
+            ]
+          },
+          {
+            id: 'toppings',
+            title: 'Remove Toppings (Select what you DON\'T want)',
+            required: false,
+            multiSelect: true,
+            options: [
+              { id: 'no_lettuce', name: 'No Lettuce', description: 'Remove lettuce' },
+              { id: 'no_tomato', name: 'No Tomato', description: 'Remove tomato' },
+              { id: 'no_onion', name: 'No Onion', description: 'Remove onion' },
+              { id: 'no_peppers', name: 'No Peppers', description: 'Remove peppers' },
+              { id: 'no_cheese', name: 'No Cheese', description: 'Remove cheese' }
+            ]
+          },
+          {
+            id: 'extras',
+            title: 'Add Extras (Optional)',
+            required: false,
+            multiSelect: true,
+            options: [
+              { id: 'extra_cheese', name: 'Extra Cheese', price: 1.5, description: 'Additional cheese (+€1.50)' },
+              { id: 'feta', name: 'Feta Cheese', price: 2.0, description: 'Feta cheese (+€2.00)' },
+              { id: 'avocado', name: 'Avocado', price: 2.5, description: 'Avocado (+€2.50)' }
+            ]
+          }
+        );
+      }
+      return baseSteps;
     } else if (item.category === 'WRAP') {
       return [
         {
@@ -467,21 +559,33 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   };
 
   const steps = getCustomizationSteps();
+  const currentStepData = steps[currentStep];
+
+  // Defensive: If no steps or currentStepData, show fallback UI
+  if (!isOpen || !steps.length || !currentStepData) {
+    return isOpen ? (
+      <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div className="bg-gray-900 rounded-2xl max-w-md w-full p-8 text-center text-white">
+          <h2 className="text-2xl font-bold mb-4">No customization available</h2>
+          <p className="mb-6">This item cannot be customized at the moment.</p>
+          <button onClick={onClose} className="bg-red-600 hover:bg-red-700 text-white py-2 px-6 rounded-lg font-semibold transition-all duration-300">Close</button>
+        </div>
+      </div>
+    ) : null;
+  }
 
   const handleOptionSelect = (stepId: string, optionId: string, multiSelect: boolean) => {
-    const currentStepData = steps[currentStep];
-    
     setSelections(prev => {
       const current = prev[stepId] || [];
       let newSelections;
-      
+      const stepData = steps.find(s => s.id === stepId) || currentStepData;
       if (multiSelect) {
         // Toggle selection for multi-select
         if (current.includes(optionId)) {
           newSelections = { ...prev, [stepId]: current.filter(id => id !== optionId) };
         } else {
           // Check if we've reached the maximum selections
-          if (currentStepData.maxSelections && current.length >= currentStepData.maxSelections) {
+          if (stepData.maxSelections && current.length >= stepData.maxSelections) {
             // If at max, replace the oldest selection with the new one
             const updatedSelections = [...current.slice(1), optionId];
             newSelections = { ...prev, [stepId]: updatedSelections };
@@ -496,7 +600,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 
       // Auto-advance logic
       if (currentStep < steps.length - 1) {
-        if (!multiSelect && currentStepData.required) {
+        if (!multiSelect && stepData.required) {
           // Single-select required steps: auto-advance immediately
           setIsAutoAdvancing(true);
           setTimeout(() => {
@@ -594,8 +698,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   };
 
 
-  // Get current step data for rendering
-  const currentStepData = steps[currentStep];
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">

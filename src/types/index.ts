@@ -21,6 +21,8 @@ export interface Restaurant {
     sunday: string;
   };
   certifications?: string[];
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface Ingredient {

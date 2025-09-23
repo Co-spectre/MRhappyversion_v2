@@ -1,4 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useContext } from 'react';
+import { restaurants } from '../data/restaurants';
+import { haversineDistance } from '../utils/haversine';
+import LocationContext from '../context/LocationContext';
 import { menuItems } from '../data/restaurants';
 import MenuItemCard from './MenuItemCard';
 import MenuFilters from './MenuFilters';
@@ -12,6 +15,29 @@ interface MenuSectionProps {
 }
 
 const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = false }) => {
+  // Get user location from context
+  const locationCtx = useContext(LocationContext) as any;
+  const userLocation = locationCtx?.location;
+  const isLocationLoading = locationCtx?.isLocationLoading;
+  const requestLocation = locationCtx?.requestLocation;
+
+  // Get restaurant data
+  const restaurant = restaurants.find(r => r.id === restaurantId);
+  const restLat = restaurant?.latitude;
+  const restLng = restaurant?.longitude;
+
+  // Determine delivery radius (km)
+  let deliveryRadius = 2;
+  if (restaurantId === 'doner-pizza') deliveryRadius = 10;
+
+  // Calculate distance (km) if possible
+  let userDistance: number | null = null;
+  if (userLocation && restLat && restLng) {
+    userDistance = haversineDistance(userLocation.latitude, userLocation.longitude, restLat, restLng);
+  }
+
+  // Delivery eligibility
+  const canDeliver = userDistance !== null && userDistance <= deliveryRadius;
   console.log('🚨 MenuSection rendered with restaurantId:', restaurantId);
   
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -101,6 +127,41 @@ const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = fal
     return filtered;
   }, [restaurantMenuItems, selectedCategory, dietaryFilters, searchQuery]);
 
+
+  // UI: Location prompt or delivery eligibility
+  if (!userLocation && !isLocationLoading) {
+    return (
+      <div className="text-center py-20">
+        <p className="text-gray-400 text-lg mb-4">To check delivery eligibility, please allow location access.</p>
+        <button
+          onClick={requestLocation}
+          className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors"
+        >
+          Enable Location
+        </button>
+      </div>
+    );
+  }
+  if (isLocationLoading) {
+    return (
+      <div className="text-center py-20">
+        <p className="text-gray-400 text-lg">Checking your location...</p>
+      </div>
+    );
+  }
+  // Show warning if out of delivery radius, but still show menu items for pickup
+  let deliveryWarning = null;
+  if (userLocation && userDistance !== null && !canDeliver) {
+    deliveryWarning = (
+      <div className="text-center py-6">
+        <p className="text-red-400 text-lg mb-2">
+          Sorry, delivery is only available within {deliveryRadius} km of this restaurant.<br />
+          Your distance: {userDistance.toFixed(2)} km
+        </p>
+        <p className="text-gray-400 text-lg mb-2">You can still order for pickup!</p>
+      </div>
+    );
+  }
   if (restaurantMenuItems.length === 0) {
     return (
       <div className="text-center py-20">
@@ -123,6 +184,9 @@ const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = fal
             Discover our carefully crafted dishes and customize them to your taste
           </p>
         </div>
+
+        {/* Delivery warning if out of radius */}
+        {deliveryWarning}
 
         {/* Filters */}
         <MenuFilters

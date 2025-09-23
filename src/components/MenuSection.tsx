@@ -18,8 +18,6 @@ const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = fal
   // Get user location from context
   const locationCtx = useContext(LocationContext) as any;
   const userLocation = locationCtx?.location;
-  const isLocationLoading = locationCtx?.isLocationLoading;
-  const requestLocation = locationCtx?.requestLocation;
 
   // Get restaurant data
   const restaurant = restaurants.find(r => r.id === restaurantId);
@@ -128,27 +126,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = fal
   }, [restaurantMenuItems, selectedCategory, dietaryFilters, searchQuery]);
 
 
-  // UI: Location prompt or delivery eligibility
-  if (!userLocation && !isLocationLoading) {
-    return (
-      <div className="text-center py-20">
-        <p className="text-gray-400 text-lg mb-4">To check delivery eligibility, please allow location access.</p>
-        <button
-          onClick={requestLocation}
-          className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors"
-        >
-          Enable Location
-        </button>
-      </div>
-    );
-  }
-  if (isLocationLoading) {
-    return (
-      <div className="text-center py-20">
-        <p className="text-gray-400 text-lg">Checking your location...</p>
-      </div>
-    );
-  }
+  // UI: Always show menu items. Only show delivery warning if location is available and out of range.
   // Show warning if out of delivery radius, but still show menu items for pickup
   let deliveryWarning = null;
   if (userLocation && userDistance !== null && !canDeliver) {

@@ -11,16 +11,13 @@ import {
   Shield, 
   UtensilsCrossed, 
   Beef, 
-  ChefHat,
-  MapPin
+  ChefHat
 } from './icons';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage, Language } from '../context/LanguageContext';
-import { useLocation } from '../context/LocationContext';
 import EnhancedRegistrationModal from './EnhancedRegistrationModal';
 import UserProfileModal from './UserProfileModal';
-import LocationPermissionModal from './LocationPermissionModal';
 
 interface HeaderProps {
   currentRestaurant: string;
@@ -39,13 +36,7 @@ const Header: React.FC<HeaderProps> = ({ currentRestaurant, onRestaurantChange, 
   const { getTotalItems, getTotalPrice, dispatch } = useCart();
   const { state, logout, checkProfileComplete } = useAuth();
   const { language, setLanguage, t } = useLanguage();
-  const { 
-    location, 
-    isLocationEnabled, 
-    showLocationModal, 
-    setShowLocationModal, 
-    setLocation: setLocationData 
-  } = useLocation();
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -99,26 +90,7 @@ const Header: React.FC<HeaderProps> = ({ currentRestaurant, onRestaurantChange, 
     }
   };
 
-  const handleLocationRequest = () => {
-    if (!isLocationEnabled) {
-      setShowLocationModal(true);
-    }
-  };
 
-  const handleLocationGranted = (position: GeolocationPosition) => {
-    const locationData = {
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude,
-      accuracy: position.coords.accuracy,
-      timestamp: Date.now()
-    };
-    setLocationData(locationData);
-  };
-
-  const handleLocationDenied = () => {
-    // User can manually enter address during checkout
-    console.log('Location access denied');
-  };
 
   const getProfileCompletionStatus = () => {
     if (!state.isAuthenticated) return null;
@@ -195,23 +167,7 @@ const Header: React.FC<HeaderProps> = ({ currentRestaurant, onRestaurantChange, 
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
-            {/* Location Button */}
-            <button
-              onClick={handleLocationRequest}
-              className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
-                isLocationEnabled
-                  ? 'text-green-400 bg-green-500/10 hover:bg-green-500/20'
-                  : 'text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700'
-              }`}
-              title={isLocationEnabled ? 'Location enabled' : 'Enable location for better experience'}
-            >
-              <MapPin className={`w-4 h-4 ${isLocationEnabled ? 'text-green-400' : ''}`} />
-              {isLocationEnabled && location?.address?.city && (
-                <span className="text-sm hidden sm:inline">
-                  {location.address.city}
-                </span>
-              )}
-            </button>
+
 
             {/* Language Switcher Dropdown */}
             <div className="relative">
@@ -484,13 +440,7 @@ const Header: React.FC<HeaderProps> = ({ currentRestaurant, onRestaurantChange, 
       onClose={() => setIsProfileModalOpen(false)} 
     />
     
-    {/* Location Permission Modal */}
-    <LocationPermissionModal 
-      isOpen={showLocationModal} 
-      onClose={() => setShowLocationModal(false)}
-      onLocationGranted={handleLocationGranted}
-      onLocationDenied={handleLocationDenied}
-    />
+
     
     {/* Click outside to close user menu */}
     {isUserMenuOpen && (

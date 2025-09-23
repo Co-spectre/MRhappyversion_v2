@@ -116,10 +116,20 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
   // Pre-fill customer information from auth context
   useEffect(() => {
     if (authState.user) {
-      const nameParts = authState.user.name.split(' ');
+      // Try to split name into first and last, fallback to using the same value for both if only one word
+      const nameParts = authState.user.name.trim().split(' ');
+      let firstName = '';
+      let lastName = '';
+      if (nameParts.length === 1) {
+        firstName = nameParts[0];
+        lastName = nameParts[0];
+      } else {
+        firstName = nameParts[0];
+        lastName = nameParts.slice(1).join(' ');
+      }
       setCustomerInfo({
-        firstName: nameParts[0] || '',
-        lastName: nameParts.slice(1).join(' ') || '',
+        firstName,
+        lastName,
         email: authState.user.email,
         phone: authState.user.phone || ''
       });
@@ -133,7 +143,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
           street: defaultAddr.street,
           city: defaultAddr.city,
           zipCode: defaultAddr.zipCode,
-          phone: customerInfo.phone,
+          phone: authState.user.phone || '',
           isDefault: defaultAddr.isDefault
         });
       }
@@ -473,33 +483,10 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
         </div>
       )}
 
-      {/* Delivery Time */}
+      {/* Delivery Time (Fixed) */}
       <div>
         <h4 className="text-lg font-medium text-gray-300 mb-3">Delivery Time</h4>
-        <div className="space-y-2">
-          <label className="flex items-center space-x-3">
-            <input
-              type="radio"
-              name="deliveryTime"
-              value="asap"
-              checked={deliveryTime === 'asap'}
-              onChange={(e) => setDeliveryTime(e.target.value)}
-              className="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500"
-            />
-            <span className="text-gray-300">As soon as possible (30-45 min)</span>
-          </label>
-          <label className="flex items-center space-x-3">
-            <input
-              type="radio"
-              name="deliveryTime"
-              value="scheduled"
-              checked={deliveryTime === 'scheduled'}
-              onChange={(e) => setDeliveryTime(e.target.value)}
-              className="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500"
-            />
-            <span className="text-gray-300">Schedule for later</span>
-          </label>
-        </div>
+        <div className="text-gray-300 text-base">Your order will be delivered in 20-25 mins.</div>
       </div>
 
       {errors.address && <p className="text-red-400 text-sm">{errors.address}</p>}

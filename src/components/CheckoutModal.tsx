@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from '../context/LocationContext';
+import LocationPermissionModal from './LocationPermissionModal';
 import { X, MapPin, Phone, Check, Mail, ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useOrder } from '../context/OrderContext';
-import PayPalPayment from './PayPalPayment';
+
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -68,7 +70,24 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
   const [deliveryTime, setDeliveryTime] = useState('asap');
   const [tipAmount, setTipAmount] = useState(0);
 
-  // Mock saved addresses
+  // Location context for geolocation and modal
+  const {
+    isLocationEnabled,
+    showLocationModal,
+    setShowLocationModal,
+    setLocation
+  } = useLocation();
+
+  // Show location modal only if delivery is selected and no location is set
+  useEffect(() => {
+    if (isOpen && orderType === 'delivery' && !isLocationEnabled) {
+      setShowLocationModal(true);
+    } else {
+      setShowLocationModal(false);
+    }
+  }, [isOpen, orderType, isLocationEnabled, setShowLocationModal]);
+
+  // Mock saved addresses (could be extended to use geocoded address)
   const savedAddresses: DeliveryAddress[] = [
     {
       id: '1',
@@ -89,6 +108,29 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
       isDefault: false
     }
   ];
+  // Handle location granted/denied from modal
+  const handleLocationGranted = (position: GeolocationPosition) => {
+    const locationData = {
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude,
+      accuracy: position.coords.accuracy,
+      timestamp: Date.now()
+    };
+    setLocation(locationData);
+  };
+
+  const handleLocationDenied = () => {
+    // User can manually enter address
+  };
+  // Render location modal only if needed
+  const renderLocationModal = () => (
+    <LocationPermissionModal
+      isOpen={showLocationModal}
+      onClose={() => setShowLocationModal(false)}
+      onLocationGranted={handleLocationGranted}
+      onLocationDenied={handleLocationDenied}
+    />
+  );
 
   // Payment methods
   const paymentMethods: PaymentMethod[] = [
@@ -742,6 +784,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
       <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
         {/* Background overlay */}
         <div className="fixed inset-0 bg-black/75 transition-opacity" onClick={onClose} />
+
+        {/* Location Modal (only if needed) */}
+        {renderLocationModal()}
 
         {/* Modal */}
         <div className="inline-block w-full max-w-4xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-gray-900 shadow-xl rounded-2xl border border-gray-800">

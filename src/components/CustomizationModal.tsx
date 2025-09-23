@@ -880,13 +880,25 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     } else if (item.category === 'Buckets' && item.customizable) {
       const steps = [];
       
+      // Determine sauce and drink limits based on bucket type
+      let sauceLimit = 1;
+      let drinkLimit = 1;
+      
+      if (item.name === 'Filet Bucket' || item.name === 'Keulen Bucket' || item.name === 'Twice Mix Bucket') {
+        sauceLimit = 2;
+        drinkLimit = 2;
+      } else if (item.name === 'Family Mix Bucket') {
+        sauceLimit = 4;
+        drinkLimit = 4;
+      }
+      
       // Add sauce selection for all buckets
       steps.push({
         id: 'bucket_sauces',
-        title: 'Choose Your Sauces',
+        title: `Choose Your Sauces (up to ${sauceLimit})`,
         required: true,
         multiSelect: true,
-        maxSelections: 2,
+        maxSelections: sauceLimit,
         options: [
           { id: 'ranch-sauce', name: 'Ranch', price: 0.50, description: 'Creamy ranch dressing sauce' },
           { id: 'curry-sauce', name: 'Curry', price: 0.50, description: 'Traditional curry sauce' },
@@ -902,9 +914,10 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
       // Add FRITZ drink selection
       steps.push({
         id: 'bucket_fritz_drink',
-        title: 'Choose Your FRITZ Drink',
+        title: `Choose Your FRITZ Drinks (up to ${drinkLimit})`,
         required: true,
-        multiSelect: false,
+        multiSelect: drinkLimit > 1,
+        maxSelections: drinkLimit,
         options: [
           { id: 'fritz-kola', name: 'FRITZ Kola', price: 2.90, description: 'Classic cola with real kola nut' },
           { id: 'fritz-limo-zitrone', name: 'FRITZ Limo Zitrone', price: 2.90, description: 'Lemon flavored lemonade' },

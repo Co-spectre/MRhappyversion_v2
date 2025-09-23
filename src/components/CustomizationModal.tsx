@@ -877,11 +877,49 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
       }
 
       return baseSteps;
-    } else if (item.category === 'Flavour Chicken' || (item.category === 'Buckets' && item.customizable)) {
+    } else if (item.category === 'Buckets' && item.customizable) {
+      const steps = [];
+      
+      // Add sauce selection for all buckets
+      steps.push({
+        id: 'bucket_sauces',
+        title: 'Choose Your Sauces',
+        required: true,
+        multiSelect: true,
+        maxSelections: 2,
+        options: [
+          { id: 'ranch-sauce', name: 'Ranch', price: 0.50, description: 'Creamy ranch dressing sauce' },
+          { id: 'curry-sauce', name: 'Curry', price: 0.50, description: 'Traditional curry sauce' },
+          { id: 'chilli-cheese-sauce', name: 'Chilli Cheese', price: 0.50, description: 'Spicy cheese sauce' },
+          { id: 'burger-sauce', name: 'Burgersauce', price: 0.50, description: 'Classic burger sauce' },
+          { id: 'ketchup-sauce', name: 'Ketchup', price: 0.30, description: 'Traditional tomato ketchup' },
+          { id: 'mayonnaise-sauce', name: 'Mayonnaise', price: 0.30, description: 'Creamy mayonnaise' },
+          { id: 'bbq-sauce', name: 'BBQ', price: 0.30, description: 'Smoky barbecue sauce' },
+          { id: 'sweet-sour-sauce', name: 'Süss-Sauer', price: 0.30, description: 'Sweet and sour sauce' }
+        ]
+      });
+      
+      // Add FRITZ drink selection
+      steps.push({
+        id: 'bucket_fritz_drink',
+        title: 'Choose Your FRITZ Drink',
+        required: true,
+        multiSelect: false,
+        options: [
+          { id: 'fritz-kola', name: 'FRITZ Kola', price: 2.90, description: 'Classic cola with real kola nut' },
+          { id: 'fritz-limo-zitrone', name: 'FRITZ Limo Zitrone', price: 2.90, description: 'Lemon flavored lemonade' },
+          { id: 'fritz-limo-orange', name: 'FRITZ Limo Orange', price: 2.90, description: 'Orange flavored lemonade' },
+          { id: 'fritz-limo-apfel', name: 'FRITZ Limo Apfel', price: 2.90, description: 'Apple flavored lemonade' },
+          { id: 'fritz-spritz-rhababer', name: 'FRITZ Spritz Rhabarber', price: 2.90, description: 'Sparkling rhubarb drink' },
+          { id: 'fritz-kola-zucker-frei', name: 'FRITZ Kola Zucker Frei', price: 2.90, description: 'Sugar-free cola with stevia' }
+        ]
+      });
+      
+      return steps;
+    } else if (item.category === 'Flavour Chicken') {
       const steps = [];
       // For Flavour Chicken, add piece count selection first with actual prices from the menu
-      if (item.category === 'Flavour Chicken') {
-        // Map actual prices for each Flavour Chicken type
+      // Map actual prices for each Flavour Chicken type
   let pieceOptions: { id: string; name: string; price: number }[] = [];
         if (item.name.includes('Keulen')) {
           pieceOptions = [
@@ -915,7 +953,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           multiSelect: false,
           options: pieceOptions
         });
-      }
+      
       // Add flavour selection
       steps.push({
         id: 'flavour_choice',

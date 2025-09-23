@@ -2330,7 +2330,7 @@ export const menuItems: MenuItem[] = [
     allergens: ['gluten', 'eggs'],
     calories: 800,
     ingredients: [],
-    customizable: false,
+    customizable: true,
     popular: true,
     preparationTime: '15-18 min',
     origin: 'Mix Style'
@@ -2347,7 +2347,7 @@ export const menuItems: MenuItem[] = [
     allergens: ['gluten', 'eggs'],
     calories: 1600,
     ingredients: [],
-    customizable: false,
+    customizable: true,
     popular: true,
     preparationTime: '18-22 min',
     origin: 'Mix Style'
@@ -2364,7 +2364,7 @@ export const menuItems: MenuItem[] = [
     allergens: ['gluten', 'eggs'],
     calories: 1400,
     ingredients: [],
-    customizable: false,
+    customizable: true,
     popular: true,
     preparationTime: '18-22 min',
     origin: 'Drumstick Style'
@@ -2381,7 +2381,7 @@ export const menuItems: MenuItem[] = [
     allergens: ['gluten', 'eggs'],
     calories: 1300,
     ingredients: [],
-    customizable: false,
+    customizable: true,
     popular: true,
     preparationTime: '18-22 min',
     origin: 'Filet Style'
@@ -2415,7 +2415,7 @@ export const menuItems: MenuItem[] = [
     allergens: ['gluten', 'eggs'],
     calories: 2800,
     ingredients: [],
-    customizable: false,
+    customizable: true,
     popular: true,
     preparationTime: '20-25 min',
     origin: 'Family Style'

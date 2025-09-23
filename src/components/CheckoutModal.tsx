@@ -72,6 +72,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
   // Location context for geolocation and modal
   const {
     isLocationEnabled,
+    location,
+    showLocationModal,
+    setShowLocationModal,
   } = useLocation();
 
   // Show location modal only if delivery is selected and no location is set
@@ -83,22 +86,31 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     }
   }, [isOpen, orderType, isLocationEnabled, setShowLocationModal]);
 
-  // Ensure renderLocationModal is properly defined
-  const renderLocationModal = () => null; // Placeholder if not used
-
   // Corrected renderEligibilityStatus declaration
   const renderEligibilityStatus = () => {
-    if (!isLocationEnabled) {
-      return <p className="text-yellow-400">Location not enabled. Please enable location to check eligibility.</p>;
+    if (!isLocationEnabled || !location) {
+      return (
+        <div className="p-4 bg-yellow-900/30 border border-yellow-600 rounded-lg">
+          <p className="text-yellow-400">📍 Location not enabled. Please enable location to check delivery eligibility.</p>
+        </div>
+      );
     }
 
-    const userLocation = { latitude: 0, longitude: 0 }; // Replace with actual user location
-    const eligibility = checkEligibility(userLocation);
+    const eligibility = checkEligibility(location);
 
     return (
-      <div className="text-gray-300">
-        <p>Eligibility for Vegesack: {eligibility.isEligibleForVegesack ? 'Eligible' : 'Not Eligible'}</p>
-        <p>Eligibility for Schwanewede: {eligibility.isEligibleForSchwanewede ? 'Eligible' : 'Not Eligible'}</p>
+      <div className={`p-4 rounded-lg border ${eligibility.canDeliver 
+        ? 'bg-green-900/30 border-green-600' 
+        : 'bg-red-900/30 border-red-600'
+      }`}>
+        <p className={eligibility.canDeliver ? 'text-green-400' : 'text-red-400'}>
+          {eligibility.message}
+        </p>
+        {!eligibility.canDeliver && (
+          <p className="text-gray-400 text-sm mt-2">
+            💡 Tip: You can still place a pickup order from any of our locations!
+          </p>
+        )}
       </div>
     );
   };
@@ -510,7 +522,26 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
         <h4 className="text-lg font-medium text-gray-300 mb-3">Order Type</h4>
         <div className="grid grid-cols-2 gap-4">
           <button
-            onClick={() => setOrderType('delivery')}
+            onClick={() => {
+              // Check delivery eligibility before allowing delivery selection
+              if (location) {
+                const eligibility = checkEligibility(location);
+                if (eligibility.canDeliver) {
+                  setOrderType('delivery');
+                } else {
+                  // Show error and keep pickup selected
+                  setErrors(prev => ({
+                    ...prev,
+                    delivery: 'Delivery not available at your location. Please select pickup.'
+                  }));
+                  setOrderType('pickup');
+                  return;
+                }
+              } else {
+                // No location available, show warning but allow selection to trigger location modal
+                setOrderType('delivery');
+              }
+            }}
             className={`p-4 border rounded-lg transition-all ${
               orderType === 'delivery'
                 ? 'border-red-600 bg-red-900/20 text-white'
@@ -522,10 +553,19 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
               <div className="font-medium">Delivery</div>
               <div className="text-sm opacity-75">We'll deliver to your address</div>
               <div className="text-sm font-bold text-red-400 mt-1">+€2.00</div>
+              <div className="text-xs text-gray-400 mt-1">Within 4km radius</div>
             </div>
           </button>
           <button
-            onClick={() => setOrderType('pickup')}
+            onClick={() => {
+              setOrderType('pickup');
+              // Clear any delivery errors when switching to pickup
+              setErrors(prev => {
+                const newErrors = { ...prev };
+                delete newErrors.delivery;
+                return newErrors;
+              });
+            }}
             className={`p-4 border rounded-lg transition-all ${
               orderType === 'pickup'
                 ? 'border-red-600 bg-red-900/20 text-white'
@@ -537,9 +577,15 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
               <div className="font-medium">Pickup</div>
               <div className="text-sm opacity-75">Pick up from our restaurant</div>
               <div className="text-sm font-bold text-green-400 mt-1">FREE</div>
+              <div className="text-xs text-gray-400 mt-1">Available at all locations</div>
             </div>
           </button>
         </div>
+        {errors.delivery && (
+          <div className="mt-3 p-3 bg-red-900/50 border border-red-600 rounded-lg">
+            <p className="text-red-400 text-sm">{errors.delivery}</p>
+          </div>
+        )}
       </div>
       
       {/* Payment Methods */}
@@ -723,9 +769,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
         {/* Background overlay */}
         <div className="fixed inset-0 bg-black/75 transition-opacity" onClick={onClose} />
 
-        {/* Location Modal (only if needed) */}
-        {renderLocationModal()}
-
         {/* Modal */}
         <div className="inline-block w-full max-w-4xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-gray-900 shadow-xl rounded-2xl border border-gray-800">
           {/* Header */}
@@ -835,18 +878,36 @@ const savedAddresses: DeliveryAddress[] = [
   },
 ];
 
-// Fix setShowLocationModal to accept arguments
-const setShowLocationModal = (value: boolean) => {
-  console.log('Set show location modal:', value);
-};
 
-// Update checkEligibility to use userLocation
+
+// Update checkEligibility to use userLocation and 4km radius
 const checkEligibility = (userLocation: {
   latitude: number;
   longitude: number;
-}): { isEligibleForVegesack: boolean; isEligibleForSchwanewede: boolean } => {
-  const VEGESACK_COORDS = { latitude: 53.1667, longitude: 8.6317 };
-  const SCHWANEWEDE_COORDS = { latitude: 53.2333, longitude: 8.5833 };
+}): { canDeliver: boolean; distance: number; message: string } => {
+  // Mr. Happy restaurant locations
+  const MR_HAPPY_LOCATIONS = [
+    { 
+      name: 'Bremen Vegesack', 
+      latitude: 53.1667, 
+      longitude: 8.6317,
+      address: 'Zum Alten Speicher 1-2, 28759 Bremen'
+    },
+    { 
+      name: 'Schwanewede', 
+      latitude: 53.2333, 
+      longitude: 8.5833,
+      address: 'Schwanewede Location' 
+    },
+    { 
+      name: 'Burger Shop', 
+      latitude: 53.0793, 
+      longitude: 8.8017,
+      address: 'Bremen City Location' 
+    }
+  ];
+
+  const DELIVERY_RADIUS = 4; // 4km radius for all locations
 
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
     const toRadians = (degrees: number): number => (degrees * Math.PI) / 180;
@@ -863,22 +924,32 @@ const checkEligibility = (userLocation: {
     return R * c;
   };
 
-  const distanceToVegesack = calculateDistance(
-    userLocation.latitude,
-    userLocation.longitude,
-    VEGESACK_COORDS.latitude,
-    VEGESACK_COORDS.longitude
-  );
+  // Find the closest restaurant
+  let closestLocation = null;
+  let minDistance = Infinity;
 
-  const distanceToSchwanewede = calculateDistance(
-    userLocation.latitude,
-    userLocation.longitude,
-    SCHWANEWEDE_COORDS.latitude,
-    SCHWANEWEDE_COORDS.longitude
-  );
+  for (const location of MR_HAPPY_LOCATIONS) {
+    const distance = calculateDistance(
+      userLocation.latitude,
+      userLocation.longitude,
+      location.latitude,
+      location.longitude
+    );
+    
+    if (distance < minDistance) {
+      minDistance = distance;
+      closestLocation = location;
+    }
+  }
+
+  const canDeliver = minDistance <= DELIVERY_RADIUS;
+  const message = canDeliver 
+    ? `✅ Delivery available from ${closestLocation?.name} (${minDistance.toFixed(1)}km away)`
+    : `❌ Sorry, delivery is only available within ${DELIVERY_RADIUS}km. Closest location: ${closestLocation?.name} is ${minDistance.toFixed(1)}km away. Please select pickup instead.`;
 
   return {
-    isEligibleForVegesack: distanceToVegesack <= 2,
-    isEligibleForSchwanewede: distanceToSchwanewede <= 10,
+    canDeliver,
+    distance: minDistance,
+    message
   };
 };

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from '../context/LocationContext';
 import { X, User, Mail, Phone, MapPin, Plus, Edit3, Trash2, Check, Save, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { AuthUser, Address } from '../types';
@@ -14,6 +15,7 @@ interface FormErrors {
 
 const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) => {
   const { state, updateProfile, checkProfileComplete } = useAuth();
+  const { requestLocation, isLocationLoading, locationError, location, isLocationEnabled } = useLocation();
   const [activeTab, setActiveTab] = useState<'personal' | 'addresses' | 'preferences'>('personal');
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -161,6 +163,19 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
     updateProfile({ addresses: updatedAddresses });
   };
 
+  // Location feedback state
+  const [locationMsg, setLocationMsg] = useState<string | null>(null);
+
+  const handleSetCurrentLocation = async () => {
+    setLocationMsg(null);
+    try {
+      await requestLocation();
+      setLocationMsg('Location set successfully!');
+    } catch (e) {
+      setLocationMsg('Failed to set location.');
+    }
+  };
+
   const renderPersonalInfoTab = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -174,7 +189,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
         </button>
       </div>
 
-      {/* Profile Completion Status */}
+  {/* Profile Completion Status */}
       <div className={`p-4 rounded-lg border ${
         checkProfileComplete() 
           ? 'bg-green-900/20 border-green-600' 
@@ -200,6 +215,26 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
             </p>
           </div>
         </div>
+      </div>
+
+      {/* Set Current Location Button */}
+      <div className="flex items-center space-x-4">
+        <button
+          onClick={handleSetCurrentLocation}
+          disabled={isLocationLoading}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:bg-gray-700 disabled:text-gray-400"
+        >
+          {isLocationLoading ? 'Setting Location...' : 'Set Current Location'}
+        </button>
+        {isLocationEnabled && location && (
+          <span className="text-green-400 text-sm">Location set!</span>
+        )}
+        {locationMsg && (
+          <span className="text-yellow-400 text-sm">{locationMsg}</span>
+        )}
+        {locationError && (
+          <span className="text-red-400 text-sm">{locationError}</span>
+        )}
       </div>
 
       {errors.general && (

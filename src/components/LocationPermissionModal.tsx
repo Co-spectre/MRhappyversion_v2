@@ -115,6 +115,16 @@ const LocationPermissionModal: React.FC<LocationPermissionModalProps> = ({
     onClose();
   };
 
+  const handleCheckoutLocationRequest = () => {
+    if (locationState.permissionStatus === 'prompt') {
+      requestLocation();
+    } else if (locationState.permissionStatus === 'denied') {
+      onLocationDenied();
+    } else if (locationState.permissionStatus === 'granted') {
+      onLocationGranted(locationState.position!);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -191,7 +201,7 @@ const LocationPermissionModal: React.FC<LocationPermissionModalProps> = ({
               {/* Action Buttons */}
               <div className="space-y-3">
                 <button
-                  onClick={requestLocation}
+                  onClick={handleCheckoutLocationRequest}
                   disabled={locationState.loading}
                   className="w-full bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                 >

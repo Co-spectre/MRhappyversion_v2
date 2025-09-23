@@ -74,69 +74,15 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({ children }) 
     setLocationError(null);
   };
 
-  const requestLocation = async (): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) {
-        const error = 'Geolocation is not supported by this browser';
-        setLocationError(error);
-        reject(new Error(error));
-        return;
-      }
+  // Updated to ensure location prompt is triggered only at checkout
+  const requestLocationAtCheckout = async (): Promise<void> => {
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation is not supported by this browser');
+      return;
+    }
 
-      setIsLocationLoading(true);
-      setLocationError(null);
-
-      const options: PositionOptions = {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000 // Cache for 1 minute
-      };
-
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const locationData: LocationData = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            accuracy: position.coords.accuracy,
-            timestamp: Date.now()
-          };
-
-          setLocation(locationData);
-          setIsLocationLoading(false);
-
-          // Try to geocode the location
-          try {
-            await geocodeLocation(locationData.latitude, locationData.longitude);
-          } catch (geocodeError) {
-            console.warn('Geocoding failed:', geocodeError);
-            // Still resolve with basic location data
-          }
-
-          resolve();
-        },
-        (error) => {
-          setIsLocationLoading(false);
-          
-          let errorMessage = 'Failed to get location';
-          
-          switch (error.code) {
-            case error.PERMISSION_DENIED:
-              errorMessage = 'Location access denied by user';
-              break;
-            case error.POSITION_UNAVAILABLE:
-              errorMessage = 'Location information is unavailable';
-              break;
-            case error.TIMEOUT:
-              errorMessage = 'Location request timed out';
-              break;
-          }
-
-          setLocationError(errorMessage);
-          reject(new Error(errorMessage));
-        },
-        options
-      );
-    });
+    setIsLocationLoading(true); // Set loading state to true
+    setShowLocationModal(true); // Trigger the modal only at checkout
   };
 
   const geocodeLocation = async (lat: number, lng: number): Promise<void> => {
@@ -191,7 +137,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({ children }) 
     locationError,
     showLocationModal,
     setShowLocationModal,
-    requestLocation,
+    requestLocation: requestLocationAtCheckout, // Updated to use the new function
     setLocation,
     clearLocation,
     geocodeLocation

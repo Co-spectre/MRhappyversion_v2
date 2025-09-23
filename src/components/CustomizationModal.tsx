@@ -274,6 +274,29 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           return baseSteps;
         }
 
+        // Check if this is a Sauces item and add sauce selection
+        if (item.name === 'Sauces' || item.id === 'sauces-selection') {
+          baseSteps.push({
+            id: 'sauce_selection',
+            title: 'Choose Your Sauces',
+            required: true,
+            multiSelect: true,
+            maxSelections: 3,
+            options: [
+              { id: 'ranch-sauce', name: 'Ranch', price: 1.00, description: 'Creamy ranch dressing sauce' },
+              { id: 'curry-sauce', name: 'Curry', price: 1.00, description: 'Traditional curry sauce' },
+              { id: 'chilli-cheese-sauce', name: 'Chilli Cheese', price: 1.00, description: 'Spicy cheese sauce' },
+              { id: 'burger-sauce', name: 'Burgersauce', price: 1.00, description: 'Classic burger sauce' },
+              { id: 'ketchup-sauce', name: 'Ketchup', price: 0.50, description: 'Traditional tomato ketchup' },
+              { id: 'mayonnaise-sauce', name: 'Mayonnaise', price: 0.50, description: 'Creamy mayonnaise' },
+              { id: 'bbq-sauce', name: 'BBQ', price: 0.50, description: 'Smoky barbecue sauce' },
+              { id: 'sweet-sour-sauce', name: 'Süss-Sauer', price: 0.50, description: 'Sweet and sour sauce' }
+            ]
+          });
+          
+          return baseSteps;
+        }
+
         // Add döner-pizza specific ingredients
         baseSteps.push(
           {

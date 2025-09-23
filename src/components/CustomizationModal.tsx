@@ -29,6 +29,15 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   onClose,
   onAddToCart
 }) => {
+  console.log('🚨 CustomizationModal rendered:', { 
+    itemName: item.name, 
+    itemId: item.id, 
+    isOpen, 
+    category: item.category, 
+    restaurantId: item.restaurantId,
+    customizable: item.customizable 
+  });
+  
   const [currentStep, setCurrentStep] = useState(0);
   const [selections, setSelections] = useState<Record<string, string[]>>({});
   const [quantity, setQuantity] = useState(1);
@@ -36,6 +45,34 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 
   // Define steps based on item category
   const getCustomizationSteps = (): CustomizationStep[] => {
+    console.log('🚨 getCustomizationSteps called for item:', item.name, 'category:', item.category);
+    
+    // Check if this is a Sauces item first (regardless of restaurant or category)
+    if (item.name === 'Sauces' || item.id === 'sauces-selection') {
+      console.log('🚨 SAUCES DETECTED! Creating sauce selection steps', { itemName: item.name, itemId: item.id });
+      const baseSteps: CustomizationStep[] = [];
+      baseSteps.push({
+        id: 'sauce_selection',
+        title: 'Choose Your Sauces',
+        required: true,
+        multiSelect: true,
+        maxSelections: 3,
+        options: [
+          { id: 'ranch-sauce', name: 'Ranch', price: 1.00, description: 'Creamy ranch dressing sauce' },
+          { id: 'curry-sauce', name: 'Curry', price: 1.00, description: 'Traditional curry sauce' },
+          { id: 'chilli-cheese-sauce', name: 'Chilli Cheese', price: 1.00, description: 'Spicy cheese sauce' },
+          { id: 'burger-sauce', name: 'Burgersauce', price: 1.00, description: 'Classic burger sauce' },
+          { id: 'ketchup-sauce', name: 'Ketchup', price: 0.50, description: 'Traditional tomato ketchup' },
+          { id: 'mayonnaise-sauce', name: 'Mayonnaise', price: 0.50, description: 'Creamy mayonnaise' },
+          { id: 'bbq-sauce', name: 'BBQ', price: 0.50, description: 'Smoky barbecue sauce' },
+          { id: 'sweet-sour-sauce', name: 'Süss-Sauer', price: 0.50, description: 'Sweet and sour sauce' }
+        ]
+      });
+      
+      console.log('🚨 SAUCES baseSteps after adding sauce selection:', baseSteps);
+      return baseSteps;
+    }
+    
     if (item.category === "Mac'n Cheese") {
       return [
         {
@@ -268,29 +305,6 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
               { id: 'premium-tzatziki', name: 'Tzatziki', price: 0, description: 'Greek yogurt sauce with herbs' },
               { id: 'premium-knoblauch', name: 'Knoblauch', price: 0, description: 'Garlic sauce' },
               { id: 'premium-scharfe-sauce', name: 'Scharfe Sauce', price: 0, description: 'Hot and spicy sauce' }
-            ]
-          });
-          
-          return baseSteps;
-        }
-
-        // Check if this is a Sauces item and add sauce selection
-        if (item.name === 'Sauces' || item.id === 'sauces-selection') {
-          baseSteps.push({
-            id: 'sauce_selection',
-            title: 'Choose Your Sauces',
-            required: true,
-            multiSelect: true,
-            maxSelections: 3,
-            options: [
-              { id: 'ranch-sauce', name: 'Ranch', price: 1.00, description: 'Creamy ranch dressing sauce' },
-              { id: 'curry-sauce', name: 'Curry', price: 1.00, description: 'Traditional curry sauce' },
-              { id: 'chilli-cheese-sauce', name: 'Chilli Cheese', price: 1.00, description: 'Spicy cheese sauce' },
-              { id: 'burger-sauce', name: 'Burgersauce', price: 1.00, description: 'Classic burger sauce' },
-              { id: 'ketchup-sauce', name: 'Ketchup', price: 0.50, description: 'Traditional tomato ketchup' },
-              { id: 'mayonnaise-sauce', name: 'Mayonnaise', price: 0.50, description: 'Creamy mayonnaise' },
-              { id: 'bbq-sauce', name: 'BBQ', price: 0.50, description: 'Smoky barbecue sauce' },
-              { id: 'sweet-sour-sauce', name: 'Süss-Sauer', price: 0.50, description: 'Sweet and sour sauce' }
             ]
           });
           

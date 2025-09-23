@@ -36,7 +36,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 
   // Define steps based on item category
   const getCustomizationSteps = (): CustomizationStep[] => {
-  if (item.category === "Mac'n Cheese") {
+    if (item.category === "Mac'n Cheese") {
       return [
         {
           id: 'macncheese_type',
@@ -51,8 +51,308 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         }
       ];
     }
-    if (item.category === 'Döner' || item.category === 'MENÜ\'S' || item.category === 'Pizza') {
-      // Use the same customization steps as Burger/Burgers
+    if (item.category === 'Döner' || item.category === 'DÖNER' || item.category === 'DONER' || item.category === 'ROLLO' || item.category === 'TÜRKISCHE PIZZA' || item.category === 'Türkische Pizza' || item.category === 'PIDE' || item.category === 'KONYA' || item.category === 'MENÜ\'S' || item.category === 'Pizza' || item.category === "Mac'n Cheese" || item.category === 'SIDES' || item.category === 'GETRÄNKE' || item.category === 'Getränke' || item.category === 'SAUCEN') {
+      // Check if this is a döner-pizza restaurant item
+      if (item.restaurantId === 'doner-pizza') {
+        const baseSteps: CustomizationStep[] = [];
+        
+        // Add size selection if available
+        if (item.sizes && item.sizes.length > 0) {
+          baseSteps.push({
+            id: 'item_size',
+            title: 'Choose Your Size',
+            required: true,
+            multiSelect: false,
+            options: item.sizes.map((size, index) => ({
+              id: `size_${index}`,
+              name: size.name,
+              price: index > 0 ? (item.basePrice * size.priceMultiplier) - item.basePrice : 0,
+              description: index === 0 ? 'Standard size' : 'Larger size'
+            }))
+          });
+        }
+
+        // Add side selection for Döner Teller items
+        if (item.name === 'Döner Teller' || item.id === 'doner-teller-dp' || item.id === 'doner-teller') {
+          baseSteps.push({
+            id: 'side_choice',
+            title: 'Choose Your Side',
+            required: true,
+            multiSelect: false,
+            options: [
+              { id: 'reis', name: 'Reis', price: 0, description: 'Fluffy rice' },
+              { id: 'bulgur', name: 'Bulgur', price: 0, description: 'Traditional bulgur wheat' },
+              { id: 'pommes', name: 'Pommes', price: 0, description: 'Crispy french fries' }
+            ]
+          });
+        }
+
+        // Check if this is a PIDE item and add PIDE-specific customization
+        if (item.category === 'PIDE') {
+          baseSteps.push(
+            {
+              id: 'pide_vegetables',
+              title: 'Add Vegetables (Optional)',
+              required: false,
+              multiSelect: true,
+              options: [
+                { id: 'tomate', name: 'Tomate', price: 1.20, description: 'Fresh tomatoes' },
+                { id: 'mais', name: 'Mais', price: 1.20, description: 'Sweet corn' },
+                { id: 'pilze', name: 'Pilze', price: 1.30, description: 'Fresh mushrooms' },
+                { id: 'brokkoli', name: 'Brokkoli', price: 1.40, description: 'Fresh broccoli' },
+                { id: 'paprika', name: 'Paprika', price: 1.30, description: 'Bell peppers' },
+                { id: 'peperoni', name: 'Peperoni', price: 1.50, description: 'Spicy pepperoni' },
+                { id: 'jalapeños', name: 'Jalapeños', price: 1.40, description: 'Spicy jalapeños' },
+                { id: 'rote-zwiebeln', name: 'Rote Zwiebeln', price: 1.20, description: 'Red onions' },
+                { id: 'ananas', name: 'Ananas', price: 1.20, description: 'Sweet pineapple' }
+              ]
+            },
+            {
+              id: 'pide_proteins',
+              title: 'Add Proteins (Optional)',
+              required: false,
+              multiSelect: true,
+              options: [
+                { id: 'sucuk', name: 'Sucuk', price: 3.00, description: 'Turkish spiced sausage' },
+                { id: 'hähnchenfleisch', name: 'Hähnchenfleisch', price: 3.00, description: 'Grilled chicken' },
+                { id: 'kalbfleisch', name: 'Kalbfleisch', price: 3.00, description: 'Tender veal' },
+                { id: 'rinder-salami', name: 'Rinder Halal Salami', price: 3.00, description: 'Halal beef salami' },
+                { id: 'puten-schinken', name: 'Puten Halal Schinken', price: 3.00, description: 'Halal turkey ham' }
+              ]
+            },
+            {
+              id: 'pide_cheeses',
+              title: 'Add Extra Cheese (Optional)',
+              required: false,
+              multiSelect: true,
+              options: [
+                { id: 'feta', name: 'Feta Käse', price: 3.00, description: 'Creamy feta cheese' },
+                { id: 'doppel-gouda', name: 'Doppel Gouda Käse', price: 3.00, description: 'Double gouda cheese' },
+                { id: 'cheddar', name: 'Cheddar Käse', price: 3.00, description: 'Sharp cheddar cheese' }
+              ]
+            },
+            {
+              id: 'pide_extras',
+              title: 'Add Extras (Optional)',
+              required: false,
+              multiSelect: true,
+              options: [
+                { id: 'hollandaise', name: 'Hollandaise', price: 3.00, description: 'Creamy hollandaise sauce' },
+                { id: 'pommes', name: 'Pommes', price: 3.00, description: 'Crispy fries as side' }
+              ]
+            }
+          );
+          
+          return baseSteps;
+        }
+
+        // Check if this is a TÜRKISCHE PIZZA item and add Turkish Pizza-specific customization
+        if (item.category === 'TÜRKISCHE PIZZA' || item.category === 'Türkische Pizza') {
+          baseSteps.push(
+            {
+              id: 'turkish_cheese',
+              title: 'Add Cheese (Optional)',
+              required: false,
+              multiSelect: false,
+              options: [
+                { id: 'turkish-feta', name: 'Feta', price: 2.00, description: 'Creamy feta cheese' },
+                { id: 'turkish-gouda', name: 'Gouda', price: 2.00, description: 'Mild gouda cheese' }
+              ]
+            },
+            {
+              id: 'turkish_protein',
+              title: 'Add Extra Meat (Optional)',
+              required: false,
+              multiSelect: false,
+              options: [
+                { id: 'turkish-doppel-fleisch', name: 'Doppel Fleisch', price: 2.50, description: 'Double portion of meat' }
+              ]
+            },
+            {
+              id: 'turkish_sauce',
+              title: 'Add Sauce (Optional)',
+              required: false,
+              multiSelect: false,
+              options: [
+                { id: 'turkish-sauce', name: 'Sauce', price: 1.00, description: 'Traditional Turkish sauce' }
+              ]
+            }
+          );
+          
+          return baseSteps;
+        }
+
+        // Check if this is a Mac'n Cheese item and add Mac'n Cheese-specific customization
+        if (item.category === "Mac'n Cheese") {
+          baseSteps.push(
+            {
+              id: 'mac_toppings',
+              title: 'Add Belag (Optional)',
+              required: false,
+              multiSelect: true,
+              options: [
+                { id: 'mac-coleslaw', name: 'Coleslaw', price: 1.50, description: 'Fresh coleslaw salad' },
+                { id: 'mac-weisskraut', name: 'Weißkraut', price: 1.20, description: 'White cabbage' },
+                { id: 'mac-rotkraut', name: 'Rotkraut', price: 1.20, description: 'Red cabbage' },
+                { id: 'mac-zwiebeln', name: 'Zwiebeln', price: 1.20, description: 'Fresh onions' },
+                { id: 'mac-bauernsalat', name: 'Bauernsalat', price: 2.00, description: 'Traditional farmer\'s salad' }
+              ]
+            },
+            {
+              id: 'mac_sauces',
+              title: 'Add Saucen (Optional)',
+              required: false,
+              multiSelect: true,
+              options: [
+                { id: 'mac-chili-cheese', name: 'Chili Cheese', price: 2.50, description: 'Spicy cheese sauce' },
+                { id: 'mac-tzatziki', name: 'Tzatziki', price: 2.50, description: 'Greek yogurt sauce' },
+                { id: 'mac-cocktail', name: 'Cocktail', price: 2.50, description: 'Cocktail sauce' },
+                { id: 'mac-ranch', name: 'Ranch', price: 2.50, description: 'Creamy ranch dressing' },
+                { id: 'mac-scharfe-sauce', name: 'Scharfe Sauce', price: 2.50, description: 'Spicy hot sauce' }
+              ]
+            }
+          );
+          
+          return baseSteps;
+        }
+
+        // Check if this is a Börek item and add Börek-specific customization
+        if (item.name === 'Börek' || item.id === 'borek-dp') {
+          baseSteps.push({
+            id: 'borek_filling',
+            title: 'Choose Your Filling',
+            required: true,
+            multiSelect: false,
+            options: [
+              { id: 'borek-hackfleisch', name: 'Hackfleisch', price: 0, description: 'Traditional ground meat filling' },
+              { id: 'borek-feta', name: 'Feta', price: 0, description: 'Creamy feta cheese filling' },
+              { id: 'borek-spinat-feta', name: 'Spinat und Feta', price: 0, description: 'Spinach and feta cheese filling' }
+            ]
+          });
+          
+          return baseSteps;
+        }
+
+        // Check if this is a FRITZ item and add FRITZ-specific customization
+        if (item.name === 'FRITZ' || item.id === 'fritz-dp' || item.id === 'fritz-same-drinks') {
+          baseSteps.push({
+            id: 'fritz_flavor',
+            title: 'Choose Your Flavor',
+            required: true,
+            multiSelect: false,
+            options: [
+              { id: 'fritz-kola-original', name: 'Kola Original', price: 0, description: 'Classic cola taste' },
+              { id: 'fritz-kola-superzero', name: 'Kola SuperZero', price: 0, description: 'Sugar-free cola' },
+              { id: 'fritz-honigmelone', name: 'Honigmelone', price: 0, description: 'Honeydew melon flavor' },
+              { id: 'fritz-orange', name: 'Orange', price: 0, description: 'Fresh orange taste' },
+              { id: 'fritz-zitrone', name: 'Zitrone', price: 0, description: 'Lemon flavor' },
+              { id: 'fritz-mischmasch', name: 'Misch Masch', price: 0, description: 'Mixed fruit flavors' }
+            ]
+          });
+          
+          return baseSteps;
+        }
+
+        // Check if this is a Premium Saucen item and add Premium Saucen-specific customization
+        if (item.name === 'Premium Saucen' || item.id === 'premium-saucen-dp') {
+          baseSteps.push({
+            id: 'premium_sauce_selection',
+            title: 'Choose Your Premium Sauces',
+            required: true,
+            multiSelect: true,
+            options: [
+              { id: 'premium-chili-cheese', name: 'Chili Cheese', price: 0, description: 'Spicy cheese sauce' },
+              { id: 'premium-ranch', name: 'Ranch', price: 0, description: 'Creamy ranch dressing' },
+              { id: 'premium-curry', name: 'Curry', price: 0, description: 'Spicy curry sauce' },
+              { id: 'premium-cocktail', name: 'Cocktail', price: 0, description: 'Classic cocktail sauce' },
+              { id: 'premium-tzatziki', name: 'Tzatziki', price: 0, description: 'Greek yogurt sauce with herbs' },
+              { id: 'premium-knoblauch', name: 'Knoblauch', price: 0, description: 'Garlic sauce' },
+              { id: 'premium-scharfe-sauce', name: 'Scharfe Sauce', price: 0, description: 'Hot and spicy sauce' }
+            ]
+          });
+          
+          return baseSteps;
+        }
+
+        // Add döner-pizza specific ingredients
+        baseSteps.push(
+          {
+            id: 'doner_ingredients',
+            title: 'Customize Your Ingredients',
+            required: false,
+            multiSelect: true,
+            options: [
+              { id: 'doner-fleisch', name: 'Extra Döner Fleisch', price: 2.50, description: 'Extra döner meat' },
+              { id: 'hahnchenfleisch', name: 'Hähnchenfleisch', price: 2.50, description: 'Grilled chicken' },
+              { id: 'sucuk', name: 'Sucuk', price: 2.50, description: 'Turkish spiced sausage' },
+              { id: 'falafel', name: 'Falafel', price: 2.00, description: 'Chickpea falafel' },
+              { id: 'tomate', name: 'Extra Tomate', price: 1.00, description: 'Fresh tomatoes' },
+              { id: 'mais', name: 'Mais', price: 1.00, description: 'Sweet corn' },
+              { id: 'pilze', name: 'Pilze', price: 1.00, description: 'Fresh mushrooms' },
+              { id: 'paprika', name: 'Paprika', price: 1.00, description: 'Bell peppers' },
+              { id: 'rote-zwiebeln', name: 'Rote Zwiebeln', price: 1.00, description: 'Red onions' },
+              { id: 'peperoni', name: 'Peperoni', price: 1.00, description: 'Spicy pepperoni' },
+              { id: 'jallapenos', name: 'Jalapeños', price: 1.00, description: 'Spicy jalapeños' }
+            ]
+          },
+          {
+            id: 'cheese_options',
+            title: 'Add Cheese (Optional)',
+            required: false,
+            multiSelect: true,
+            options: [
+              { id: 'feta', name: 'Feta', price: 1.50, description: 'Creamy feta cheese' },
+              { id: 'gouda', name: 'Extra Gouda', price: 1.50, description: 'Extra gouda cheese' },
+              { id: 'cheddar', name: 'Cheddar', price: 1.50, description: 'Sharp cheddar cheese' }
+            ]
+          },
+          {
+            id: 'sauces',
+            title: 'Add Sauces (Optional)',
+            required: false,
+            multiSelect: true,
+            options: [
+              { id: 'saucen-premium', name: 'Saucen Premium', price: 5.00, description: 'Choose from ALL available sauces' },
+              { id: 'tzaziki', name: 'Tzatziki', price: 0.50, description: 'Greek yogurt sauce' },
+              { id: 'chili-cheese', name: 'Chili Cheese', price: 1.00, description: 'Spicy cheese sauce' },
+              { id: 'ranch', name: 'Ranch', price: 0.50, description: 'Creamy ranch dressing' },
+              { id: 'hollandaise', name: 'Hollandaise', price: 0.50, description: 'Rich hollandaise sauce' },
+              { id: 'cocktail', name: 'Cocktail', price: 0.50, description: 'Cocktail sauce' },
+              { id: 'curry', name: 'Curry', price: 0.50, description: 'Curry sauce' },
+              { id: 'knoblauch', name: 'Knoblauch', price: 0.50, description: 'Garlic sauce' },
+              { id: 'scharfe-sauce', name: 'Scharfe Sauce', price: 0.50, description: 'Spicy hot sauce' },
+              { id: 'ketchup', name: 'Ketchup', price: 0.50, description: 'Classic ketchup' },
+              { id: 'mayo', name: 'Mayo', price: 0.50, description: 'Mayonnaise' }
+            ]
+          },
+          {
+            id: 'extras',
+            title: 'Add Extras (Optional)',
+            required: false,
+            multiSelect: true,
+            options: [
+              { id: 'pommes', name: 'Pommes', price: 3.00, description: 'Crispy fries' }
+            ]
+          },
+          {
+            id: 'drinks',
+            title: 'Add Drinks (Optional)',
+            required: false,
+            multiSelect: true,
+            options: [
+              { id: 'coca-cola-033', name: 'Coca Cola (0,33l)', price: 2.50, description: 'Classic Coca Cola' },
+              { id: 'fanta-033', name: 'Fanta (0,33l)', price: 2.50, description: 'Orange Fanta' },
+              { id: 'sprite-033', name: 'Sprite (0,33l)', price: 2.50, description: 'Lemon-lime Sprite' },
+              { id: 'wasser-033', name: 'Wasser (0,33l)', price: 2.00, description: 'Still water' },
+              { id: 'apfelschorle-033', name: 'Apfelschorle (0,33l)', price: 2.50, description: 'Apple juice spritzer' }
+            ]
+          }
+        );
+        
+        return baseSteps;
+      }
+      
+      // Use the same customization steps as Burger/Burgers for regular döner restaurant
       const baseSteps: CustomizationStep[] = [
         {
           id: 'menu_option',
@@ -96,11 +396,17 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             multiSelect: true,
             maxSelections: 3,
             options: [
+              { id: 'saucen-premium', name: 'Saucen Premium', price: 5.0, description: 'Choose from ALL available sauces (+€5.00)' },
               { id: 'cocktail', name: 'Cocktail', price: 1.0, description: 'Creamy cocktail sauce (+€1.00)' },
               { id: 'tzatziki', name: 'Tzatziki', price: 1.0, description: 'Greek yogurt with herbs (+€1.00)' },
               { id: 'curry', name: 'Curry', price: 1.0, description: 'Spicy curry sauce (+€1.00)' },
               { id: 'garlic', name: 'Knoblauch', price: 1.0, description: 'Garlic sauce (+€1.00)' },
-              { id: 'hot', name: 'Scharfe Sauce', price: 1.0, description: 'Spicy hot sauce (+€1.00)' }
+              { id: 'hot', name: 'Scharfe Sauce', price: 1.0, description: 'Spicy hot sauce (+€1.00)' },
+              { id: 'ranch', name: 'Ranch', price: 1.0, description: 'Creamy ranch dressing (+€1.00)' },
+              { id: 'chili-cheese', name: 'Chili Cheese', price: 1.0, description: 'Spicy cheese sauce (+€1.00)' },
+              { id: 'hollandaise', name: 'Hollandaise', price: 1.0, description: 'Rich hollandaise sauce (+€1.00)' },
+              { id: 'ketchup', name: 'Ketchup', price: 1.0, description: 'Classic ketchup (+€1.00)' },
+              { id: 'mayo', name: 'Mayo', price: 1.0, description: 'Mayonnaise (+€1.00)' }
             ]
           }
         );
@@ -113,11 +419,17 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             multiSelect: true,
             maxSelections: 3,
             options: [
+              { id: 'saucen-premium', name: 'Saucen Premium', price: 5.0, description: 'Choose from ALL available sauces (+€5.00)' },
               { id: 'cocktail', name: 'Cocktail', price: 1.0, description: 'Creamy cocktail sauce (+€1.00)' },
               { id: 'tzatziki', name: 'Tzatziki', price: 1.0, description: 'Greek yogurt with herbs (+€1.00)' },
               { id: 'curry', name: 'Curry', price: 1.0, description: 'Spicy curry sauce (+€1.00)' },
               { id: 'garlic', name: 'Knoblauch', price: 1.0, description: 'Garlic sauce (+€1.00)' },
-              { id: 'hot', name: 'Scharfe Sauce', price: 1.0, description: 'Spicy hot sauce (+€1.00)' }
+              { id: 'hot', name: 'Scharfe Sauce', price: 1.0, description: 'Spicy hot sauce (+€1.00)' },
+              { id: 'ranch', name: 'Ranch', price: 1.0, description: 'Creamy ranch dressing (+€1.00)' },
+              { id: 'chili-cheese', name: 'Chili Cheese', price: 1.0, description: 'Spicy cheese sauce (+€1.00)' },
+              { id: 'hollandaise', name: 'Hollandaise', price: 1.0, description: 'Rich hollandaise sauce (+€1.00)' },
+              { id: 'ketchup', name: 'Ketchup', price: 1.0, description: 'Classic ketchup (+€1.00)' },
+              { id: 'mayo', name: 'Mayo', price: 1.0, description: 'Mayonnaise (+€1.00)' }
             ]
           },
           {
@@ -329,25 +641,94 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           ]
         }
       ];
-    } else if (item.category === 'Pizza') {
-      return [
+    } else if (item.category === 'PIZZA') {
+      const baseSteps: CustomizationStep[] = [];
+      
+      // Add size selection for pizzas
+      if (item.sizes && item.sizes.length > 0) {
+        baseSteps.push({
+          id: 'pizza_size',
+          title: 'Choose Your Pizza Size',
+          required: true,
+          multiSelect: false,
+          options: item.sizes.map((size, index) => ({
+            id: `size_${index}`,
+            name: size.name,
+            price: index > 0 ? (item.basePrice * size.priceMultiplier) - item.basePrice : 0,
+            description: index === 0 ? 'Standard size' : 'Larger size'
+          }))
+        });
+      }
+
+      // Add pizza-specific ingredients as upgrades
+      baseSteps.push(
         {
-          id: 'extras',
-          title: 'Add Extra Toppings',
+          id: 'pizza_vegetables',
+          title: 'Add Vegetables (Optional)',
           required: false,
           multiSelect: true,
           options: [
-            { id: 'cheese', name: 'Extra Cheese', price: 2.0 },
-            { id: 'pepperoni', name: 'Pepperoni', price: 2.5 },
-            { id: 'mushrooms', name: 'Mushrooms', price: 1.5 },
-            { id: 'olives', name: 'Olives', price: 1.5 },
-            { id: 'peppers', name: 'Bell Peppers', price: 1.5 },
-            { id: 'onions', name: 'Red Onions', price: 1.0 },
-            { id: 'tomatoes', name: 'Fresh Tomatoes', price: 1.5 },
-            { id: 'arugula', name: 'Arugula', price: 2.0 }
+            { id: 'pizza-tomate', name: 'Tomate', price: 1.20, description: 'Fresh tomatoes' },
+            { id: 'pizza-mais', name: 'Mais', price: 1.20, description: 'Sweet corn' },
+            { id: 'pizza-pilze', name: 'Pilze', price: 1.30, description: 'Fresh mushrooms' },
+            { id: 'pizza-brokkoli', name: 'Brokkoli', price: 1.40, description: 'Fresh broccoli' },
+            { id: 'pizza-paprika', name: 'Paprika', price: 1.30, description: 'Bell peppers' },
+            { id: 'pizza-peperoni', name: 'Peperoni', price: 1.50, description: 'Spicy pepperoni' },
+            { id: 'pizza-jallapenos', name: 'Jalapeños', price: 1.40, description: 'Spicy jalapeños' },
+            { id: 'pizza-rote-zwiebeln', name: 'Rote Zwiebeln', price: 1.20, description: 'Red onions' },
+            { id: 'pizza-ananas', name: 'Ananas', price: 1.20, description: 'Sweet pineapple' }
+          ]
+        },
+        {
+          id: 'pizza_proteins',
+          title: 'Add Proteins (Optional)',
+          required: false,
+          multiSelect: true,
+          options: [
+            { id: 'pizza-sucuk', name: 'Sucuk', price: 3.00, description: 'Turkish spiced sausage' },
+            { id: 'pizza-hahnchenfleisch', name: 'Hähnchenfleisch', price: 3.00, description: 'Grilled chicken' },
+            { id: 'pizza-kalbfleisch', name: 'Kalbfleisch', price: 3.00, description: 'Tender veal' },
+            { id: 'pizza-rinder-salami', name: 'Rinder Halal Salami', price: 3.00, description: 'Halal beef salami' },
+            { id: 'pizza-puten-schinken', name: 'Puten Halal Schinken', price: 3.00, description: 'Halal turkey ham' }
+          ]
+        },
+        {
+          id: 'pizza_cheeses',
+          title: 'Add Extra Cheese (Optional)',
+          required: false,
+          multiSelect: true,
+          options: [
+            { id: 'pizza-feta', name: 'Feta Käse', price: 3.00, description: 'Creamy feta cheese' },
+            { id: 'pizza-doppel-gouda', name: 'Doppel Gouda', price: 3.00, description: 'Double gouda cheese' },
+            { id: 'pizza-cheddar', name: 'Cheddar Käse', price: 3.00, description: 'Sharp cheddar cheese' }
+          ]
+        },
+        {
+          id: 'pizza_extras',
+          title: 'Add Extras (Optional)',
+          required: false,
+          multiSelect: true,
+          options: [
+            { id: 'pizza-hollandaise', name: 'Hollandaise', price: 3.00, description: 'Creamy hollandaise sauce' },
+            { id: 'pizza-pommes', name: 'Pommes', price: 3.00, description: 'Crispy fries on pizza' }
+          ]
+        },
+        {
+          id: 'pizza_drinks',
+          title: 'Add Drinks (Optional)',
+          required: false,
+          multiSelect: true,
+          options: [
+            { id: 'coca-cola-033', name: 'Coca Cola (0,33l)', price: 2.50, description: 'Classic Coca Cola' },
+            { id: 'fanta-033', name: 'Fanta (0,33l)', price: 2.50, description: 'Orange Fanta' },
+            { id: 'sprite-033', name: 'Sprite (0,33l)', price: 2.50, description: 'Lemon-lime Sprite' },
+            { id: 'wasser-033', name: 'Wasser (0,33l)', price: 2.00, description: 'Still water' },
+            { id: 'apfelschorle-033', name: 'Apfelschorle (0,33l)', price: 2.50, description: 'Apple juice spritzer' }
           ]
         }
-      ];
+      );
+      
+      return baseSteps;
     } else if (item.category === 'Burger' || item.category === 'Burgers') {
       // Add menu-specific steps if burger menu is selected
       const baseSteps: CustomizationStep[] = [
@@ -726,21 +1107,29 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
                 const stepSelections = selections[step.id] || [];
                 const isCurrentStep = index === currentStep;
                 const isCompleted = index < currentStep || stepSelections.length > 0;
+                const isPreviousStep = index < currentStep;
                 
                 return (
-                  <div key={step.id} className={`p-3 rounded-lg border ${
-                    isCurrentStep 
-                      ? 'border-red-600 bg-red-600/10' 
-                      : isCompleted
-                      ? 'border-green-600 bg-green-600/10'
-                      : 'border-gray-700 bg-gray-800/30'
-                  }`}>
+                  <div 
+                    key={step.id} 
+                    className={`p-3 rounded-lg border transition-all duration-200 ${
+                      isCurrentStep 
+                        ? 'border-red-600 bg-red-600/10' 
+                        : isCompleted
+                        ? 'border-green-600 bg-green-600/10 hover:bg-green-600/20'
+                        : 'border-gray-700 bg-gray-800/30'
+                    } ${isPreviousStep ? 'cursor-pointer' : ''}`}
+                    onClick={isPreviousStep ? () => setCurrentStep(index) : undefined}
+                  >
                     <div className="flex items-center justify-between mb-2">
                       <h4 className={`text-sm font-medium ${
                         isCurrentStep ? 'text-red-400' : isCompleted ? 'text-green-400' : 'text-gray-400'
                       }`}>
                         {step.title}
                         {step.required && <span className="text-red-400 ml-1">*</span>}
+                        {isPreviousStep && (
+                          <span className="ml-2 text-xs text-gray-500">(click to edit)</span>
+                        )}
                       </h4>
                       {isCompleted && !isCurrentStep && (
                         <Check className="w-4 h-4 text-green-400" />

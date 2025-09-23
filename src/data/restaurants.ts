@@ -2056,7 +2056,7 @@ export const menuItems: MenuItem[] = [
     name: 'BBQ Beef Bacon',
     description: 'Beef patty with BBQ sauce and crispy bacon',
     basePrice: 8.90,
-    image: '/food items/buger/Chesse burger.jpg',
+    image: '/food items/buger/bbq-beef-bacon-burger.jpg',
     category: 'Burgers',
     restaurantId: 'burger',
     dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 1, halal: true },

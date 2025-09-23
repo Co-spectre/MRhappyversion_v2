@@ -24,9 +24,9 @@ const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = fal
   const restLat = restaurant?.latitude;
   const restLng = restaurant?.longitude;
 
-  // Determine delivery radius (km) - 4km for all restaurants
-  const deliveryRadius = 4;
-  // All restaurants now have 4km delivery radius
+  // Determine delivery radius (km) - 2km for all restaurants
+  const deliveryRadius = 2;
+  // All restaurants now have 2km delivery radius
 
   // Calculate distance (km) if possible
   let userDistance: number | null = null;

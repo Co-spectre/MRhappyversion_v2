@@ -553,7 +553,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
               <div className="font-medium">Delivery</div>
               <div className="text-sm opacity-75">We'll deliver to your address</div>
               <div className="text-sm font-bold text-red-400 mt-1">+€2.00</div>
-              <div className="text-xs text-gray-400 mt-1">Within 4km radius</div>
+              <div className="text-xs text-gray-400 mt-1">Within 2km radius</div>
             </div>
           </button>
           <button
@@ -907,7 +907,7 @@ const checkEligibility = (userLocation: {
     }
   ];
 
-  const DELIVERY_RADIUS = 4; // 4km radius for all locations
+  const DELIVERY_RADIUS = 2; // 2km radius for all locations
 
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
     const toRadians = (degrees: number): number => (degrees * Math.PI) / 180;

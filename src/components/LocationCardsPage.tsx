@@ -23,26 +23,26 @@ interface LocationCardsPageProps {
 const LocationCardsPage: React.FC<LocationCardsPageProps> = ({ onRestaurantSelect }) => {
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
 
-  const locations: Location[] = [
-    {
-      id: 'doner-vegesack',
-      name: 'Mr.Happy Döner',
-      address: 'Bremen Vegesack Kaufland - Zum Alten Speicher 1 · 28759 Bremen',
-      coordinates: { lat: 53.1678, lng: 8.6119 },
-      phone: '+49 421 12345678',
-      hours: {
-        'Monday': '8:00 - 20:00',
-        'Tuesday': '8:00 - 20:00',
-        'Wednesday': '8:00 - 20:00',
-        'Thursday': '8:00 - 20:00',
-        'Friday': '8:00 - 20:00',
-        'Saturday': '8:00 - 20:00',
-        'Sunday': 'Closed'
+    const locations: Location[] = [
+      {
+        id: 'doner-vegesack',
+        name: 'Mr. Happy Döner',
+        address: 'Bremen Vegesack Kaufland - Zum Alten Speicher 1 · 28759 Bremen',
+        coordinates: { lat: 53.1678, lng: 8.6119 },
+        phone: '+49 421 12345678',
+        hours: {
+          'Monday': '8:00 - 20:00',
+          'Tuesday': '8:00 - 20:00',
+          'Wednesday': '8:00 - 20:00',
+          'Thursday': '8:00 - 20:00',
+          'Friday': '8:00 - 20:00',
+          'Saturday': '8:00 - 20:00',
+          'Sunday': 'Closed'
+        },
+        image: 'https://images.pexels.com/photos/4393021/pexels-photo-4393021.jpeg?auto=compress&cs=tinysrgb&w=800',
+        description: 'Authentic Turkish döner and Mediterranean specialties in the heart of Bremen Vegesack.',
+        features: ['Halal Certified', 'Fresh Daily Preparation', 'Vegetarian Options', 'Takeaway & Delivery']
       },
-      image: 'https://images.pexels.com/photos/4393021/pexels-photo-4393021.jpeg?auto=compress&cs=tinysrgb&w=800',
-      description: 'Authentic Turkish döner and Mediterranean specialties in the heart of Bremen Vegesack.',
-      features: ['Halal Certified', 'Fresh Daily Preparation', 'Vegetarian Options', 'Takeaway & Delivery']
-    },
     {
       id: 'burger-vegesack',
       name: 'Mr.Happy Burger',

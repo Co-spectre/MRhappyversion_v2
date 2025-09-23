@@ -63,7 +63,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
   // Payment Information
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethod | null>(null);
   const [orderNotes, setOrderNotes] = useState('');
-  const [deliveryTime, setDeliveryTime] = useState('asap');
   const [tipAmount, setTipAmount] = useState(0);
 
   // Mock saved addresses
@@ -158,7 +157,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
       setErrors({});
       setTipAmount(0);
       setOrderNotes('');
-      setDeliveryTime('asap');
     }
   }, [isOpen]);
 
@@ -401,8 +399,34 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
                       latitude: position.coords.latitude,
                       longitude: position.coords.longitude
                     }));
-                  },
-                  (error) => {
+                    const restaurantLat = 52.5200; // Example latitude for the restaurant
+                    const restaurantLon = 13.4050; // Example longitude for the restaurant
+                    const userLat = position.coords.latitude;
+                    const userLon = position.coords.longitude;
+
+                    const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+                      const toRadians = (degrees: number): number => (degrees * Math.PI) / 180;
+                      const R = 6371; // Earth's radius in kilometers
+                      const dLat = toRadians(lat2 - lat1);
+                      const dLon = toRadians(lon2 - lon1);
+                      const a =
+                        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                        Math.cos(toRadians(lat1)) *
+                          Math.cos(toRadians(lat2)) *
+                          Math.sin(dLon / 2) *
+                          Math.sin(dLon / 2);
+                      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                      return R * c; // Distance in kilometers
+                    };
+
+                    const distance = calculateDistance(userLat, userLon, restaurantLat, restaurantLon);
+                    alert(`Distance to restaurant: ${distance.toFixed(2)} km`);
+                    if (distance <= 10) {
+                      alert('Delivery available');
+                    } else {
+                      alert('Pickup only');
+                    }
+                  }, () => {
                     alert('Unable to get your location. Please allow location access.');
                   }
                 );

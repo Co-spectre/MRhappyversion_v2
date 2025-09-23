@@ -41,8 +41,8 @@ const translations = {
     'restaurant.doner.desc': 'Authentic Turkish flavors',
     'restaurant.burger.name': 'Burger',
     'restaurant.burger.desc': 'Premium American classics',
-    'restaurant.doner-pizza.name': 'Restaurant',
-    'restaurant.doner-pizza.desc': 'Fine dining experience',
+  'restaurant.doner-pizza.name': 'Doner&Pizza',
+  'restaurant.doner-pizza.desc': 'Turkish Döner & Italian Pizza',
     'restaurant.viewMenu': 'View Menu',
     'restaurant.cantDecide': "Can't decide? Each restaurant offers a unique experience worth exploring.",
     

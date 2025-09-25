@@ -428,22 +428,17 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           },
           {
             id: 'sauces',
-            title: 'Extra Sauces (Optional)',
+            title: 'Extra Sauces',
             required: false,
             multiSelect: true,
-            maxSelections: 3,
             options: [
-              { id: 'saucen-premium', name: 'Saucen Premium', price: 5.0, description: 'Choose from ALL available sauces (+€5.00)' },
-              { id: 'cocktail', name: 'Cocktail', price: 1.0, description: 'Creamy cocktail sauce (+€1.00)' },
-              { id: 'tzatziki', name: 'Tzatziki', price: 1.0, description: 'Greek yogurt with herbs (+€1.00)' },
-              { id: 'curry', name: 'Curry', price: 1.0, description: 'Spicy curry sauce (+€1.00)' },
-              { id: 'garlic', name: 'Knoblauch', price: 1.0, description: 'Garlic sauce (+€1.00)' },
-              { id: 'hot', name: 'Scharfe Sauce', price: 1.0, description: 'Spicy hot sauce (+€1.00)' },
-              { id: 'ranch', name: 'Ranch', price: 1.0, description: 'Creamy ranch dressing (+€1.00)' },
-              { id: 'chili-cheese', name: 'Chili Cheese', price: 1.0, description: 'Spicy cheese sauce (+€1.00)' },
-              { id: 'hollandaise', name: 'Hollandaise', price: 1.0, description: 'Rich hollandaise sauce (+€1.00)' },
-              { id: 'ketchup', name: 'Ketchup', price: 1.0, description: 'Classic ketchup (+€1.00)' },
-              { id: 'mayo', name: 'Mayo', price: 1.0, description: 'Mayonnaise (+€1.00)' }
+              { id: 'cocktail', name: 'Cocktail', description: 'Creamy cocktail sauce' },
+              { id: 'tzatziki', name: 'Tzatziki', description: 'Greek yogurt with herbs' },
+              { id: 'curry', name: 'Curry', description: 'Spicy curry sauce' },
+              { id: 'garlic', name: 'Knoblauch', description: 'Garlic sauce' },
+              { id: 'hot', name: 'Scharfe Sauce', description: 'Spicy hot sauce' },
+              { id: 'ranch', name: 'Ranch', description: 'Creamy ranch dressing' },
+              { id: 'chili-cheese', name: 'Chili Cheese', description: 'Spicy cheese sauce' }
             ]
           }
         );
@@ -451,34 +446,30 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         baseSteps.push(
           {
             id: 'sauces',
-            title: 'Extra Sauces (Optional)',
+            title: 'Extra Sauces',
             required: false,
             multiSelect: true,
-            maxSelections: 3,
             options: [
-              { id: 'saucen-premium', name: 'Saucen Premium', price: 5.0, description: 'Choose from ALL available sauces (+€5.00)' },
-              { id: 'cocktail', name: 'Cocktail', price: 1.0, description: 'Creamy cocktail sauce (+€1.00)' },
-              { id: 'tzatziki', name: 'Tzatziki', price: 1.0, description: 'Greek yogurt with herbs (+€1.00)' },
-              { id: 'curry', name: 'Curry', price: 1.0, description: 'Spicy curry sauce (+€1.00)' },
-              { id: 'garlic', name: 'Knoblauch', price: 1.0, description: 'Garlic sauce (+€1.00)' },
-              { id: 'hot', name: 'Scharfe Sauce', price: 1.0, description: 'Spicy hot sauce (+€1.00)' },
-              { id: 'ranch', name: 'Ranch', price: 1.0, description: 'Creamy ranch dressing (+€1.00)' },
-              { id: 'chili-cheese', name: 'Chili Cheese', price: 1.0, description: 'Spicy cheese sauce (+€1.00)' },
-              { id: 'hollandaise', name: 'Hollandaise', price: 1.0, description: 'Rich hollandaise sauce (+€1.00)' },
-              { id: 'ketchup', name: 'Ketchup', price: 1.0, description: 'Classic ketchup (+€1.00)' },
-              { id: 'mayo', name: 'Mayo', price: 1.0, description: 'Mayonnaise (+€1.00)' }
+              { id: 'cocktail', name: 'Cocktail', description: 'Creamy cocktail sauce' },
+              { id: 'tzatziki', name: 'Tzatziki', description: 'Greek yogurt with herbs' },
+              { id: 'curry', name: 'Curry', description: 'Spicy curry sauce' },
+              { id: 'garlic', name: 'Knoblauch', description: 'Garlic sauce' },
+              { id: 'hot', name: 'Scharfe Sauce', description: 'Spicy hot sauce' },
+              { id: 'ranch', name: 'Ranch', description: 'Creamy ranch dressing' },
+              { id: 'chili-cheese', name: 'Chili Cheese', description: 'Spicy cheese sauce' }
             ]
           },
           {
             id: 'toppings',
-            title: 'Remove Toppings (Select what you DON\'T want)',
+            title: 'Remove Toppings',
             required: false,
             multiSelect: true,
             options: [
               { id: 'no_lettuce', name: 'No Lettuce', description: 'Remove lettuce' },
               { id: 'no_tomato', name: 'No Tomato', description: 'Remove tomato' },
               { id: 'no_onion', name: 'No Onion', description: 'Remove onion' },
-              { id: 'no_peppers', name: 'No Peppers', description: 'Remove peppers' },
+              { id: 'no_white_cabbage', name: 'No White Cabbage', description: 'Remove white cabbage' },
+              { id: 'no_red_cabbage', name: 'No Red Cabbage', description: 'Remove red cabbage' },
               { id: 'no_cheese', name: 'No Cheese', description: 'Remove cheese' }
             ]
           },
@@ -851,7 +842,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           },
           {
             id: 'burger_toppings',
-            title: 'Remove Toppings (Select what you DON\'T want)',
+            title: 'Remove Toppings',
             required: false,
             multiSelect: true,
             options: [
@@ -1053,8 +1044,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         if (current.includes(optionId)) {
           newSelections = { ...prev, [stepId]: current.filter(id => id !== optionId) };
         } else {
-          // Check if we've reached the maximum selections
-          if (stepData.maxSelections && current.length >= stepData.maxSelections) {
+          // Check if we've reached the maximum selections (except for sauces)
+          if (stepData.maxSelections && current.length >= stepData.maxSelections && stepId !== 'sauces') {
             // If at max, replace the oldest selection with the new one
             const updatedSelections = [...current.slice(1), optionId];
             newSelections = { ...prev, [stepId]: updatedSelections };
@@ -1090,14 +1081,21 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     const customizations: { ingredientId: string; action: string; name: string; price: number }[] = [];
     steps.forEach(step => {
       const stepSelections = selections[step.id] || [];
-      stepSelections.forEach(selectionId => {
+      stepSelections.forEach((selectionId, index) => {
         const option = step.options.find(opt => opt.id === selectionId);
         if (option) {
+          let price = option.price || 0;
+          
+          // Special pricing for sauces: first 2 are free, rest cost €1.00
+          if (step.id === 'sauces' && index >= 2) {
+            price = 1.00;
+          }
+          
           customizations.push({
             ingredientId: selectionId,
             action: 'add',
             name: option.name,
-            price: option.price || 0
+            price: price
           });
         }
       });
@@ -1351,7 +1349,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
                 const isAtMaxLimit = Boolean(currentStepData.maxSelections && 
                                     currentSelections.length >= currentStepData.maxSelections && 
                                     !isSelected && 
-                                    currentStepData.multiSelect);
+                                    currentStepData.multiSelect &&
+                                    currentStepData.id !== 'sauces');
                 
                 return (
                   <button
@@ -1382,13 +1381,50 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
                           </div>
                         </div>
                       </div>
-                      {option.price && option.price > 0 && (
-                        <div className="text-right">
-                          <span className="text-lg font-semibold text-green-400">
-                            +€{option.price.toFixed(2)}
-                          </span>
-                        </div>
-                      )}
+                      {(() => {
+                        // Dynamic pricing for sauces
+                        if (currentStepData.id === 'sauces') {
+                          const selectedCount = currentSelections.length;
+                          
+                          if (isSelected) {
+                            // If this sauce is already selected, check if it's in position 3+
+                            const saucePosition = currentSelections.indexOf(option.id);
+                            if (saucePosition >= 2) {
+                              return (
+                                <div className="text-right">
+                                  <span className="text-lg font-semibold text-red-400">
+                                    +€1.00
+                                  </span>
+                                </div>
+                              );
+                            }
+                          } else {
+                            // If not selected, show price if selecting it would make it the 3rd+ sauce
+                            if (selectedCount >= 2) {
+                              return (
+                                <div className="text-right">
+                                  <span className="text-lg font-semibold text-red-400">
+                                    +€1.00
+                                  </span>
+                                </div>
+                              );
+                            }
+                          }
+                          return null;
+                        }
+                        
+                        // Regular price display for non-sauce items
+                        if (option.price && option.price > 0) {
+                          return (
+                            <div className="text-right">
+                              <span className="text-lg font-semibold text-green-400">
+                                +€{option.price.toFixed(2)}
+                              </span>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
                     </div>
                   </button>
                 );

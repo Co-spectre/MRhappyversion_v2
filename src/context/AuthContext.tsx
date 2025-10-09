@@ -18,7 +18,7 @@ const AuthContext = createContext<{
   state: AuthState;
   dispatch: React.Dispatch<AuthAction>;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (email: string, password: string, name: string) => Promise<boolean>;
+  register: (email: string, password: string, name: string, phone?: string) => Promise<boolean>;
   logout: () => void;
   updateProfile: (updates: Partial<AuthUser>) => void;
   checkProfileComplete: () => boolean;
@@ -164,7 +164,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const register = async (email: string, _password: string, name: string): Promise<boolean> => {
+  const register = async (email: string, _password: string, name: string, phone?: string): Promise<boolean> => {
     dispatch({ type: 'LOGIN_START' });
     
     try {
@@ -175,10 +175,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         id: Date.now().toString(),
         email,
         name,
+        phone: phone || undefined,
         addresses: [],
         favoriteItems: [],
         loyaltyPoints: 0,
-        createdAt: new Date()
+        createdAt: new Date(),
+        locationVerified: false,
+        emailVerified: false
       };
       
       localStorage.setItem('mr-happy-user', JSON.stringify(user));

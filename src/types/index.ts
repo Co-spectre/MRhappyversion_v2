@@ -117,6 +117,8 @@ export interface Address {
   state: string;
   zipCode: string;
   isDefault: boolean;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface Order {
@@ -153,6 +155,10 @@ export interface AuthUser {
   loyaltyPoints: number;
   createdAt: Date;
   role?: 'customer' | 'admin' | 'manager';
+  preferredLocation?: 'vegesack' | 'schwanewede';
+  deliveryAddress?: Address;
+  locationVerified?: boolean;
+  emailVerified?: boolean;
 }
 
 export interface AdminUser {

@@ -30,6 +30,7 @@ import ChefShowcaseSection from './components/ChefShowcaseSection';
 import SpecialOffersSection from './components/SpecialOffersSection';
 import { AdminDashboard } from './components/AdminDashboard';
 import { NotificationCenter } from './components/NotificationCenter';
+import LocationSelectionModal from './components/LocationSelectionModal';
 
 // Component to handle notification gateway registration
 function NotificationGatewayConnector() {
@@ -82,6 +83,14 @@ function AppContent() {
   const [currentView, setCurrentView] = useState<'home' | 'menu' | 'about' | 'orders' | 'my-orders' | 'admin' | 'impressum' | 'jobs' | 'privacy' | 'terms' | 'cookies' | 'allergens'>('home');
   const [selectedRestaurant, setSelectedRestaurant] = useState<string>('');
   const [viewTransition, setViewTransition] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+
+  // Show location modal after successful login/registration if not verified
+  useEffect(() => {
+    if (authState.isAuthenticated && authState.user && !authState.user.locationVerified) {
+      setShowLocationModal(true);
+    }
+  }, [authState.isAuthenticated, authState.user]);
 
   // Protect admin panel access
   useEffect(() => {
@@ -89,6 +98,10 @@ function AppContent() {
       setCurrentView('home');
     }
   }, [currentView, authState.user]);
+
+  const handleLocationComplete = () => {
+    setShowLocationModal(false);
+  };
 
   const handleViewChange = (view: string) => {
     // Additional protection for admin panel
@@ -235,6 +248,12 @@ function AppContent() {
           
           {/* Notification Center */}
           <NotificationCenter />
+
+          {/* Location Selection Modal - Shows after login/registration */}
+          <LocationSelectionModal 
+            isOpen={showLocationModal} 
+            onComplete={handleLocationComplete} 
+          />
         </>
       )}
     </div>

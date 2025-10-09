@@ -1,14 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from '../context/LocationContext';
 import { X, MapPin, Phone, Check, Mail, ArrowLeft, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useOrder } from '../context/OrderContext';
-import { geocodeBremenAddress, checkAddressDeliveryEligibility, BremenAddress } from '../utils/bremenGeocoding';
-import { getLocationAndAddress, isBremenArea } from '../utils/geolocation';
-import { restaurants } from '../data/restaurants';
-
-import { CartItem } from '../types';
+import { findNearestLocation, formatDistance, calculateDistance, RESTAURANT_LOCATIONS, type Coordinates } from '../utils/locationUtils';
 
 
 interface CheckoutModalProps {
@@ -48,13 +44,26 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
   // Order Type
   const [orderType, setOrderType] = useState<'delivery' | 'pickup'>('pickup');
   
-  // Customer Information
+  // Customer Information - Auto-fill from user profile
   const [customerInfo, setCustomerInfo] = useState({
     firstName: '',
     lastName: '',
     email: '',
     phone: ''
   });
+
+  // Auto-fill customer info when modal opens or user logs in
+  useEffect(() => {
+    if (authState.user && isOpen) {
+      const nameParts = authState.user.name.split(' ');
+      setCustomerInfo({
+        firstName: nameParts[0] || '',
+        lastName: nameParts.slice(1).join(' ') || '',
+        email: authState.user.email || '',
+        phone: authState.user.phone || ''
+      });
+    }
+  }, [authState.user, isOpen]);
 
   // Delivery Information
   const [selectedAddress, setSelectedAddress] = useState<DeliveryAddress | null>(null);
@@ -86,146 +95,29 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
   const [deliveryAvailabilityChecked, setDeliveryAvailabilityChecked] = useState(false);
   const [addressDeliveryStatus, setAddressDeliveryStatus] = useState<{[key: string]: {canDeliver: boolean, distance: number}}>({});
   const [isGeocodingAddress, setIsGeocodingAddress] = useState(false);
-  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
-
-  // Geocode an address and check delivery eligibility
-  const geocodeAddressAndCheckDelivery = useCallback((street: string, city: string, zipCode: string): {canDeliver: boolean, distance: number, coordinates?: {lat: number, lng: number}} | null => {
-    try {
-      setIsGeocodingAddress(true);
-      
-      // Create Bremen address object
-      const bremenAddress: BremenAddress = { street, city, zipCode };
-      
-      // Get restaurant information for delivery radius
-      const restaurantId = cartState.items[0]?.menuItem?.restaurantId;
-      const deliveryRadius = restaurantId === 'doner-pizza' ? 10 : 2;
-      
-      // Find restaurant coordinates (use first restaurant as default)
-      const restaurant = restaurants.find(r => r.id === 'doner') || restaurants[0];
-      if (!restaurant || typeof restaurant.latitude !== 'number' || typeof restaurant.longitude !== 'number') {
-        console.error('Restaurant coordinates not found');
-        return null;
-      }
-      
-      const restaurantCoords = {
-        latitude: restaurant.latitude,
-        longitude: restaurant.longitude
-      };
-      
-      // Check delivery eligibility using Bremen address system
-      const result = checkAddressDeliveryEligibility(bremenAddress, restaurantCoords, deliveryRadius);
-      
-      // Get geocoded coordinates
-      const geocoded = geocodeBremenAddress(bremenAddress);
-      
-      console.log('Bremen address validation:', bremenAddress, 'delivery:', result.canDeliver, 'distance:', result.distance);
-      
-      return {
-        canDeliver: result.canDeliver,
-        distance: result.distance,
-        coordinates: geocoded.isValid ? {
-          lat: geocoded.latitude,
-          lng: geocoded.longitude
-        } : undefined
-      };
-      
-    } catch (error) {
-      console.error('Bremen address validation error:', error);
-      return null;
-    } finally {
-      setIsGeocodingAddress(false);
-    }
-  }, [cartState.items]);
-
-  // Auto-fill address using geolocation
-  const handleAutoFillLocation = async () => {
-    try {
-      setIsLoadingLocation(true);
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors.location;
-        return newErrors;
-      });
-
-      console.log('🌍 Getting your exact location...');
-      
-      // Check if geolocation is supported
-      if (!navigator.geolocation) {
-        throw new Error('Your browser does not support location detection. Please enter your address manually.');
-      }
-      
-      const result = await getLocationAndAddress();
-
-      if (!result.success || !result.address) {
-        throw new Error(result.error || 'Unable to get your location');
-      }
-
-      const { address, coordinates } = result;
-      console.log('📍 Location detected:', address);
-
-      // Check if address is in Bremen area
-      if (!isBremenArea(address)) {
-        setErrors(prev => ({
-          ...prev,
-          location: `Sorry, we only deliver in Bremen. Your detected location: ${address.city}`
-        }));
-        return;
-      }
-
-      // Auto-fill the address form
-      setNewAddress({
-        name: 'My Current Location',
-        street: address.street,
-        city: address.city,
-        zipCode: address.zipCode,
-        phone: newAddress.phone, // Keep existing phone
-        instructions: newAddress.instructions // Keep existing instructions
-      });
-
-      // Update location context if coordinates are available
-      if (coordinates && setLocation) {
-        setLocation({
-          latitude: coordinates.latitude,
-          longitude: coordinates.longitude,
-          accuracy: coordinates.accuracy,
-          timestamp: Date.now()
-        });
-      }
-
-      // Trigger delivery validation
-      if (address.street && address.city && address.zipCode) {
-        const deliveryInfo = geocodeAddressAndCheckDelivery(address.street, address.city, address.zipCode);
-        
-        if (deliveryInfo) {
-          const fullAddress = `${address.street}, ${address.city}, ${address.zipCode}`;
-          setAddressDeliveryStatus(prev => ({
-            ...prev,
-            [fullAddress]: {
-              canDeliver: deliveryInfo.canDeliver,
-              distance: deliveryInfo.distance
-            }
-          }));
-        }
-      }
-
-      console.log('✅ Address auto-filled successfully!');
-
-    } catch (error) {
-      console.error('Auto-location error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unable to get your location';
-      setErrors(prev => ({
-        ...prev,
-        location: errorMessage
-      }));
-    } finally {
-      setIsLoadingLocation(false);
-    }
-  };
+  
+  // Auto location detection state
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false);
+  const [detectedLocation, setDetectedLocation] = useState<{
+    latitude: number;
+    longitude: number;
+    accuracy: number;
+    address?: string;
+    street?: string;
+    city?: string;
+    zipCode?: string;
+    distances?: Array<{
+      id: string;
+      name: string;
+      distance: number;
+      deliveryRadius: number;
+    }>;
+  } | null>(null);
 
   // Check delivery availability whenever location changes
   useEffect(() => {
     if (location && orderType === 'delivery' && !deliveryAvailabilityChecked) {
-      const eligibility = checkEligibility(location, cartState.items);
+      const eligibility = checkEligibility(location);
       if (!eligibility.canDeliver) {
         // Automatically switch to pickup if delivery not available
         setOrderType('pickup');
@@ -243,7 +135,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
       }
       setDeliveryAvailabilityChecked(true);
     }
-  }, [location, orderType, deliveryAvailabilityChecked, cartState.items]);
+  }, [location, orderType, deliveryAvailabilityChecked]);
 
   // Reset delivery availability check when location changes
   useEffect(() => {
@@ -255,7 +147,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     if (isOpen && location && isLocationEnabled) {
       console.log('Location detected on modal open:', location);
       console.log('Location enabled status:', isLocationEnabled);
-      const eligibility = checkEligibility(location, cartState.items);
+      const eligibility = checkEligibility(location);
       if (eligibility.canDeliver) {
         console.log('Delivery available - enabling delivery option');
       } else {
@@ -268,16 +160,16 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
         hasLocationData: !!location
       });
     }
-  }, [isOpen, location, isLocationEnabled, cartState.items]);
+  }, [isOpen, location, isLocationEnabled]);
 
   // Check delivery eligibility for saved addresses on mount
   useEffect(() => {
-    const checkSavedAddresses = () => {
+    const checkSavedAddresses = async () => {
       if (savedAddresses.length > 0) {
         for (const address of savedAddresses) {
           const fullAddress = `${address.street}, ${address.city} ${address.zipCode}`;
           if (!addressDeliveryStatus[fullAddress]) {
-            const deliveryInfo = geocodeAddressAndCheckDelivery(address.street, address.city, address.zipCode);
+            const deliveryInfo = await geocodeAddressAndCheckDelivery(fullAddress);
             if (deliveryInfo) {
               setAddressDeliveryStatus(prev => ({
                 ...prev,
@@ -295,16 +187,66 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     if (isOpen) {
       checkSavedAddresses();
     }
-  }, [isOpen, addressDeliveryStatus, geocodeAddressAndCheckDelivery]);
+  }, [isOpen, addressDeliveryStatus]);
 
+  // Geocode an address and check delivery eligibility
+  const geocodeAddressAndCheckDelivery = async (address: string): Promise<{canDeliver: boolean, distance: number, coordinates?: {lat: number, lng: number}} | null> => {
+    try {
+      setIsGeocodingAddress(true);
+      
+      // Use OpenStreetMap Nominatim API for geocoding (free)
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1&addressdetails=1&accept-language=en`,
+        {
+          headers: {
+            'User-Agent': 'MRhappy-Restaurant-App'
+          }
+        }
+      );
 
+      if (!response.ok) {
+        throw new Error('Geocoding request failed');
+      }
+
+      const data = await response.json();
+      
+      if (data && data.length > 0) {
+        const result = data[0];
+        const coordinates = {
+          lat: parseFloat(result.lat),
+          lng: parseFloat(result.lon)
+        };
+        
+        // Check delivery eligibility
+        const eligibility = checkEligibility({
+          latitude: coordinates.lat,
+          longitude: coordinates.lng
+        });
+        
+        console.log('Geocoded address:', address, 'to coordinates:', coordinates, 'delivery:', eligibility.canDeliver);
+        
+        return {
+          canDeliver: eligibility.canDeliver,
+          distance: eligibility.distance,
+          coordinates
+        };
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Geocoding error:', error);
+      return null;
+    } finally {
+      setIsGeocodingAddress(false);
+    }
+  };
 
   // Check delivery for address when it changes
   useEffect(() => {
-    const checkAddressDelivery = () => {
+    const checkAddressDelivery = async () => {
       if (useNewAddress && newAddress.street && newAddress.city && newAddress.zipCode) {
         const fullAddress = `${newAddress.street}, ${newAddress.city}, ${newAddress.zipCode}`;
-        const deliveryInfo = geocodeAddressAndCheckDelivery(newAddress.street, newAddress.city, newAddress.zipCode);
+        const deliveryInfo = await geocodeAddressAndCheckDelivery(fullAddress);
         
         if (deliveryInfo) {
           setAddressDeliveryStatus(prev => ({
@@ -331,7 +273,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     // Debounce the address check
     const timeoutId = setTimeout(checkAddressDelivery, 1000);
     return () => clearTimeout(timeoutId);
-  }, [newAddress.street, newAddress.city, newAddress.zipCode, useNewAddress, setLocation, geocodeAddressAndCheckDelivery]);
+  }, [newAddress.street, newAddress.city, newAddress.zipCode, useNewAddress, setLocation]);
 
   // Address management functions
   const deleteAddress = (addressId: string) => {
@@ -341,6 +283,151 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     // If the deleted address was selected, clear the selection
     if (selectedAddress?.id === addressId) {
       setSelectedAddress(null);
+    }
+  };
+
+  // Auto-detect user's precise location using GPS
+  const handleAutoDetectLocation = async () => {
+    setIsDetectingLocation(true);
+    setDetectedLocation(null);
+    
+    try {
+      // Request high-accuracy GPS location
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude, accuracy } = position.coords;
+          
+          console.log('📍 GPS Location detected:', {
+            latitude: latitude.toFixed(6),
+            longitude: longitude.toFixed(6),
+            accuracy: `${accuracy.toFixed(0)}m`
+          });
+
+          // Reverse geocode to get human-readable address
+          try {
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
+              {
+                headers: {
+                  'Accept-Language': 'de,en',
+                  'User-Agent': 'MrHappyRestaurant/1.0'
+                }
+              }
+            );
+
+            if (response.ok) {
+              const data = await response.json();
+              const addr = data.address;
+              
+              // Extract address components
+              const street = `${addr.road || addr.street || ''} ${addr.house_number || ''}`.trim();
+              const city = addr.city || addr.town || addr.village || addr.municipality || 'Bremen';
+              const zipCode = addr.postcode || '';
+              const fullAddress = data.display_name;
+
+              console.log('🏠 Address detected:', {
+                street,
+                city,
+                zipCode,
+                fullAddress
+              });
+
+              // Calculate distances to restaurants
+              const distances = RESTAURANT_LOCATIONS.map(restaurant => ({
+                ...restaurant,
+                distance: calculateDistance(
+                  { latitude, longitude },
+                  restaurant.coordinates
+                )
+              }));
+
+              // Set detected location with all details
+              const locationData = {
+                latitude,
+                longitude,
+                accuracy,
+                address: fullAddress,
+                street,
+                city,
+                zipCode,
+                distances
+              };
+
+              setDetectedLocation(locationData);
+
+              // Auto-fill the new address form
+              setNewAddress(prev => ({
+                ...prev,
+                street: street || prev.street,
+                city: city || prev.city,
+                zipCode: zipCode || prev.zipCode,
+                name: prev.name || 'My Location'
+              }));
+
+              // Show success message
+              setErrors(prev => {
+                const newErrors = { ...prev };
+                delete newErrors.location;
+                return newErrors;
+              });
+
+            } else {
+              throw new Error('Geocoding failed');
+            }
+          } catch (geocodeError) {
+            console.error('Geocoding error:', geocodeError);
+            setErrors(prev => ({
+              ...prev,
+              location: '⚠️ Could not determine address. Please enter manually.'
+            }));
+            
+            // Still set coordinates for distance calculation
+            setDetectedLocation({
+              latitude,
+              longitude,
+              accuracy
+            });
+          }
+
+          setIsDetectingLocation(false);
+        },
+        (error) => {
+          console.error('Geolocation error:', error);
+          let errorMessage = '❌ Could not detect location. ';
+          
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage += 'Please enable location permissions in your browser.';
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage += 'Location information is unavailable.';
+              break;
+            case error.TIMEOUT:
+              errorMessage += 'Location request timed out.';
+              break;
+            default:
+              errorMessage += 'An unknown error occurred.';
+          }
+          
+          setErrors(prev => ({
+            ...prev,
+            location: errorMessage
+          }));
+          setIsDetectingLocation(false);
+        },
+        {
+          enableHighAccuracy: true, // Request GPS-level accuracy
+          timeout: 10000, // 10 second timeout
+          maximumAge: 0 // Don't use cached position
+        }
+      );
+    } catch (error) {
+      console.error('Auto-detect error:', error);
+      setErrors(prev => ({
+        ...prev,
+        location: '❌ Location detection is not available in your browser.'
+      }));
+      setIsDetectingLocation(false);
     }
   };
 
@@ -382,9 +469,33 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     });
   };
 
-  // Address-based delivery validation - no GPS needed
+  // Corrected renderEligibilityStatus declaration
   const renderEligibilityStatus = () => {
-    return null; // Delivery validation now happens based on address input
+    if (!isLocationEnabled || !location) {
+      return (
+        <div className="p-4 bg-yellow-900/30 border border-yellow-600 rounded-lg">
+          <p className="text-yellow-400">📍 Location not detected. Click "Delivery" to enable location for delivery eligibility check.</p>
+        </div>
+      );
+    }
+
+    const eligibility = checkEligibility(location);
+
+    return (
+      <div className={`p-4 rounded-lg border ${eligibility.canDeliver 
+        ? 'bg-green-900/30 border-green-600' 
+        : 'bg-red-900/30 border-red-600'
+      }`}>
+        <p className={eligibility.canDeliver ? 'text-green-400' : 'text-red-400'}>
+          {eligibility.message}
+        </p>
+        {!eligibility.canDeliver && (
+          <p className="text-gray-400 text-sm mt-2">
+            💡 Tip: You can still place a pickup order from any of our locations!
+          </p>
+        )}
+      </div>
+    );
   };
 
   // Payment methods
@@ -630,197 +741,281 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     </div>
   );
 
-  const renderDeliveryStep = () => (
-    <div className="space-y-4">
-      <h3 className="text-xl font-semibold text-white mb-4">Delivery Information</h3>
-      
-      {/* Saved Addresses */}
-      {savedAddresses.length > 0 && !useNewAddress && (
-        <div>
-          <h4 className="text-lg font-medium text-gray-300 mb-3">Select Delivery Address</h4>
-          <div className="space-y-3">
-            {savedAddresses.map((address: DeliveryAddress) => {
-              const fullAddress = `${address.street}, ${address.city} ${address.zipCode}`;
-              const deliveryStatus = addressDeliveryStatus[fullAddress];
-              const isDeliveryAvailable = deliveryStatus?.canDeliver ?? true; // Default to available if not checked yet
-              
-              return (
-                <div
-                  key={address.id}
-                  className={`p-4 border rounded-lg transition-all ${
-                    selectedAddress?.id === address.id
-                      ? 'border-red-600 bg-red-900/20'
-                      : 'border-gray-700 bg-gray-800/50'
-                  } ${!isDeliveryAvailable ? 'opacity-60' : ''}`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div 
-                      className="flex-1 cursor-pointer"
-                      onClick={() => setSelectedAddress(address)}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <MapPin className="w-4 h-4 text-gray-400" />
-                        <span className="font-medium text-white">{address.name}</span>
-                        {address.isDefault && (
-                          <span className="px-2 py-1 bg-green-600 text-white text-xs rounded-full">Default</span>
-                        )}
-                        {!isDeliveryAvailable && (
-                          <span className="px-2 py-1 bg-red-600 text-white text-xs rounded-full">
-                            No Delivery ({deliveryStatus?.distance.toFixed(1)}km)
-                          </span>
-                        )}
-                        {isDeliveryAvailable && deliveryStatus && (
-                          <span className="px-2 py-1 bg-green-600 text-white text-xs rounded-full">
-                            ✓ Delivery ({deliveryStatus.distance.toFixed(1)}km)
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-gray-300 mt-1">
-                        {address.street}, {address.city} {address.zipCode}
-                      </p>
-                      <p className="text-gray-400 text-sm">{address.phone}</p>
-                      {!isDeliveryAvailable && (
-                        <p className="text-red-400 text-xs mt-1">
-                          🚫 Outside delivery range - pickup only
-                        </p>
-                      )}
+  const renderDeliveryStep = () => {
+    // Get user's delivery address from signup
+    const userDeliveryAddress = authState.user?.deliveryAddress;
+
+    return (
+      <div className="space-y-6">
+        <div className="text-center mb-6">
+          <h3 className="text-2xl font-bold text-white mb-2">🏠 Delivery Location</h3>
+          <p className="text-gray-400">Choose where we should deliver your delicious food</p>
+        </div>
+        
+        {/* User's Saved Location from Signup */}
+        {userDeliveryAddress && !useNewAddress && (
+          <div className="space-y-4">
+            <h4 className="text-lg font-semibold text-gray-300 flex items-center space-x-2">
+              <MapPin className="w-5 h-5 text-red-500" />
+              <span>Your Saved Location</span>
+            </h4>
+            
+            <div 
+              onClick={() => {
+                // Auto-select this address
+                setSelectedAddress({
+                  id: 'user-signup-address',
+                  name: 'My Address',
+                  street: userDeliveryAddress.street,
+                  city: userDeliveryAddress.city,
+                  zipCode: userDeliveryAddress.zipCode,
+                  phone: authState.user?.phone || customerInfo.phone,
+                  isDefault: true
+                });
+              }}
+              className={`group cursor-pointer p-6 border-2 rounded-2xl transition-all duration-300 ${
+                selectedAddress?.id === 'user-signup-address'
+                  ? 'border-red-500 bg-gradient-to-br from-red-900/30 to-red-800/20 shadow-lg shadow-red-500/20'
+                  : 'border-gray-700 bg-gradient-to-br from-gray-800/50 to-gray-900/50 hover:border-red-500/50 hover:shadow-lg hover:shadow-red-500/10'
+              }`}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className={`p-3 rounded-full ${
+                      selectedAddress?.id === 'user-signup-address' 
+                        ? 'bg-red-500 text-white' 
+                        : 'bg-gray-700 text-gray-300 group-hover:bg-red-500/20 group-hover:text-red-400'
+                    } transition-all`}>
+                      <MapPin className="w-6 h-6" />
                     </div>
-                    <div className="flex items-center space-x-2">
-                      {selectedAddress?.id === address.id && (
-                        <Check className="w-6 h-6 text-red-400" />
-                      )}
-                      <button
-                        onClick={() => deleteAddress(address.id)}
-                        className="p-1 text-red-400 hover:text-red-300 transition-colors"
-                        title="Delete address"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
+                    <div>
+                      <h5 className="text-xl font-bold text-white">My Address</h5>
+                      <span className="px-3 py-1 bg-gradient-to-r from-green-600 to-green-500 text-white text-xs rounded-full font-semibold shadow-lg">
+                        ✓ Default Location
+                      </span>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+                  
+                  <div className="ml-16 space-y-2">
+                    <p className="text-gray-200 font-medium text-lg">
+                      {userDeliveryAddress.street}
+                    </p>
+                    <p className="text-gray-300">
+                      {userDeliveryAddress.city} {userDeliveryAddress.zipCode}
+                    </p>
+                    <p className="text-gray-400 flex items-center space-x-2">
+                      <Phone className="w-4 h-4" />
+                      <span>{authState.user?.phone || customerInfo.phone}</span>
+                    </p>
+                  </div>
 
-      {/* Add New Address Toggle */}
-      <div className="flex items-center space-x-3">
-        <input
-          type="checkbox"
-          id="useNewAddress"
-          checked={useNewAddress}
-          onChange={(e) => setUseNewAddress(e.target.checked)}
-          className="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 rounded focus:ring-red-500"
-        />
-        <label htmlFor="useNewAddress" className="text-gray-300">
-          Use a different address
-        </label>
-      </div>
+                  {/* Restaurant Distance Indicators */}
+                  <div className="mt-4 ml-16 space-y-2">
+                    <p className="text-sm font-semibold text-gray-400 mb-2">📍 Distance to Restaurants:</p>
+                    {RESTAURANT_LOCATIONS.map((restaurant) => {
+                      // Calculate distance if we have coordinates
+                      const distance = userDeliveryAddress.latitude && userDeliveryAddress.longitude
+                        ? calculateDistance(
+                            { latitude: userDeliveryAddress.latitude, longitude: userDeliveryAddress.longitude },
+                            restaurant.coordinates
+                          )
+                        : null;
+                      
+                      const withinRange = distance ? distance <= restaurant.deliveryRadius : true;
+                      const restaurantIcon = restaurant.id === 'vegesack' ? '🍔' : '🍕';
+                      
+                      return (
+                        <div key={restaurant.id} className={`flex items-center justify-between p-3 rounded-xl ${
+                          withinRange 
+                            ? 'bg-green-900/30 border border-green-600/30' 
+                            : 'bg-red-900/20 border border-red-600/30'
+                        }`}>
+                          <div className="flex items-center space-x-3">
+                            <span className="text-2xl">{restaurantIcon}</span>
+                            <div>
+                              <p className={`font-semibold ${withinRange ? 'text-green-300' : 'text-red-300'}`}>
+                                {restaurant.name}
+                              </p>
+                              <p className="text-xs text-gray-400">Max: {restaurant.deliveryRadius}km</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            {distance ? (
+                              <>
+                                <p className={`font-bold ${withinRange ? 'text-green-400' : 'text-red-400'}`}>
+                                  {formatDistance(distance)}
+                                </p>
+                                <p className={`text-xs ${withinRange ? 'text-green-500' : 'text-red-500'}`}>
+                                  {withinRange ? '✓ Available' : '✗ Too far'}
+                                </p>
+                              </>
+                            ) : (
+                              <p className="text-xs text-gray-500">Calculating...</p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                
+                {selectedAddress?.id === 'user-signup-address' && (
+                  <div className="ml-4">
+                    <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
+                      <Check className="w-6 h-6 text-white" />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add Different Address Button */}
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={() => setUseNewAddress(!useNewAddress)}
+            className={`px-8 py-3 rounded-xl font-semibold transition-all duration-300 ${
+              useNewAddress
+                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                : 'bg-gradient-to-r from-red-600 to-red-500 text-white hover:from-red-700 hover:to-red-600 shadow-lg hover:shadow-xl'
+            }`}
+          >
+            {useNewAddress ? '← Back to Saved Location' : '+ Add Different Address'}
+          </button>
+        </div>
 
       {/* New Address Form */}
       {useNewAddress && (
-          <div className="space-y-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-            <h4 className="text-lg font-medium text-gray-300">New Delivery Address</h4>
-
-            {/* Address Name Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Address Name (Optional)
-              </label>
-              <input
-                type="text"
-                value={newAddress.name}
-                onChange={(e) => setNewAddress(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full px-4 py-3 bg-black border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600"
-                placeholder="Home, Work, etc."
-              />
+          <div className="space-y-6 p-6 bg-gradient-to-br from-gray-800/70 to-gray-900/70 rounded-2xl border border-gray-700 shadow-xl">
+            <div className="flex items-center justify-between">
+              <h4 className="text-xl font-bold text-white flex items-center space-x-2">
+                <MapPin className="w-6 h-6 text-red-500" />
+                <span>New Delivery Address</span>
+              </h4>
             </div>
 
-            {/* Auto-fill helper text */}
-            <div className="bg-blue-900/30 border border-blue-600/30 rounded-lg p-3 mb-2">
-              <p className="text-blue-300 text-sm">
-                💡 <strong>Auto-detect your address:</strong> Click the button below to use GPS location. 
-                Your browser may ask for permission to access your location.
-              </p>
-              <p className="text-blue-200 text-xs mt-1">
-                <strong>Having issues?</strong> Make sure location services are enabled in your browser settings or enter your address manually.
-              </p>
-            </div>
+            {/* Auto Detect Location Button */}
+            <div className="bg-gradient-to-r from-blue-900/40 to-blue-800/40 border border-blue-600/50 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                    <MapPin className="w-6 h-6 text-white animate-pulse" />
+                  </div>
+                  <div>
+                    <h5 className="text-white font-semibold">Quick & Accurate</h5>
+                    <p className="text-blue-300 text-sm">Detect your exact location automatically</p>
+                  </div>
+                </div>
+              </div>
+              
+              <button
+                type="button"
+                onClick={handleAutoDetectLocation}
+                disabled={isDetectingLocation}
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-500 text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              >
+                {isDetectingLocation ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Detecting Your Location...</span>
+                  </>
+                ) : (
+                  <>
+                    <MapPin className="w-5 h-5" />
+                    <span>📍 Auto Detect My Location</span>
+                  </>
+                )}
+              </button>
 
-            {/* Auto-fill current location button */}
-            <button
-              type="button"
-              className="mb-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={handleAutoFillLocation}
-              disabled={isLoadingLocation}
-            >
-              {isLoadingLocation ? (
-                <>
-                  <Loader2 className="animate-spin" size={16} />
-                  Getting your location...
-                </>
-              ) : (
-                <>
-                  <MapPin size={16} />
-                  📍 Use My Current Location
-                </>
+              {/* Display Detected Location */}
+              {detectedLocation && (
+                <div className="mt-4 space-y-3 bg-black/30 rounded-lg p-4 border border-blue-500/30">
+                  <div className="flex items-center space-x-2 text-green-400">
+                    <Check className="w-5 h-5" />
+                    <span className="font-semibold">Location Detected Successfully!</span>
+                  </div>
+                  
+                  {/* GPS Coordinates */}
+                  <div className="space-y-1">
+                    <p className="text-xs text-gray-400 uppercase tracking-wide">GPS Coordinates</p>
+                    <p className="text-white font-mono text-sm">
+                      📍 {detectedLocation.latitude.toFixed(6)}°N, {detectedLocation.longitude.toFixed(6)}°E
+                    </p>
+                    <p className="text-blue-300 text-xs">
+                      Accuracy: ±{detectedLocation.accuracy.toFixed(0)} meters
+                    </p>
+                  </div>
+
+                  {/* Detected Address */}
+                  {detectedLocation.address && (
+                    <div className="space-y-1">
+                      <p className="text-xs text-gray-400 uppercase tracking-wide">Detected Address</p>
+                      <p className="text-white text-sm">{detectedLocation.address}</p>
+                    </div>
+                  )}
+
+                  {/* Restaurant Distances */}
+                  {detectedLocation.distances && (
+                    <div className="space-y-2">
+                      <p className="text-xs text-gray-400 uppercase tracking-wide">Distance to Restaurants</p>
+                      {detectedLocation.distances.map((restaurant: any) => {
+                        const withinRange = restaurant.distance <= restaurant.deliveryRadius;
+                        return (
+                          <div 
+                            key={restaurant.id}
+                            className={`flex items-center justify-between p-2 rounded-lg ${
+                              withinRange ? 'bg-green-900/40' : 'bg-red-900/40'
+                            }`}
+                          >
+                            <span className="text-sm text-white">
+                              {restaurant.id === 'vegesack' ? '🍔' : '🍕'} {restaurant.name}
+                            </span>
+                            <span className={`text-sm font-bold ${
+                              withinRange ? 'text-green-400' : 'text-red-400'
+                            }`}>
+                              {formatDistance(restaurant.distance)} {withinRange ? '✓' : '✗'}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               )}
-            </button>
 
-            {/* Quick fill options for common Bremen areas */}
-            <div className="mt-2">
-              <p className="text-gray-400 text-xs mb-2">Or use a common Bremen area:</p>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded transition-colors"
-                  onClick={() => setNewAddress(prev => ({
-                    ...prev,
-                    city: 'Bremen',
-                    zipCode: '28195'
-                  }))}
-                >
-                  Bremen Mitte (28195)
-                </button>
-                <button
-                  type="button"
-                  className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded transition-colors"
-                  onClick={() => setNewAddress(prev => ({
-                    ...prev,
-                    city: 'Bremen',
-                    zipCode: '28203'
-                  }))}
-                >
-                  Altstadt (28203)
-                </button>
-                <button
-                  type="button"
-                  className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded transition-colors"
-                  onClick={() => setNewAddress(prev => ({
-                    ...prev,
-                    city: 'Bremen',
-                    zipCode: '28199'
-                  }))}
-                >
-                  Neustadt (28199)
-                </button>
+              {errors.location && (
+                <p className="mt-3 text-red-400 text-sm flex items-center space-x-2">
+                  <AlertCircle className="w-4 h-4" />
+                  <span>{errors.location}</span>
+                </p>
+              )}
+            </div>
+
+            {/* Manual Address Entry */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2 text-gray-400">
+                <div className="flex-1 h-px bg-gray-700"></div>
+                <span className="text-sm">Or enter manually</span>
+                <div className="flex-1 h-px bg-gray-700"></div>
+              </div>
+
+              {/* Address Name Field */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Address Name (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={newAddress.name}
+                  onChange={(e) => setNewAddress(prev => ({ ...prev, name: e.target.value }))}
+                  className="w-full px-4 py-3 bg-black border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600"
+                  placeholder="Home, Work, etc."
+                />
               </div>
             </div>
-            
-            {errors.location && (
-              <div className="bg-red-900/30 border border-red-600/30 rounded-lg p-3 mb-2">
-                <p className="text-red-300 text-sm">
-                  ⚠️ <strong>Location Error:</strong> {errors.location}
-                </p>
-                <p className="text-gray-400 text-xs mt-1">
-                  Please enter your Bremen address manually in the fields below.
-                </p>
-              </div>
-            )}
-
-
 
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -947,7 +1142,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
 
       {errors.address && <p className="text-red-400 text-sm">{errors.address}</p>}
     </div>
-  );
+    );
+  };
 
   const renderPaymentStep = () => (
     <div className="space-y-6">
@@ -963,12 +1159,10 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
             let deliveryMessage = "";
             
             if (location) {
-              const eligibility = checkEligibility(location, cartState.items);
+              const eligibility = checkEligibility(location);
               deliveryAvailable = eligibility.canDeliver;
               if (!deliveryAvailable) {
-                const restaurantId = cartState.items[0]?.menuItem?.restaurantId;
-                const radius = restaurantId === 'doner-pizza' ? '10km' : '2km';
-                deliveryMessage = `Outside ${radius} delivery zone (${eligibility.distance.toFixed(1)}km away)`;
+                deliveryMessage = `Outside ${eligibility.distance.toFixed(1)}km delivery zone`;
               }
             } else if (selectedAddress) {
               const fullAddress = `${selectedAddress.street}, ${selectedAddress.city} ${selectedAddress.zipCode}`;
@@ -976,9 +1170,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
               if (deliveryStatus) {
                 deliveryAvailable = deliveryStatus.canDeliver;
                 if (!deliveryAvailable) {
-                  const restaurantId = cartState.items[0]?.menuItem?.restaurantId;
-                  const radius = restaurantId === 'doner-pizza' ? '10km' : '2km';
-                  deliveryMessage = `Outside ${radius} delivery zone (${deliveryStatus.distance.toFixed(1)}km away)`;
+                  deliveryMessage = `Outside ${deliveryStatus.distance.toFixed(1)}km delivery zone`;
                 }
               }
             } else if (useNewAddress && newAddress.street && newAddress.city && newAddress.zipCode) {
@@ -987,9 +1179,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
               if (deliveryStatus) {
                 deliveryAvailable = deliveryStatus.canDeliver;
                 if (!deliveryAvailable) {
-                  const restaurantId = cartState.items[0]?.menuItem?.restaurantId;
-                  const radius = restaurantId === 'doner-pizza' ? '10km' : '2km';
-                  deliveryMessage = `Outside ${radius} delivery zone (${deliveryStatus.distance.toFixed(1)}km away)`;
+                  deliveryMessage = `Outside ${deliveryStatus.distance.toFixed(1)}km delivery zone`;
                 }
               }
             }
@@ -1009,7 +1199,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
                   if (location && isLocationEnabled) {
                     // We already have location, check delivery availability
                     console.log('Using existing location:', location);
-                    const eligibility = checkEligibility(location, cartState.items);
+                    const eligibility = checkEligibility(location);
                     if (eligibility.canDeliver) {
                       setOrderType('delivery');
                       setErrors(prev => {
@@ -1048,7 +1238,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
                     +€2.00
                   </div>
                   <div className="text-xs text-gray-400 mt-1">
-                    {deliveryAvailable ? 'Within 2km radius' : deliveryMessage}
+                    {deliveryAvailable ? 'Delivery available' : deliveryMessage}
                   </div>
                 </div>
               </button>
@@ -1385,8 +1575,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
               </p>
               <div className="bg-green-900/30 border border-green-600 rounded-lg p-3">
                 <p className="text-green-300 text-xs">
-                  ✅ <strong>We deliver within 2km</strong> of our Bremen locations:<br/>
-                  • Vegesack • Schwanewede • Bremen City
+                  ✅ <strong>Delivery ranges:</strong><br/>
+                  • Vegesack: 5km radius<br/>
+                  • Schwanewede: 10km radius
                 </p>
               </div>
             </div>              <div className="flex flex-col sm:flex-row gap-3">
@@ -1409,7 +1600,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
                         console.log('Location granted and saved:', position.coords.latitude, position.coords.longitude);
                         
                         // Check if delivery is available at this location
-                        const eligibility = checkEligibility(newLocation, cartState.items);
+                        const eligibility = checkEligibility(newLocation);
                         
                         if (eligibility.canDeliver) {
                           setOrderType('delivery');
@@ -1485,8 +1676,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
   );
 };
 
-export default CheckoutModal;
-
 // Ensure savedAddresses is declared
 const savedAddresses: DeliveryAddress[] = [
   {
@@ -1509,96 +1698,42 @@ const savedAddresses: DeliveryAddress[] = [
   },
 ];
 
-
-
-// Update checkEligibility to use userLocation with restaurant-specific radius
+// Update checkEligibility to use userLocation and proper delivery radius
 const checkEligibility = (userLocation: {
   latitude: number;
   longitude: number;
-}, cartItems?: CartItem[]): { canDeliver: boolean; distance: number; message: string } => {
-  // Determine delivery radius based on restaurant in cart
-  const getDeliveryRadius = () => {
-    if (!cartItems || cartItems.length === 0) return 2; // Default to 2km
-    
-    const firstItem = cartItems[0];
-    const restaurantId = firstItem.menuItem?.restaurantId;
-    
-    switch(restaurantId) {
-      case 'doner': return 2;        // Mr Happy Döner: 2km
-      case 'burger': return 2;       // Mr Happy Burger: 2km  
-      case 'doner-pizza': return 10; // Döner&Pizza: 10km
-      default: return 2;             // Default: 2km
-    }
+}): { canDeliver: boolean; distance: number; message: string; nearestLocation?: string; deliveryRadius?: number } => {
+  // Use our centralized location system with proper delivery radius
+  // Vegesack: 5km radius, Schwanewede: 10km radius
+  const userCoords: Coordinates = {
+    latitude: userLocation.latitude,
+    longitude: userLocation.longitude
   };
 
-  // Mr. Happy restaurant locations
-  const MR_HAPPY_LOCATIONS = [
-    { 
-      id: 'doner',
-      name: 'Mr. Happy Döner - Bremen Vegesack', 
-      latitude: 53.1705, 
-      longitude: 8.6141,
-      address: 'Zum Alten Speicher 1-2, 28759 Bremen Vegesack'
-    },
-    { 
-      id: 'burger',
-      name: 'Mr. Happy Burger - Schwanewede', 
-      latitude: 53.2333, 
-      longitude: 8.5833,
-      address: 'Schwanewede Location' 
-    },
-    { 
-      id: 'doner-pizza',
-      name: 'Döner&Pizza - Bremen City', 
-      latitude: 53.0793, 
-      longitude: 8.8017,
-      address: 'Bremen City Location' 
-    }
-  ];
-
-  const DELIVERY_RADIUS = getDeliveryRadius();
-
-  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-    const toRadians = (degrees: number): number => (degrees * Math.PI) / 180;
-    const R = 6371; // Earth's radius in km
-    const dLat = toRadians(lat2 - lat1);
-    const dLon = toRadians(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRadians(lat1)) *
-        Math.cos(toRadians(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  };
-
-  // Find the closest restaurant
-  let closestLocation = null;
-  let minDistance = Infinity;
-
-  for (const location of MR_HAPPY_LOCATIONS) {
-    const distance = calculateDistance(
-      userLocation.latitude,
-      userLocation.longitude,
-      location.latitude,
-      location.longitude
-    );
-    
-    if (distance < minDistance) {
-      minDistance = distance;
-      closestLocation = location;
-    }
+  // Find nearest location and check if within delivery range
+  const nearest = findNearestLocation(userCoords);
+  
+  if (!nearest) {
+    return {
+      canDeliver: false,
+      distance: 0,
+      message: '❌ Unable to determine delivery availability. Please select pickup.'
+    };
   }
 
-  const canDeliver = minDistance <= DELIVERY_RADIUS;
-  const message = canDeliver 
-    ? `✅ Delivery available from ${closestLocation?.name} (${minDistance.toFixed(1)}km away)`
-    : `❌ Sorry, delivery is only available within ${DELIVERY_RADIUS}km. Closest location: ${closestLocation?.name} is ${minDistance.toFixed(1)}km away. Please select pickup instead.`;
+  const { location, distance, withinDeliveryRange } = nearest;
+  
+  const message = withinDeliveryRange
+    ? `✅ Delivery available from ${location.name} (${formatDistance(distance)} away) - We deliver up to ${location.deliveryRadius}km`
+    : `❌ You are ${formatDistance(distance)} from ${location.name}. Maximum delivery range is ${location.deliveryRadius}km. 🛵 Pickup is available at all locations!`;
 
   return {
-    canDeliver,
-    distance: minDistance,
-    message
+    canDeliver: withinDeliveryRange,
+    distance,
+    message,
+    nearestLocation: location.name,
+    deliveryRadius: location.deliveryRadius
   };
 };
+
+export default CheckoutModal;

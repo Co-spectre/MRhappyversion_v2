@@ -58,14 +58,14 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         multiSelect: true,
         maxSelections: 3,
         options: [
-          { id: 'ranch-sauce', name: 'Ranch', price: 1.00, description: 'Creamy ranch dressing sauce' },
-          { id: 'curry-sauce', name: 'Curry', price: 1.00, description: 'Traditional curry sauce' },
-          { id: 'chilli-cheese-sauce', name: 'Chilli Cheese', price: 1.00, description: 'Spicy cheese sauce' },
-          { id: 'burger-sauce', name: 'Burgersauce', price: 1.00, description: 'Classic burger sauce' },
-          { id: 'ketchup-sauce', name: 'Ketchup', price: 0.50, description: 'Traditional tomato ketchup' },
-          { id: 'mayonnaise-sauce', name: 'Mayonnaise', price: 0.50, description: 'Creamy mayonnaise' },
-          { id: 'bbq-sauce', name: 'BBQ', price: 0.50, description: 'Smoky barbecue sauce' },
-          { id: 'sweet-sour-sauce', name: 'Süss-Sauer', price: 0.50, description: 'Sweet and sour sauce' }
+          { id: 'ranch-sauce', name: 'Ranch', price: 1.00 },
+          { id: 'curry-sauce', name: 'Curry', price: 1.00 },
+          { id: 'chilli-cheese-sauce', name: 'Chilli Cheese', price: 1.00 },
+          { id: 'burger-sauce', name: 'Burgersauce', price: 1.00 },
+          { id: 'ketchup-sauce', name: 'Ketchup', price: 0.50 },
+          { id: 'mayonnaise-sauce', name: 'Mayonnaise', price: 0.50 },
+          { id: 'bbq-sauce', name: 'BBQ', price: 0.50 },
+          { id: 'sweet-sour-sauce', name: 'Süss-Sauer', price: 0.50 }
         ]
       });
       
@@ -93,6 +93,26 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
       if (item.restaurantId === 'doner-pizza') {
         const baseSteps: CustomizationStep[] = [];
         
+        // Add meat selection for specific döner items
+        const donerItemsNeedingMeat = [
+          'Döner Pita', 'Chili Cheese Döner Pita', 'Döner Box', 'Döner Teller', 
+          'Rollo Döner', 'Türkische Pizza mit Döner'
+        ];
+        
+        if (donerItemsNeedingMeat.some(name => item.name.includes(name) || item.name === name)) {
+          baseSteps.push({
+            id: 'meat_choice',
+            title: 'Choose Your Meat',
+            required: true,
+            multiSelect: false,
+            options: [
+              { id: 'chicken', name: 'Chicken' },
+              { id: 'beef', name: 'Beef' },
+              { id: 'mix', name: 'Mix' }
+            ]
+          });
+        }
+        
         // Add size selection if available
         if (item.sizes && item.sizes.length > 0) {
           baseSteps.push({
@@ -104,7 +124,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
               id: `size_${index}`,
               name: size.name,
               price: index > 0 ? (item.basePrice * size.priceMultiplier) - item.basePrice : 0,
-              description: index === 0 ? 'Standard size' : 'Larger size'
+
             }))
           });
         }
@@ -117,9 +137,9 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             required: true,
             multiSelect: false,
             options: [
-              { id: 'reis', name: 'Reis', price: 0, description: 'Fluffy rice' },
-              { id: 'bulgur', name: 'Bulgur', price: 0, description: 'Traditional bulgur wheat' },
-              { id: 'pommes', name: 'Pommes', price: 0, description: 'Crispy french fries' }
+              { id: 'reis', name: 'Reis', price: 0 },
+              { id: 'bulgur', name: 'Bulgur', price: 0 },
+              { id: 'pommes', name: 'Pommes', price: 0 }
             ]
           });
         }
@@ -133,15 +153,15 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
               required: false,
               multiSelect: true,
               options: [
-                { id: 'tomate', name: 'Tomate', price: 1.20, description: 'Fresh tomatoes' },
-                { id: 'mais', name: 'Mais', price: 1.20, description: 'Sweet corn' },
-                { id: 'pilze', name: 'Pilze', price: 1.30, description: 'Fresh mushrooms' },
-                { id: 'brokkoli', name: 'Brokkoli', price: 1.40, description: 'Fresh broccoli' },
-                { id: 'paprika', name: 'Paprika', price: 1.30, description: 'Bell peppers' },
-                { id: 'peperoni', name: 'Peperoni', price: 1.50, description: 'Spicy pepperoni' },
-                { id: 'jalapeños', name: 'Jalapeños', price: 1.40, description: 'Spicy jalapeños' },
-                { id: 'rote-zwiebeln', name: 'Rote Zwiebeln', price: 1.20, description: 'Red onions' },
-                { id: 'ananas', name: 'Ananas', price: 1.20, description: 'Sweet pineapple' }
+                { id: 'tomate', name: 'Tomate', price: 1.20 },
+                { id: 'mais', name: 'Mais', price: 1.20 },
+                { id: 'pilze', name: 'Pilze', price: 1.30 },
+                { id: 'brokkoli', name: 'Brokkoli', price: 1.40 },
+                { id: 'paprika', name: 'Paprika', price: 1.30 },
+                { id: 'peperoni', name: 'Peperoni', price: 1.50 },
+                { id: 'jalapeños', name: 'Jalapeños', price: 1.40 },
+                { id: 'rote-zwiebeln', name: 'Rote Zwiebeln', price: 1.20 },
+                { id: 'ananas', name: 'Ananas', price: 1.20 }
               ]
             },
             {
@@ -150,11 +170,11 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
               required: false,
               multiSelect: true,
               options: [
-                { id: 'sucuk', name: 'Sucuk', price: 3.00, description: 'Turkish spiced sausage' },
-                { id: 'hähnchenfleisch', name: 'Hähnchenfleisch', price: 3.00, description: 'Grilled chicken' },
-                { id: 'kalbfleisch', name: 'Kalbfleisch', price: 3.00, description: 'Tender veal' },
-                { id: 'rinder-salami', name: 'Rinder Halal Salami', price: 3.00, description: 'Halal beef salami' },
-                { id: 'puten-schinken', name: 'Puten Halal Schinken', price: 3.00, description: 'Halal turkey ham' }
+                { id: 'sucuk', name: 'Sucuk', price: 3.00 },
+                { id: 'hähnchenfleisch', name: 'Hähnchenfleisch', price: 3.00 },
+                { id: 'kalbfleisch', name: 'Kalbfleisch', price: 3.00 },
+                { id: 'rinder-salami', name: 'Rinder Halal Salami', price: 3.00 },
+                { id: 'puten-schinken', name: 'Puten Halal Schinken', price: 3.00 }
               ]
             },
             {
@@ -163,9 +183,9 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
               required: false,
               multiSelect: true,
               options: [
-                { id: 'feta', name: 'Feta Käse', price: 3.00, description: 'Creamy feta cheese' },
-                { id: 'doppel-gouda', name: 'Doppel Gouda Käse', price: 3.00, description: 'Double gouda cheese' },
-                { id: 'cheddar', name: 'Cheddar Käse', price: 3.00, description: 'Sharp cheddar cheese' }
+                { id: 'feta', name: 'Feta Käse', price: 3.00 },
+                { id: 'doppel-gouda', name: 'Doppel Gouda Käse', price: 3.00 },
+                { id: 'cheddar', name: 'Cheddar Käse', price: 3.00 }
               ]
             },
             {
@@ -174,8 +194,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
               required: false,
               multiSelect: true,
               options: [
-                { id: 'hollandaise', name: 'Hollandaise', price: 3.00, description: 'Creamy hollandaise sauce' },
-                { id: 'pommes', name: 'Pommes', price: 3.00, description: 'Crispy fries as side' }
+                { id: 'hollandaise', name: 'Hollandaise', price: 3.00 },
+                { id: 'pommes', name: 'Pommes', price: 3.00 }
               ]
             }
           );
@@ -192,8 +212,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
               required: false,
               multiSelect: false,
               options: [
-                { id: 'turkish-feta', name: 'Feta', price: 2.00, description: 'Creamy feta cheese' },
-                { id: 'turkish-gouda', name: 'Gouda', price: 2.00, description: 'Mild gouda cheese' }
+                { id: 'turkish-feta', name: 'Feta', price: 2.00 },
+                { id: 'turkish-gouda', name: 'Gouda', price: 2.00 }
               ]
             },
             {
@@ -202,7 +222,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
               required: false,
               multiSelect: false,
               options: [
-                { id: 'turkish-doppel-fleisch', name: 'Doppel Fleisch', price: 2.50, description: 'Double portion of meat' }
+                { id: 'turkish-doppel-fleisch', name: 'Doppel Fleisch', price: 2.50 }
               ]
             },
             {
@@ -211,7 +231,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
               required: false,
               multiSelect: false,
               options: [
-                { id: 'turkish-sauce', name: 'Sauce', price: 1.00, description: 'Traditional Turkish sauce' }
+                { id: 'turkish-sauce', name: 'Sauce', price: 1.00 }
               ]
             }
           );
@@ -228,11 +248,11 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
               required: false,
               multiSelect: true,
               options: [
-                { id: 'mac-coleslaw', name: 'Coleslaw', price: 1.50, description: 'Fresh coleslaw salad' },
-                { id: 'mac-weisskraut', name: 'Weißkraut', price: 1.20, description: 'White cabbage' },
-                { id: 'mac-rotkraut', name: 'Rotkraut', price: 1.20, description: 'Red cabbage' },
-                { id: 'mac-zwiebeln', name: 'Zwiebeln', price: 1.20, description: 'Fresh onions' },
-                { id: 'mac-bauernsalat', name: 'Bauernsalat', price: 2.00, description: 'Traditional farmer\'s salad' }
+                { id: 'mac-coleslaw', name: 'Coleslaw', price: 1.50 },
+                { id: 'mac-weisskraut', name: 'Weißkraut', price: 1.20 },
+                { id: 'mac-rotkraut', name: 'Rotkraut', price: 1.20 },
+                { id: 'mac-zwiebeln', name: 'Zwiebeln', price: 1.20 },
+                { id: 'mac-bauernsalat', name: 'Bauernsalat', price: 2.00 }
               ]
             },
             {
@@ -241,11 +261,11 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
               required: false,
               multiSelect: true,
               options: [
-                { id: 'mac-chili-cheese', name: 'Chili Cheese', price: 2.50, description: 'Spicy cheese sauce' },
-                { id: 'mac-tzatziki', name: 'Tzatziki', price: 2.50, description: 'Greek yogurt sauce' },
-                { id: 'mac-cocktail', name: 'Cocktail', price: 2.50, description: 'Cocktail sauce' },
-                { id: 'mac-ranch', name: 'Ranch', price: 2.50, description: 'Creamy ranch dressing' },
-                { id: 'mac-scharfe-sauce', name: 'Scharfe Sauce', price: 2.50, description: 'Spicy hot sauce' }
+                { id: 'mac-chili-cheese', name: 'Chili Cheese', price: 2.50 },
+                { id: 'mac-tzatziki', name: 'Tzatziki', price: 2.50 },
+                { id: 'mac-cocktail', name: 'Cocktail', price: 2.50 },
+                { id: 'mac-ranch', name: 'Ranch', price: 2.50 },
+                { id: 'mac-scharfe-sauce', name: 'Scharfe Sauce', price: 2.50 }
               ]
             }
           );
@@ -261,9 +281,9 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             required: true,
             multiSelect: false,
             options: [
-              { id: 'borek-hackfleisch', name: 'Hackfleisch', price: 0, description: 'Traditional ground meat filling' },
-              { id: 'borek-feta', name: 'Feta', price: 0, description: 'Creamy feta cheese filling' },
-              { id: 'borek-spinat-feta', name: 'Spinat und Feta', price: 0, description: 'Spinach and feta cheese filling' }
+              { id: 'borek-hackfleisch', name: 'Hackfleisch', price: 0 },
+              { id: 'borek-feta', name: 'Feta', price: 0 },
+              { id: 'borek-spinat-feta', name: 'Spinat und Feta', price: 0 }
             ]
           });
           
@@ -278,12 +298,12 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             required: true,
             multiSelect: false,
             options: [
-              { id: 'fritz-kola-original', name: 'Kola Original', price: 0, description: 'Classic cola taste' },
-              { id: 'fritz-kola-superzero', name: 'Kola SuperZero', price: 0, description: 'Sugar-free cola' },
-              { id: 'fritz-honigmelone', name: 'Honigmelone', price: 0, description: 'Honeydew melon flavor' },
-              { id: 'fritz-orange', name: 'Orange', price: 0, description: 'Fresh orange taste' },
-              { id: 'fritz-zitrone', name: 'Zitrone', price: 0, description: 'Lemon flavor' },
-              { id: 'fritz-mischmasch', name: 'Misch Masch', price: 0, description: 'Mixed fruit flavors' }
+              { id: 'fritz-kola-original', name: 'Kola Original', price: 0 },
+              { id: 'fritz-kola-superzero', name: 'Kola SuperZero', price: 0 },
+              { id: 'fritz-honigmelone', name: 'Honigmelone', price: 0 },
+              { id: 'fritz-orange', name: 'Orange', price: 0 },
+              { id: 'fritz-zitrone', name: 'Zitrone', price: 0 },
+              { id: 'fritz-mischmasch', name: 'Misch Masch', price: 0 }
             ]
           });
           
@@ -298,13 +318,13 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             required: true,
             multiSelect: true,
             options: [
-              { id: 'premium-chili-cheese', name: 'Chili Cheese', price: 0, description: 'Spicy cheese sauce' },
-              { id: 'premium-ranch', name: 'Ranch', price: 0, description: 'Creamy ranch dressing' },
-              { id: 'premium-curry', name: 'Curry', price: 0, description: 'Spicy curry sauce' },
-              { id: 'premium-cocktail', name: 'Cocktail', price: 0, description: 'Classic cocktail sauce' },
-              { id: 'premium-tzatziki', name: 'Tzatziki', price: 0, description: 'Greek yogurt sauce with herbs' },
-              { id: 'premium-knoblauch', name: 'Knoblauch', price: 0, description: 'Garlic sauce' },
-              { id: 'premium-scharfe-sauce', name: 'Scharfe Sauce', price: 0, description: 'Hot and spicy sauce' }
+              { id: 'premium-chili-cheese', name: 'Chili Cheese', price: 0 },
+              { id: 'premium-ranch', name: 'Ranch', price: 0 },
+              { id: 'premium-curry', name: 'Curry', price: 0 },
+              { id: 'premium-cocktail', name: 'Cocktail', price: 0 },
+              { id: 'premium-tzatziki', name: 'Tzatziki', price: 0 },
+              { id: 'premium-knoblauch', name: 'Knoblauch', price: 0 },
+              { id: 'premium-scharfe-sauce', name: 'Scharfe Sauce', price: 0 }
             ]
           });
           
@@ -390,20 +410,43 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
       }
       
       // Use the same customization steps as Burger/Burgers for regular döner restaurant
-      const baseSteps: CustomizationStep[] = [
-        {
-          id: 'menu_option',
-          title: 'Choose Your Option',
+      const baseSteps: CustomizationStep[] = [];
+      
+      // Add meat selection for specific döner items
+      const donerItemsNeedingMeat = [
+        'Döner Pita', 'Chili Cheese Döner Pita', 'Döner Box', 'Döner Teller', 
+        'Rollo Döner', 'Türkische Pizza mit Döner'
+      ];
+      
+      // First step: Choose Your Option (Single or Menu)
+      baseSteps.push({
+        id: 'menu_option',
+        title: 'Choose Your Option*',
+        required: true,
+        multiSelect: false,
+        options: [
+          { id: 'single_only', name: `${item.category} Single`, price: 0 },
+          { id: 'menu', name: `${item.category} Menü`, price: 2.50, description: '+ Drink (+€2.50)' }
+        ]
+      });
+      
+      // Second step: Meat choice for döner items
+      if (donerItemsNeedingMeat.some(name => item.name.includes(name) || item.name === name)) {
+        baseSteps.push({
+          id: 'meat_choice',
+          title: 'Choose Your Meat',
           required: true,
           multiSelect: false,
           options: [
-            { id: 'single_only', name: `${item.category} Single`, description: `Just the ${item.category.toLowerCase()}`, price: 0 },
-            { id: 'menu', name: `${item.category} Menü`, price: 7.00, description: `${item.category} + Pommes + Drink (+€7.00)` }
+            { id: 'chicken', name: 'Chicken' },
+            { id: 'beef', name: 'Beef' },
+            { id: 'mix', name: 'Mix' }
           ]
-        }
-      ];
+        });
+      }
 
       const isMenuSelected = selections['menu_option']?.includes('menu');
+      console.log('🥙 DÖNER DEBUG:', { selections, isMenuSelected, menuOption: selections['menu_option'] });
 
       if (isMenuSelected) {
         baseSteps.push(
@@ -413,32 +456,34 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             required: true,
             multiSelect: false,
             options: [
-              { id: 'fritz_kola_original', name: 'Fritz-Kola Original', description: 'Original Fritz Cola' },
-              { id: 'fritz_kola_zero', name: 'Fritz-Kola Super Zero', description: 'Sugar-free Fritz Cola' },
-              { id: 'fritz_kola_mischmasch', name: 'Fritz-Kola Mischmasch', description: 'Cola-Orange-Lemonade mix' },
-              { id: 'fritz_limo_orange', name: 'Fritz-Limo Orange', description: 'Orange lemonade' },
-              { id: 'fritz_limo_lemon', name: 'Fritz-Limo Lemon', description: 'Lemon lemonade' },
-              { id: 'fritz_limo_apple_cherry', name: 'Fritz-Limo Apple-Cherry-Elderberry', description: 'Apple-Cherry-Elderberry' },
-              { id: 'fritz_limo_honeydew', name: 'Fritz-Limo Honeydew Melon', description: 'Honeydew melon lemonade' },
-              { id: 'fritz_limo_ginger', name: 'Fritz-Limo Ginger-Lime', description: 'Ginger-lime lemonade' },
-              { id: 'fritz_spritz_apple', name: 'Fritz-Spritz Organic Cloudy Apple', description: 'Organic cloudy apple' },
-              { id: 'fritz_spritz_grape', name: 'Fritz-Spritz Organic Grape', description: 'Organic grape spritz' },
-              { id: 'fritz_spritz_rhubarb', name: 'Fritz-Spritz Organic Rhubarb', description: 'Organic rhubarb spritz' }
+              { id: 'fritz_kola_original', name: 'Fritz-Kola Original' },
+              { id: 'fritz_kola_zero', name: 'Fritz-Kola Super Zero' },
+              { id: 'fritz_kola_mischmasch', name: 'Fritz-Kola Mischmasch' },
+              { id: 'fritz_limo_orange', name: 'Fritz-Limo Orange' },
+              { id: 'fritz_limo_lemon', name: 'Fritz-Limo Lemon' },
+              { id: 'fritz_limo_apple_cherry', name: 'Fritz-Limo Apple-Cherry-Elderberry' },
+              { id: 'fritz_limo_honeydew', name: 'Fritz-Limo Honeydew Melon' },
+              { id: 'fritz_limo_ginger', name: 'Fritz-Limo Ginger-Lime' },
+              { id: 'fritz_spritz_apple', name: 'Fritz-Spritz Organic Cloudy Apple' },
+              { id: 'fritz_spritz_grape', name: 'Fritz-Spritz Organic Grape' },
+              { id: 'fritz_spritz_rhubarb', name: 'Fritz-Spritz Organic Rhubarb' }
             ]
           },
           {
             id: 'sauces',
-            title: 'Extra Sauces',
+            title: 'Sauces',
             required: false,
             multiSelect: true,
             options: [
-              { id: 'cocktail', name: 'Cocktail', description: 'Creamy cocktail sauce' },
-              { id: 'tzatziki', name: 'Tzatziki', description: 'Greek yogurt with herbs' },
-              { id: 'curry', name: 'Curry', description: 'Spicy curry sauce' },
-              { id: 'garlic', name: 'Knoblauch', description: 'Garlic sauce' },
-              { id: 'hot', name: 'Scharfe Sauce', description: 'Spicy hot sauce' },
-              { id: 'ranch', name: 'Ranch', description: 'Creamy ranch dressing' },
-              { id: 'chili-cheese', name: 'Chili Cheese', description: 'Spicy cheese sauce' }
+              // Main sauces (FREE)
+              { id: 'cocktail', name: 'Cocktail' },
+              { id: 'tzatziki', name: 'Tzatziki' },
+              { id: 'hot', name: 'Scharfe Sauce' },
+              // Premium sauces (+€1.00 each)
+              { id: 'curry', name: 'Curry', price: 1.00 },
+              { id: 'garlic', name: 'Knoblauch', price: 1.00 },
+              { id: 'ranch', name: 'Ranch', price: 1.00 },
+              { id: 'chili-cheese', name: 'Chili Cheese', price: 1.00 }
             ]
           }
         );
@@ -446,17 +491,19 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         baseSteps.push(
           {
             id: 'sauces',
-            title: 'Extra Sauces',
+            title: 'Sauces',
             required: false,
             multiSelect: true,
             options: [
-              { id: 'cocktail', name: 'Cocktail', description: 'Creamy cocktail sauce' },
-              { id: 'tzatziki', name: 'Tzatziki', description: 'Greek yogurt with herbs' },
-              { id: 'curry', name: 'Curry', description: 'Spicy curry sauce' },
-              { id: 'garlic', name: 'Knoblauch', description: 'Garlic sauce' },
-              { id: 'hot', name: 'Scharfe Sauce', description: 'Spicy hot sauce' },
-              { id: 'ranch', name: 'Ranch', description: 'Creamy ranch dressing' },
-              { id: 'chili-cheese', name: 'Chili Cheese', description: 'Spicy cheese sauce' }
+              // Main sauces (FREE)
+              { id: 'cocktail', name: 'Cocktail' },
+              { id: 'tzatziki', name: 'Tzatziki' },
+              { id: 'hot', name: 'Scharfe Sauce' },
+              // Premium sauces (+€1.00 each)
+              { id: 'curry', name: 'Curry', price: 1.00 },
+              { id: 'garlic', name: 'Knoblauch', price: 1.00 },
+              { id: 'ranch', name: 'Ranch', price: 1.00 },
+              { id: 'chili-cheese', name: 'Chili Cheese', price: 1.00 }
             ]
           },
           {
@@ -465,12 +512,12 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             required: false,
             multiSelect: true,
             options: [
-              { id: 'no_lettuce', name: 'No Lettuce', description: 'Remove lettuce' },
-              { id: 'no_tomato', name: 'No Tomato', description: 'Remove tomato' },
-              { id: 'no_onion', name: 'No Onion', description: 'Remove onion' },
-              { id: 'no_white_cabbage', name: 'No White Cabbage', description: 'Remove white cabbage' },
-              { id: 'no_red_cabbage', name: 'No Red Cabbage', description: 'Remove red cabbage' },
-              { id: 'no_cheese', name: 'No Cheese', description: 'Remove cheese' }
+              { id: 'no_lettuce', name: 'No Lettuce' },
+              { id: 'no_tomato', name: 'No Tomato' },
+              { id: 'no_onion', name: 'No Onion' },
+              { id: 'no_white_cabbage', name: 'No White Cabbage' },
+              { id: 'no_red_cabbage', name: 'No Red Cabbage' },
+              { id: 'no_cheese', name: 'No Cheese' }
             ]
           },
           {
@@ -479,9 +526,9 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             required: false,
             multiSelect: true,
             options: [
-              { id: 'extra_cheese', name: 'Extra Cheese', price: 1.5, description: 'Additional cheese (+€1.50)' },
-              { id: 'feta', name: 'Feta Cheese', price: 2.0, description: 'Feta cheese (+€2.00)' },
-              { id: 'avocado', name: 'Avocado', price: 2.5, description: 'Avocado (+€2.50)' }
+              { id: 'extra_cheese', name: 'Extra Cheese', price: 1.5 },
+              { id: 'feta', name: 'Feta Cheese', price: 2.0 },
+              { id: 'avocado', name: 'Avocado', price: 2.5 }
             ]
           }
         );
@@ -495,9 +542,9 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           required: true,
           multiSelect: false,
           options: [
-            { id: 'doner', name: 'Döner Meat', description: 'Traditional döner meat' },
-            { id: 'chicken', name: 'Grilled Chicken', description: 'Tender grilled chicken' },
-            { id: 'veggie', name: 'Vegetarian', description: 'Fresh vegetables with feta' }
+            { id: 'doner', name: 'Döner Meat' },
+            { id: 'chicken', name: 'Grilled Chicken' },
+            { id: 'veggie', name: 'Vegetarian' }
           ]
         },
         {
@@ -507,11 +554,11 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           multiSelect: true,
           maxSelections: 2,
           options: [
-            { id: 'cocktail', name: 'Cocktail', description: 'Creamy cocktail sauce' },
-            { id: 'tzatziki', name: 'Tzatziki', description: 'Greek yogurt with herbs' },
-            { id: 'curry', name: 'Curry', description: 'Spicy curry sauce' },
-            { id: 'garlic', name: 'Knoblauch', description: 'Garlic sauce' },
-            { id: 'hot', name: 'Scharfe Sauce', description: 'Spicy hot sauce' }
+            { id: 'cocktail', name: 'Cocktail' },
+            { id: 'tzatziki', name: 'Tzatziki' },
+            { id: 'curry', name: 'Curry' },
+            { id: 'garlic', name: 'Knoblauch' },
+            { id: 'hot', name: 'Scharfe Sauce' }
           ]
         },
         {
@@ -520,11 +567,11 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           required: true,
           multiSelect: true,
           options: [
-            { id: 'tomato', name: 'Tomatoes', description: 'Fresh sliced tomatoes' },
-            { id: 'onions', name: 'Red Onions', description: 'Crisp red onions' },
-            { id: 'lettuce', name: 'Lettuce', description: 'Fresh green lettuce' },
-            { id: 'cucumber', name: 'Cucumber', description: 'Fresh cucumber slices' },
-            { id: 'peppers', name: 'Bell Peppers', description: 'Colorful bell peppers' }
+            { id: 'tomato', name: 'Tomatoes' },
+            { id: 'onions', name: 'Red Onions' },
+            { id: 'lettuce', name: 'Lettuce' },
+            { id: 'cucumber', name: 'Cucumber' },
+            { id: 'peppers', name: 'Bell Peppers' }
           ]
         },
         {
@@ -547,9 +594,9 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           required: true,
           multiSelect: false,
           options: [
-            { id: 'falafel', name: 'Falafel', description: 'House-made chickpea falafel' },
-            { id: 'veggie_mix', name: 'Vegetable Mix', description: 'Fresh vegetables with feta' },
-            { id: 'halloumi', name: 'Halloumi', description: 'Grilled halloumi cheese' }
+            { id: 'falafel', name: 'Falafel' },
+            { id: 'veggie_mix', name: 'Vegetable Mix' },
+            { id: 'halloumi', name: 'Halloumi' }
           ]
         },
         {
@@ -749,9 +796,9 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           options: [
             { id: 'coca-cola-033', name: 'Coca Cola (0,33l)', price: 2.50, description: 'Classic Coca Cola' },
             { id: 'fanta-033', name: 'Fanta (0,33l)', price: 2.50, description: 'Orange Fanta' },
-            { id: 'sprite-033', name: 'Sprite (0,33l)', price: 2.50, description: 'Lemon-lime Sprite' },
-            { id: 'wasser-033', name: 'Wasser (0,33l)', price: 2.00, description: 'Still water' },
-            { id: 'apfelschorle-033', name: 'Apfelschorle (0,33l)', price: 2.50, description: 'Apple juice spritzer' }
+            { id: 'sprite-033', name: 'Sprite (0,33l)', price: 2.50 },
+            { id: 'wasser-033', name: 'Wasser (0,33l)', price: 2.00 },
+            { id: 'apfelschorle-033', name: 'Apfelschorle (0,33l)', price: 2.50 }
           ]
         }
       );
@@ -766,8 +813,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           required: true,
           multiSelect: false,
           options: [
-            { id: 'burger_only', name: 'Burger Single', description: 'Just the burger', price: 0 },
-            { id: 'burger_menu', name: 'Burger Menü', price: 7.00, description: 'Burger + Pommes + Drink (+€7.00)' }
+            { id: 'burger_only', name: 'Burger Single', price: 0 },
+            { id: 'burger_menu', name: 'Burger Menü', price: 7.00 }
           ]
         }
       ];
@@ -785,26 +832,26 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             multiSelect: false,
             options: [
               // Fritz-Kola varieties
-              { id: 'fritz_kola_original', name: 'Fritz-Kola Original', description: 'Original Fritz Cola' },
-              { id: 'fritz_kola_zero', name: 'Fritz-Kola Super Zero', description: 'Sugar-free Fritz Cola' },
-              { id: 'fritz_kola_mischmasch', name: 'Fritz-Kola Mischmasch', description: 'Cola-Orange-Lemonade mix' },
+              { id: 'fritz_kola_original', name: 'Fritz-Kola Original' },
+              { id: 'fritz_kola_zero', name: 'Fritz-Kola Super Zero' },
+              { id: 'fritz_kola_mischmasch', name: 'Fritz-Kola Mischmasch' },
               
               // Fritz-Limo varieties
-              { id: 'fritz_limo_orange', name: 'Fritz-Limo Orange', description: 'Orange lemonade' },
-              { id: 'fritz_limo_lemon', name: 'Fritz-Limo Lemon', description: 'Lemon lemonade' },
-              { id: 'fritz_limo_apple_cherry', name: 'Fritz-Limo Apple-Cherry-Elderberry', description: 'Apple-Cherry-Elderberry' },
-              { id: 'fritz_limo_honeydew', name: 'Fritz-Limo Honeydew Melon', description: 'Honeydew melon lemonade' },
-              { id: 'fritz_limo_ginger', name: 'Fritz-Limo Ginger-Lime', description: 'Ginger-lime lemonade' },
+              { id: 'fritz_limo_orange', name: 'Fritz-Limo Orange' },
+              { id: 'fritz_limo_lemon', name: 'Fritz-Limo Lemon' },
+              { id: 'fritz_limo_apple_cherry', name: 'Fritz-Limo Apple-Cherry-Elderberry' },
+              { id: 'fritz_limo_honeydew', name: 'Fritz-Limo Honeydew Melon' },
+              { id: 'fritz_limo_ginger', name: 'Fritz-Limo Ginger-Lime' },
               
               // Fritz-Spritz varieties  
-              { id: 'fritz_spritz_apple', name: 'Fritz-Spritz Organic Cloudy Apple', description: 'Organic cloudy apple' },
-              { id: 'fritz_spritz_grape', name: 'Fritz-Spritz Organic Grape', description: 'Organic grape spritz' },
-              { id: 'fritz_spritz_rhubarb', name: 'Fritz-Spritz Organic Rhubarb', description: 'Organic rhubarb spritz' }
+              { id: 'fritz_spritz_apple', name: 'Fritz-Spritz Organic Cloudy Apple' },
+              { id: 'fritz_spritz_grape', name: 'Fritz-Spritz Organic Grape' },
+              { id: 'fritz_spritz_rhubarb', name: 'Fritz-Spritz Organic Rhubarb' }
             ]
           },
           {
             id: 'burger_sauces',
-            title: 'Extra Sauces (Optional)',
+            title: 'Sauces (Optional)',
             required: false,
             multiSelect: true,
             maxSelections: 3,
@@ -825,7 +872,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         baseSteps.push(
           {
             id: 'burger_sauces',
-            title: 'Extra Sauces (Optional)',
+            title: 'Sauces (Optional)',
             required: false,
             multiSelect: true,
             maxSelections: 3,
@@ -1342,93 +1389,118 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
               </p>
             </div>
 
-            <div className="grid gap-3">
-              {currentStepData.options.map((option) => {
-                const isSelected = (selections[currentStepData.id] || []).includes(option.id);
-                const currentSelections = selections[currentStepData.id] || [];
-                const isAtMaxLimit = Boolean(currentStepData.maxSelections && 
-                                    currentSelections.length >= currentStepData.maxSelections && 
-                                    !isSelected && 
-                                    currentStepData.multiSelect &&
-                                    currentStepData.id !== 'sauces');
-                
-                return (
-                  <button
-                    key={option.id}
-                    onClick={() => handleOptionSelect(currentStepData.id, option.id, currentStepData.multiSelect)}
-                    disabled={isAtMaxLimit}
-                    className={`p-4 rounded-xl border-2 transition-all text-left ${
-                      isSelected
-                        ? 'border-red-600 bg-red-600/10 text-white'
-                        : isAtMaxLimit
-                        ? 'border-gray-700 bg-gray-800/30 text-gray-500 cursor-not-allowed opacity-60'
-                        : 'border-gray-600 hover:border-gray-500 text-gray-300 hover:bg-gray-800/50'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3">
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                            isSelected ? 'border-red-600 bg-red-600' : 'border-gray-500'
-                          }`}>
-                            {isSelected && <Check className="w-3 h-3 text-white" />}
-                          </div>
-                          <div>
-                            <h4 className="font-medium">{option.name}</h4>
-                            {option.description && (
-                              <p className="text-sm text-gray-400">{option.description}</p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      {(() => {
-                        // Dynamic pricing for sauces
-                        if (currentStepData.id === 'sauces') {
-                          const selectedCount = currentSelections.length;
-                          
-                          if (isSelected) {
-                            // If this sauce is already selected, check if it's in position 3+
-                            const saucePosition = currentSelections.indexOf(option.id);
-                            if (saucePosition >= 2) {
-                              return (
-                                <div className="text-right">
-                                  <span className="text-lg font-semibold text-red-400">
-                                    +€1.00
-                                  </span>
-                                </div>
-                              );
-                            }
-                          } else {
-                            // If not selected, show price if selecting it would make it the 3rd+ sauce
-                            if (selectedCount >= 2) {
-                              return (
-                                <div className="text-right">
-                                  <span className="text-lg font-semibold text-red-400">
-                                    +€1.00
-                                  </span>
-                                </div>
-                              );
-                            }
-                          }
-                          return null;
-                        }
-                        
-                        // Regular price display for non-sauce items
-                        if (option.price && option.price > 0) {
-                          return (
-                            <div className="text-right">
-                              <span className="text-lg font-semibold text-green-400">
-                                +€{option.price.toFixed(2)}
-                              </span>
+            <div className="space-y-3">
+              {currentStepData.id === 'sauces' ? (
+                <div className="space-y-4">
+                  {/* Free main sauces */}
+                  <div>
+                    <div className="space-y-2">
+                      {currentStepData.options.filter(option => !option.price).map((option) => {
+                        const isSelected = (selections[currentStepData.id] || []).includes(option.id);
+                        return (
+                          <button
+                            key={option.id}
+                            onClick={() => handleOptionSelect(currentStepData.id, option.id, currentStepData.multiSelect)}
+                            className={`w-full p-3 rounded-lg border text-left transition-all ${
+                              isSelected
+                                ? 'border-green-500 bg-green-500/10 text-white'
+                                : 'border-gray-600 hover:border-gray-500 text-gray-300 hover:bg-gray-800/30'
+                            }`}
+                          >
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                                isSelected ? 'border-green-500 bg-green-500' : 'border-gray-500'
+                              }`}>
+                                {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
+                              </div>
+                              <span className="font-medium text-sm">{option.name}</span>
                             </div>
-                          );
-                        }
-                        return null;
-                      })()}
+                          </button>
+                        );
+                      })}
                     </div>
-                  </button>
-                );
-              })}
+                  </div>
+                  
+                  {/* Separator */}
+                  <div className="flex items-center">
+                    <div className="flex-1 border-t border-gray-600"></div>
+                    <span className="px-3 text-xs text-gray-500">Premium Options</span>
+                    <div className="flex-1 border-t border-gray-600"></div>
+                  </div>
+                  
+                  {/* Premium sauces */}
+                  <div>
+                    <div className="space-y-2">
+                      {currentStepData.options.filter(option => option.price && option.price > 0).map((option) => {
+                        const isSelected = (selections[currentStepData.id] || []).includes(option.id);
+                        return (
+                          <button
+                            key={option.id}
+                            onClick={() => handleOptionSelect(currentStepData.id, option.id, currentStepData.multiSelect)}
+                            className={`w-full p-3 rounded-lg border text-left transition-all ${
+                              isSelected
+                                ? 'border-orange-500 bg-orange-500/10 text-white'
+                                : 'border-gray-600 hover:border-gray-500 text-gray-300 hover:bg-gray-800/30'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                                  isSelected ? 'border-orange-500 bg-orange-500' : 'border-gray-500'
+                                }`}>
+                                  {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
+                                </div>
+                                <span className="font-medium text-sm">{option.name}</span>
+                              </div>
+                              <span className="text-sm font-semibold text-orange-400">+€1.00</span>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {currentStepData.options.map((option) => {
+                    const isSelected = (selections[currentStepData.id] || []).includes(option.id);
+                    const currentSelections = selections[currentStepData.id] || [];
+                    const isAtMaxLimit = Boolean(currentStepData.maxSelections && 
+                                        currentSelections.length >= currentStepData.maxSelections && 
+                                        !isSelected && 
+                                        currentStepData.multiSelect);
+                    
+                    return (
+                      <button
+                        key={option.id}
+                        onClick={() => handleOptionSelect(currentStepData.id, option.id, currentStepData.multiSelect)}
+                        disabled={isAtMaxLimit}
+                        className={`w-full p-3 rounded-lg border text-left transition-all ${
+                          isSelected
+                            ? 'border-red-500 bg-red-500/10 text-white'
+                            : isAtMaxLimit
+                            ? 'border-gray-700 bg-gray-800/30 text-gray-500 cursor-not-allowed opacity-60'
+                            : 'border-gray-600 hover:border-gray-500 text-gray-300 hover:bg-gray-800/30'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                              isSelected ? 'border-red-500 bg-red-500' : 'border-gray-500'
+                            }`}>
+                              {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
+                            </div>
+                            <span className="font-medium text-sm">{option.name}</span>
+                          </div>
+                          {option.price && option.price > 0 && (
+                            <span className="text-sm font-semibold text-orange-400">+€{option.price.toFixed(2)}</span>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
 

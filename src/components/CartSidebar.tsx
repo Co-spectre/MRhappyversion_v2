@@ -2,7 +2,6 @@ import React from 'react';
 import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import OrderTypeSelector from './OrderTypeSelector';
 import CheckoutModal from './CheckoutModal';
 
 const CartSidebar: React.FC = () => {
@@ -39,10 +38,12 @@ const CartSidebar: React.FC = () => {
     // Open checkout modal instead of direct order creation
     setIsCheckoutModalOpen(true);
   };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getCustomizationSummary = (customizations: any[]) => {
     if (customizations.length === 0) return 'No modifications';
     
-    return customizations.map(c => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return customizations.map((c: any) => {
       const ingredient = c.ingredientId.replace('-', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
       const action = c.action === 'extra' ? 'Extra' : 
                    c.action === 'double' ? '2x' :
@@ -90,12 +91,7 @@ const CartSidebar: React.FC = () => {
             </button>
           </div>
 
-          {/* Order Type Selector */}
-          {state.items.length > 0 && (
-            <div className="p-3 border-b border-gray-800">
-              <OrderTypeSelector />
-            </div>
-          )}
+
 
           {/* Cart Items */}
           <div className="flex-1 overflow-y-auto p-3">

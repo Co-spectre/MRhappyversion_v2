@@ -1,13 +1,11 @@
-import React, { useState, useMemo, useContext } from 'react';
-import { restaurants } from '../data/restaurants';
-import { haversineDistance } from '../utils/haversine';
-import LocationContext from '../context/LocationContext';
+import React, { useState, useMemo } from 'react';
 import { menuItems } from '../data/restaurants';
 import MenuItemCard from './MenuItemCard';
 import MenuFilters from './MenuFilters';
 import MenuItemSkeleton from './MenuItemSkeleton';
 import CustomizationModal from './CustomizationModal';
 import { useCart } from '../context/CartContext';
+import { MenuItem } from '../types';
 
 interface MenuSectionProps {
   restaurantId: string;
@@ -15,34 +13,13 @@ interface MenuSectionProps {
 }
 
 const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = false }) => {
-  // Get user location from context
-  const locationCtx = useContext(LocationContext) as any;
-  const userLocation = locationCtx?.location;
-
-  // Get restaurant data
-  const restaurant = restaurants.find(r => r.id === restaurantId);
-  const restLat = restaurant?.latitude;
-  const restLng = restaurant?.longitude;
-
-  // Determine delivery radius (km) - 2km for all restaurants
-  const deliveryRadius = 2;
-  // All restaurants now have 2km delivery radius
-
-  // Calculate distance (km) if possible
-  let userDistance: number | null = null;
-  if (userLocation && restLat && restLng) {
-    userDistance = haversineDistance(userLocation.latitude, userLocation.longitude, restLat, restLng);
-  }
-
-  // Delivery eligibility
-  const canDeliver = userDistance !== null && userDistance <= deliveryRadius;
   console.log('🚨 MenuSection rendered with restaurantId:', restaurantId);
   
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [dietaryFilters, setDietaryFilters] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [animateItems, setAnimateItems] = useState(false);
-  const [selectedItemForCustomization, setSelectedItemForCustomization] = useState<any>(null);
+  const [selectedItemForCustomization, setSelectedItemForCustomization] = useState<MenuItem | null>(null);
   const [isCustomizationModalOpen, setIsCustomizationModalOpen] = useState(false);
   const { addToCart } = useCart();
 
@@ -63,7 +40,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = fal
   }, [/* Add language context or prop here to trigger on language change */]);
 
 
-  const handleCustomizeClick = (item: any) => {
+  const handleCustomizeClick = (item: MenuItem) => {
     setSelectedItemForCustomization(item);
     setIsCustomizationModalOpen(true);
   };
@@ -74,7 +51,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = fal
     setSelectedItemForCustomization(null);
   };
 
-  const handleAddToCartWithCustomizations = (customizations: any[], quantity: number) => {
+  const handleAddToCartWithCustomizations = (customizations: unknown[], quantity: number) => {
     if (selectedItemForCustomization) {
       addToCart(selectedItemForCustomization, customizations, quantity);
       handleCloseCustomizationModal();
@@ -126,20 +103,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = fal
   }, [restaurantMenuItems, selectedCategory, dietaryFilters, searchQuery]);
 
 
-  // UI: Always show menu items. Only show delivery warning if location is available and out of range.
-  // Show warning if out of delivery radius, but still show menu items for pickup
-  let deliveryWarning = null;
-  if (userLocation && userDistance !== null && !canDeliver) {
-    deliveryWarning = (
-      <div className="text-center py-6">
-        <p className="text-red-400 text-lg mb-2">
-          Sorry, delivery is only available within {deliveryRadius} km of this restaurant.<br />
-          Your distance: {userDistance.toFixed(2)} km
-        </p>
-        <p className="text-gray-400 text-lg mb-2">You can still order for pickup!</p>
-      </div>
-    );
-  }
+  // Menu items are always available - delivery validation happens during checkout
   if (restaurantMenuItems.length === 0) {
     return (
       <div className="text-center py-20">
@@ -163,8 +127,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = fal
           </p>
         </div>
 
-        {/* Delivery warning if out of radius */}
-        {deliveryWarning}
+
 
         {/* Filters */}
         <MenuFilters

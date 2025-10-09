@@ -1,9 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from '../context/LocationContext';
 import { X, MapPin, Phone, Check, Mail, ArrowLeft, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useOrder } from '../context/OrderContext';
+import { geocodeBremenAddress, checkAddressDeliveryEligibility, BremenAddress } from '../utils/bremenGeocoding';
+import { getLocationAndAddress, isBremenArea } from '../utils/geolocation';
+import { restaurants } from '../data/restaurants';
+
+import { CartItem } from '../types';
 
 
 interface CheckoutModalProps {
@@ -81,11 +86,146 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
   const [deliveryAvailabilityChecked, setDeliveryAvailabilityChecked] = useState(false);
   const [addressDeliveryStatus, setAddressDeliveryStatus] = useState<{[key: string]: {canDeliver: boolean, distance: number}}>({});
   const [isGeocodingAddress, setIsGeocodingAddress] = useState(false);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+
+  // Geocode an address and check delivery eligibility
+  const geocodeAddressAndCheckDelivery = useCallback((street: string, city: string, zipCode: string): {canDeliver: boolean, distance: number, coordinates?: {lat: number, lng: number}} | null => {
+    try {
+      setIsGeocodingAddress(true);
+      
+      // Create Bremen address object
+      const bremenAddress: BremenAddress = { street, city, zipCode };
+      
+      // Get restaurant information for delivery radius
+      const restaurantId = cartState.items[0]?.menuItem?.restaurantId;
+      const deliveryRadius = restaurantId === 'doner-pizza' ? 10 : 2;
+      
+      // Find restaurant coordinates (use first restaurant as default)
+      const restaurant = restaurants.find(r => r.id === 'doner') || restaurants[0];
+      if (!restaurant || typeof restaurant.latitude !== 'number' || typeof restaurant.longitude !== 'number') {
+        console.error('Restaurant coordinates not found');
+        return null;
+      }
+      
+      const restaurantCoords = {
+        latitude: restaurant.latitude,
+        longitude: restaurant.longitude
+      };
+      
+      // Check delivery eligibility using Bremen address system
+      const result = checkAddressDeliveryEligibility(bremenAddress, restaurantCoords, deliveryRadius);
+      
+      // Get geocoded coordinates
+      const geocoded = geocodeBremenAddress(bremenAddress);
+      
+      console.log('Bremen address validation:', bremenAddress, 'delivery:', result.canDeliver, 'distance:', result.distance);
+      
+      return {
+        canDeliver: result.canDeliver,
+        distance: result.distance,
+        coordinates: geocoded.isValid ? {
+          lat: geocoded.latitude,
+          lng: geocoded.longitude
+        } : undefined
+      };
+      
+    } catch (error) {
+      console.error('Bremen address validation error:', error);
+      return null;
+    } finally {
+      setIsGeocodingAddress(false);
+    }
+  }, [cartState.items]);
+
+  // Auto-fill address using geolocation
+  const handleAutoFillLocation = async () => {
+    try {
+      setIsLoadingLocation(true);
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.location;
+        return newErrors;
+      });
+
+      console.log('🌍 Getting your exact location...');
+      
+      // Check if geolocation is supported
+      if (!navigator.geolocation) {
+        throw new Error('Your browser does not support location detection. Please enter your address manually.');
+      }
+      
+      const result = await getLocationAndAddress();
+
+      if (!result.success || !result.address) {
+        throw new Error(result.error || 'Unable to get your location');
+      }
+
+      const { address, coordinates } = result;
+      console.log('📍 Location detected:', address);
+
+      // Check if address is in Bremen area
+      if (!isBremenArea(address)) {
+        setErrors(prev => ({
+          ...prev,
+          location: `Sorry, we only deliver in Bremen. Your detected location: ${address.city}`
+        }));
+        return;
+      }
+
+      // Auto-fill the address form
+      setNewAddress({
+        name: 'My Current Location',
+        street: address.street,
+        city: address.city,
+        zipCode: address.zipCode,
+        phone: newAddress.phone, // Keep existing phone
+        instructions: newAddress.instructions // Keep existing instructions
+      });
+
+      // Update location context if coordinates are available
+      if (coordinates && setLocation) {
+        setLocation({
+          latitude: coordinates.latitude,
+          longitude: coordinates.longitude,
+          accuracy: coordinates.accuracy,
+          timestamp: Date.now()
+        });
+      }
+
+      // Trigger delivery validation
+      if (address.street && address.city && address.zipCode) {
+        const deliveryInfo = geocodeAddressAndCheckDelivery(address.street, address.city, address.zipCode);
+        
+        if (deliveryInfo) {
+          const fullAddress = `${address.street}, ${address.city}, ${address.zipCode}`;
+          setAddressDeliveryStatus(prev => ({
+            ...prev,
+            [fullAddress]: {
+              canDeliver: deliveryInfo.canDeliver,
+              distance: deliveryInfo.distance
+            }
+          }));
+        }
+      }
+
+      console.log('✅ Address auto-filled successfully!');
+
+    } catch (error) {
+      console.error('Auto-location error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unable to get your location';
+      setErrors(prev => ({
+        ...prev,
+        location: errorMessage
+      }));
+    } finally {
+      setIsLoadingLocation(false);
+    }
+  };
 
   // Check delivery availability whenever location changes
   useEffect(() => {
     if (location && orderType === 'delivery' && !deliveryAvailabilityChecked) {
-      const eligibility = checkEligibility(location);
+      const eligibility = checkEligibility(location, cartState.items);
       if (!eligibility.canDeliver) {
         // Automatically switch to pickup if delivery not available
         setOrderType('pickup');
@@ -103,7 +243,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
       }
       setDeliveryAvailabilityChecked(true);
     }
-  }, [location, orderType, deliveryAvailabilityChecked]);
+  }, [location, orderType, deliveryAvailabilityChecked, cartState.items]);
 
   // Reset delivery availability check when location changes
   useEffect(() => {
@@ -115,7 +255,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     if (isOpen && location && isLocationEnabled) {
       console.log('Location detected on modal open:', location);
       console.log('Location enabled status:', isLocationEnabled);
-      const eligibility = checkEligibility(location);
+      const eligibility = checkEligibility(location, cartState.items);
       if (eligibility.canDeliver) {
         console.log('Delivery available - enabling delivery option');
       } else {
@@ -128,16 +268,16 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
         hasLocationData: !!location
       });
     }
-  }, [isOpen, location, isLocationEnabled]);
+  }, [isOpen, location, isLocationEnabled, cartState.items]);
 
   // Check delivery eligibility for saved addresses on mount
   useEffect(() => {
-    const checkSavedAddresses = async () => {
+    const checkSavedAddresses = () => {
       if (savedAddresses.length > 0) {
         for (const address of savedAddresses) {
           const fullAddress = `${address.street}, ${address.city} ${address.zipCode}`;
           if (!addressDeliveryStatus[fullAddress]) {
-            const deliveryInfo = await geocodeAddressAndCheckDelivery(fullAddress);
+            const deliveryInfo = geocodeAddressAndCheckDelivery(address.street, address.city, address.zipCode);
             if (deliveryInfo) {
               setAddressDeliveryStatus(prev => ({
                 ...prev,
@@ -155,66 +295,16 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     if (isOpen) {
       checkSavedAddresses();
     }
-  }, [isOpen, addressDeliveryStatus]);
+  }, [isOpen, addressDeliveryStatus, geocodeAddressAndCheckDelivery]);
 
-  // Geocode an address and check delivery eligibility
-  const geocodeAddressAndCheckDelivery = async (address: string): Promise<{canDeliver: boolean, distance: number, coordinates?: {lat: number, lng: number}} | null> => {
-    try {
-      setIsGeocodingAddress(true);
-      
-      // Use OpenStreetMap Nominatim API for geocoding (free)
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1&addressdetails=1&accept-language=en`,
-        {
-          headers: {
-            'User-Agent': 'MRhappy-Restaurant-App'
-          }
-        }
-      );
 
-      if (!response.ok) {
-        throw new Error('Geocoding request failed');
-      }
-
-      const data = await response.json();
-      
-      if (data && data.length > 0) {
-        const result = data[0];
-        const coordinates = {
-          lat: parseFloat(result.lat),
-          lng: parseFloat(result.lon)
-        };
-        
-        // Check delivery eligibility
-        const eligibility = checkEligibility({
-          latitude: coordinates.lat,
-          longitude: coordinates.lng
-        });
-        
-        console.log('Geocoded address:', address, 'to coordinates:', coordinates, 'delivery:', eligibility.canDeliver);
-        
-        return {
-          canDeliver: eligibility.canDeliver,
-          distance: eligibility.distance,
-          coordinates
-        };
-      }
-      
-      return null;
-    } catch (error) {
-      console.error('Geocoding error:', error);
-      return null;
-    } finally {
-      setIsGeocodingAddress(false);
-    }
-  };
 
   // Check delivery for address when it changes
   useEffect(() => {
-    const checkAddressDelivery = async () => {
+    const checkAddressDelivery = () => {
       if (useNewAddress && newAddress.street && newAddress.city && newAddress.zipCode) {
         const fullAddress = `${newAddress.street}, ${newAddress.city}, ${newAddress.zipCode}`;
-        const deliveryInfo = await geocodeAddressAndCheckDelivery(fullAddress);
+        const deliveryInfo = geocodeAddressAndCheckDelivery(newAddress.street, newAddress.city, newAddress.zipCode);
         
         if (deliveryInfo) {
           setAddressDeliveryStatus(prev => ({
@@ -241,7 +331,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     // Debounce the address check
     const timeoutId = setTimeout(checkAddressDelivery, 1000);
     return () => clearTimeout(timeoutId);
-  }, [newAddress.street, newAddress.city, newAddress.zipCode, useNewAddress, setLocation]);
+  }, [newAddress.street, newAddress.city, newAddress.zipCode, useNewAddress, setLocation, geocodeAddressAndCheckDelivery]);
 
   // Address management functions
   const deleteAddress = (addressId: string) => {
@@ -292,33 +382,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     });
   };
 
-  // Corrected renderEligibilityStatus declaration
+  // Address-based delivery validation - no GPS needed
   const renderEligibilityStatus = () => {
-    if (!isLocationEnabled || !location) {
-      return (
-        <div className="p-4 bg-yellow-900/30 border border-yellow-600 rounded-lg">
-          <p className="text-yellow-400">📍 Location not detected. Click "Delivery" to enable location for delivery eligibility check.</p>
-        </div>
-      );
-    }
-
-    const eligibility = checkEligibility(location);
-
-    return (
-      <div className={`p-4 rounded-lg border ${eligibility.canDeliver 
-        ? 'bg-green-900/30 border-green-600' 
-        : 'bg-red-900/30 border-red-600'
-      }`}>
-        <p className={eligibility.canDeliver ? 'text-green-400' : 'text-red-400'}>
-          {eligibility.message}
-        </p>
-        {!eligibility.canDeliver && (
-          <p className="text-gray-400 text-sm mt-2">
-            💡 Tip: You can still place a pickup order from any of our locations!
-          </p>
-        )}
-      </div>
-    );
+    return null; // Delivery validation now happens based on address input
   };
 
   // Payment methods
@@ -670,21 +736,91 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
                 className="w-full px-4 py-3 bg-black border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600"
                 placeholder="Home, Work, etc."
               />
-            </div>          {/* Bremen Vegesack autofill button */}
-          <button
-            type="button"
-            className="mb-2 bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded transition-colors"
-            onClick={() => setNewAddress({
-              name: 'Bremen Vegesack Restaurant',
-              street: 'Zum Alten Speicher 1-2',
-              city: 'Bremen',
-              zipCode: '28759',
-              phone: '',
-              instructions: ''
-            })}
-          >
-            Use Bremen Vegesack Restaurant Location
-          </button>
+            </div>
+
+            {/* Auto-fill helper text */}
+            <div className="bg-blue-900/30 border border-blue-600/30 rounded-lg p-3 mb-2">
+              <p className="text-blue-300 text-sm">
+                💡 <strong>Auto-detect your address:</strong> Click the button below to use GPS location. 
+                Your browser may ask for permission to access your location.
+              </p>
+              <p className="text-blue-200 text-xs mt-1">
+                <strong>Having issues?</strong> Make sure location services are enabled in your browser settings or enter your address manually.
+              </p>
+            </div>
+
+            {/* Auto-fill current location button */}
+            <button
+              type="button"
+              className="mb-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleAutoFillLocation}
+              disabled={isLoadingLocation}
+            >
+              {isLoadingLocation ? (
+                <>
+                  <Loader2 className="animate-spin" size={16} />
+                  Getting your location...
+                </>
+              ) : (
+                <>
+                  <MapPin size={16} />
+                  📍 Use My Current Location
+                </>
+              )}
+            </button>
+
+            {/* Quick fill options for common Bremen areas */}
+            <div className="mt-2">
+              <p className="text-gray-400 text-xs mb-2">Or use a common Bremen area:</p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded transition-colors"
+                  onClick={() => setNewAddress(prev => ({
+                    ...prev,
+                    city: 'Bremen',
+                    zipCode: '28195'
+                  }))}
+                >
+                  Bremen Mitte (28195)
+                </button>
+                <button
+                  type="button"
+                  className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded transition-colors"
+                  onClick={() => setNewAddress(prev => ({
+                    ...prev,
+                    city: 'Bremen',
+                    zipCode: '28203'
+                  }))}
+                >
+                  Altstadt (28203)
+                </button>
+                <button
+                  type="button"
+                  className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded transition-colors"
+                  onClick={() => setNewAddress(prev => ({
+                    ...prev,
+                    city: 'Bremen',
+                    zipCode: '28199'
+                  }))}
+                >
+                  Neustadt (28199)
+                </button>
+              </div>
+            </div>
+            
+            {errors.location && (
+              <div className="bg-red-900/30 border border-red-600/30 rounded-lg p-3 mb-2">
+                <p className="text-red-300 text-sm">
+                  ⚠️ <strong>Location Error:</strong> {errors.location}
+                </p>
+                <p className="text-gray-400 text-xs mt-1">
+                  Please enter your Bremen address manually in the fields below.
+                </p>
+              </div>
+            )}
+
+
 
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -827,10 +963,12 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
             let deliveryMessage = "";
             
             if (location) {
-              const eligibility = checkEligibility(location);
+              const eligibility = checkEligibility(location, cartState.items);
               deliveryAvailable = eligibility.canDeliver;
               if (!deliveryAvailable) {
-                deliveryMessage = `Outside ${eligibility.distance.toFixed(1)}km delivery zone`;
+                const restaurantId = cartState.items[0]?.menuItem?.restaurantId;
+                const radius = restaurantId === 'doner-pizza' ? '10km' : '2km';
+                deliveryMessage = `Outside ${radius} delivery zone (${eligibility.distance.toFixed(1)}km away)`;
               }
             } else if (selectedAddress) {
               const fullAddress = `${selectedAddress.street}, ${selectedAddress.city} ${selectedAddress.zipCode}`;
@@ -838,7 +976,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
               if (deliveryStatus) {
                 deliveryAvailable = deliveryStatus.canDeliver;
                 if (!deliveryAvailable) {
-                  deliveryMessage = `Outside ${deliveryStatus.distance.toFixed(1)}km delivery zone`;
+                  const restaurantId = cartState.items[0]?.menuItem?.restaurantId;
+                  const radius = restaurantId === 'doner-pizza' ? '10km' : '2km';
+                  deliveryMessage = `Outside ${radius} delivery zone (${deliveryStatus.distance.toFixed(1)}km away)`;
                 }
               }
             } else if (useNewAddress && newAddress.street && newAddress.city && newAddress.zipCode) {
@@ -847,7 +987,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
               if (deliveryStatus) {
                 deliveryAvailable = deliveryStatus.canDeliver;
                 if (!deliveryAvailable) {
-                  deliveryMessage = `Outside ${deliveryStatus.distance.toFixed(1)}km delivery zone`;
+                  const restaurantId = cartState.items[0]?.menuItem?.restaurantId;
+                  const radius = restaurantId === 'doner-pizza' ? '10km' : '2km';
+                  deliveryMessage = `Outside ${radius} delivery zone (${deliveryStatus.distance.toFixed(1)}km away)`;
                 }
               }
             }
@@ -867,7 +1009,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
                   if (location && isLocationEnabled) {
                     // We already have location, check delivery availability
                     console.log('Using existing location:', location);
-                    const eligibility = checkEligibility(location);
+                    const eligibility = checkEligibility(location, cartState.items);
                     if (eligibility.canDeliver) {
                       setOrderType('delivery');
                       setErrors(prev => {
@@ -1267,7 +1409,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
                         console.log('Location granted and saved:', position.coords.latitude, position.coords.longitude);
                         
                         // Check if delivery is available at this location
-                        const eligibility = checkEligibility(newLocation);
+                        const eligibility = checkEligibility(newLocation, cartState.items);
                         
                         if (eligibility.canDeliver) {
                           setOrderType('delivery');
@@ -1369,34 +1511,52 @@ const savedAddresses: DeliveryAddress[] = [
 
 
 
-// Update checkEligibility to use userLocation and 4km radius
+// Update checkEligibility to use userLocation with restaurant-specific radius
 const checkEligibility = (userLocation: {
   latitude: number;
   longitude: number;
-}): { canDeliver: boolean; distance: number; message: string } => {
+}, cartItems?: CartItem[]): { canDeliver: boolean; distance: number; message: string } => {
+  // Determine delivery radius based on restaurant in cart
+  const getDeliveryRadius = () => {
+    if (!cartItems || cartItems.length === 0) return 2; // Default to 2km
+    
+    const firstItem = cartItems[0];
+    const restaurantId = firstItem.menuItem?.restaurantId;
+    
+    switch(restaurantId) {
+      case 'doner': return 2;        // Mr Happy Döner: 2km
+      case 'burger': return 2;       // Mr Happy Burger: 2km  
+      case 'doner-pizza': return 10; // Döner&Pizza: 10km
+      default: return 2;             // Default: 2km
+    }
+  };
+
   // Mr. Happy restaurant locations
   const MR_HAPPY_LOCATIONS = [
     { 
-      name: 'Bremen Vegesack', 
-      latitude: 53.1667, 
-      longitude: 8.6317,
-      address: 'Zum Alten Speicher 1-2, 28759 Bremen'
+      id: 'doner',
+      name: 'Mr. Happy Döner - Bremen Vegesack', 
+      latitude: 53.1705, 
+      longitude: 8.6141,
+      address: 'Zum Alten Speicher 1-2, 28759 Bremen Vegesack'
     },
     { 
-      name: 'Schwanewede', 
+      id: 'burger',
+      name: 'Mr. Happy Burger - Schwanewede', 
       latitude: 53.2333, 
       longitude: 8.5833,
       address: 'Schwanewede Location' 
     },
     { 
-      name: 'Burger Shop', 
+      id: 'doner-pizza',
+      name: 'Döner&Pizza - Bremen City', 
       latitude: 53.0793, 
       longitude: 8.8017,
       address: 'Bremen City Location' 
     }
   ];
 
-  const DELIVERY_RADIUS = 2; // 2km radius for all locations
+  const DELIVERY_RADIUS = getDeliveryRadius();
 
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
     const toRadians = (degrees: number): number => (degrees * Math.PI) / 180;

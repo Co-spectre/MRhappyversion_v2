@@ -8,6 +8,8 @@ interface CustomizationStep {
   required: boolean;
   multiSelect: boolean;
   maxSelections?: number;
+  freeSauceLimit?: number; // For bucket sauces - number of free sauces included
+  freeDrinkLimit?: number; // For bucket drinks - number of free drinks included
   options: {
     id: string;
     name: string;
@@ -239,6 +241,65 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           return baseSteps;
         }
 
+        // Check if this is a Pizza item and add Pizza-specific customization
+        if (item.category === 'Pizza') {
+          baseSteps.push(
+            {
+              id: 'pizza_vegetables',
+              title: 'Add Vegetables (Optional)',
+              required: false,
+              multiSelect: true,
+              options: [
+                { id: 'tomate', name: 'Tomate', price: 1.20 },
+                { id: 'mais', name: 'Mais', price: 1.20 },
+                { id: 'pilze', name: 'Pilze', price: 1.30 },
+                { id: 'brokkoli', name: 'Brokkoli', price: 1.40 },
+                { id: 'paprika', name: 'Paprika', price: 1.30 },
+                { id: 'peperoni', name: 'Peperoni', price: 1.50 },
+                { id: 'jalapeños', name: 'Jalapeños', price: 1.40 },
+                { id: 'rote-zwiebeln', name: 'Rote Zwiebeln', price: 1.20 },
+                { id: 'ananas', name: 'Ananas', price: 1.20 }
+              ]
+            },
+            {
+              id: 'pizza_proteins',
+              title: 'Add Proteins (Optional)',
+              required: false,
+              multiSelect: true,
+              options: [
+                { id: 'sucuk', name: 'Sucuk', price: 3.00 },
+                { id: 'hähnchenfleisch', name: 'Hähnchenfleisch', price: 3.00 },
+                { id: 'kalbfleisch', name: 'Kalbfleisch', price: 3.00 },
+                { id: 'rinder-salami', name: 'Rinder Halal Salami', price: 3.00 },
+                { id: 'puten-schinken', name: 'Puten Halal Schinken', price: 3.00 }
+              ]
+            },
+            {
+              id: 'pizza_cheeses',
+              title: 'Add Extra Cheese (Optional)',
+              required: false,
+              multiSelect: true,
+              options: [
+                { id: 'feta', name: 'Feta Käse', price: 3.00 },
+                { id: 'doppel-gouda', name: 'Doppel Gouda Käse', price: 3.00 },
+                { id: 'cheddar', name: 'Cheddar Käse', price: 3.00 }
+              ]
+            },
+            {
+              id: 'pizza_extras',
+              title: 'Add Extras (Optional)',
+              required: false,
+              multiSelect: true,
+              options: [
+                { id: 'hollandaise', name: 'Hollandaise', price: 3.00 },
+                { id: 'pommes', name: 'Pommes', price: 3.00 }
+              ]
+            }
+          );
+          
+          return baseSteps;
+        }
+
         // Check if this is a Mac'n Cheese item and add Mac'n Cheese-specific customization
         if (item.category === "Mac'n Cheese") {
           baseSteps.push(
@@ -291,19 +352,57 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         }
 
         // Check if this is a FRITZ item and add FRITZ-specific customization
-        if (item.name === 'FRITZ' || item.id === 'fritz-dp' || item.id === 'fritz-same-drinks') {
+        if (item.name === 'FRITZ' || item.id === 'fritz-dp' || item.id === 'fritz-same-drinks' || item.id === 'fritz-getraenke') {
           baseSteps.push({
             id: 'fritz_flavor',
             title: 'Choose Your Flavor',
             required: true,
             multiSelect: false,
             options: [
-              { id: 'fritz-kola-original', name: 'Kola Original', price: 0 },
-              { id: 'fritz-kola-superzero', name: 'Kola SuperZero', price: 0 },
-              { id: 'fritz-honigmelone', name: 'Honigmelone', price: 0 },
-              { id: 'fritz-orange', name: 'Orange', price: 0 },
-              { id: 'fritz-zitrone', name: 'Zitrone', price: 0 },
-              { id: 'fritz-mischmasch', name: 'Misch Masch', price: 0 }
+              { id: 'fritz-kola-original', name: 'Fritz-Kola Original', price: 0 },
+              { id: 'fritz-kola-superzero', name: 'Fritz-Kola SuperZero', price: 0 },
+              { id: 'fritz-kola-mischmasch', name: 'Fritz-Kola Mischmasch', price: 0 },
+              { id: 'fritz-limo-orange', name: 'Fritz-Limo Orange', price: 0 },
+              { id: 'fritz-limo-lemon', name: 'Fritz-Limo Lemon', price: 0 },
+              { id: 'fritz-limo-apple-cherry', name: 'Fritz-Limo Apple-Cherry-Elderberry', price: 0 },
+              { id: 'fritz-limo-honeydew', name: 'Fritz-Limo Honeydew Melon', price: 0 },
+              { id: 'fritz-limo-ginger', name: 'Fritz-Limo Ginger-Lime', price: 0 },
+              { id: 'fritz-spritz-apple', name: 'Fritz-Spritz Organic Cloudy Apple', price: 0 },
+              { id: 'fritz-spritz-grape', name: 'Fritz-Spritz Organic Grape', price: 0 },
+              { id: 'fritz-spritz-rhubarb', name: 'Fritz-Spritz Organic Rhubarb', price: 0 }
+            ]
+          });
+          
+          return baseSteps;
+        }
+
+        // Check if this is Capri-Sun and add flavor customization
+        if (item.id === 'capri-sun') {
+          baseSteps.push({
+            id: 'capri_sun_flavor',
+            title: 'Choose Your Flavor',
+            required: true,
+            multiSelect: false,
+            options: [
+              { id: 'orange', name: 'Orange', price: 0 },
+              { id: 'multivitamin', name: 'Multivitamin', price: 0 },
+              { id: 'safari-fruits', name: 'Safari Fruits', price: 0 }
+            ]
+          });
+          
+          return baseSteps;
+        }
+
+        // Check if this is Wasser (water) and add type customization
+        if (item.id === 'wasser-still') {
+          baseSteps.push({
+            id: 'water_type',
+            title: 'Choose Water Type',
+            required: true,
+            multiSelect: false,
+            options: [
+              { id: 'still', name: 'Still Water', price: 0 },
+              { id: 'sparkling', name: 'Sparkling Water', price: 0 }
             ]
           });
           
@@ -331,82 +430,56 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
           return baseSteps;
         }
 
-        // Add döner-pizza specific ingredients
-        baseSteps.push(
-          {
-            id: 'doner_ingredients',
-            title: 'Customize Your Ingredients',
-            required: false,
-            multiSelect: true,
-            options: [
-              { id: 'doner-fleisch', name: 'Extra Döner Fleisch', price: 2.50, description: 'Extra döner meat' },
-              { id: 'hahnchenfleisch', name: 'Hähnchenfleisch', price: 2.50, description: 'Grilled chicken' },
-              { id: 'sucuk', name: 'Sucuk', price: 2.50, description: 'Turkish spiced sausage' },
-              { id: 'falafel', name: 'Falafel', price: 2.00, description: 'Chickpea falafel' },
-              { id: 'tomate', name: 'Extra Tomate', price: 1.00, description: 'Fresh tomatoes' },
-              { id: 'mais', name: 'Mais', price: 1.00, description: 'Sweet corn' },
-              { id: 'pilze', name: 'Pilze', price: 1.00, description: 'Fresh mushrooms' },
-              { id: 'paprika', name: 'Paprika', price: 1.00, description: 'Bell peppers' },
-              { id: 'rote-zwiebeln', name: 'Rote Zwiebeln', price: 1.00, description: 'Red onions' },
-              { id: 'peperoni', name: 'Peperoni', price: 1.00, description: 'Spicy pepperoni' },
-              { id: 'jallapenos', name: 'Jalapeños', price: 1.00, description: 'Spicy jalapeños' }
-            ]
-          },
-          {
-            id: 'cheese_options',
-            title: 'Add Cheese (Optional)',
-            required: false,
-            multiSelect: true,
-            options: [
-              { id: 'feta', name: 'Feta', price: 1.50, description: 'Creamy feta cheese' },
-              { id: 'gouda', name: 'Extra Gouda', price: 1.50, description: 'Extra gouda cheese' },
-              { id: 'cheddar', name: 'Cheddar', price: 1.50, description: 'Sharp cheddar cheese' }
-            ]
-          },
-          {
-            id: 'sauces',
-            title: 'Add Sauces (Optional)',
-            required: false,
-            multiSelect: true,
-            options: [
-              { id: 'saucen-premium', name: 'Saucen Premium', price: 5.00, description: 'Choose from ALL available sauces' },
-              { id: 'tzaziki', name: 'Tzatziki', price: 0.50, description: 'Greek yogurt sauce' },
-              { id: 'chili-cheese', name: 'Chili Cheese', price: 1.00, description: 'Spicy cheese sauce' },
-              { id: 'ranch', name: 'Ranch', price: 0.50, description: 'Creamy ranch dressing' },
-              { id: 'hollandaise', name: 'Hollandaise', price: 0.50, description: 'Rich hollandaise sauce' },
-              { id: 'cocktail', name: 'Cocktail', price: 0.50, description: 'Cocktail sauce' },
-              { id: 'curry', name: 'Curry', price: 0.50, description: 'Curry sauce' },
-              { id: 'knoblauch', name: 'Knoblauch', price: 0.50, description: 'Garlic sauce' },
-              { id: 'scharfe-sauce', name: 'Scharfe Sauce', price: 0.50, description: 'Spicy hot sauce' },
-              { id: 'ketchup', name: 'Ketchup', price: 0.50, description: 'Classic ketchup' },
-              { id: 'mayo', name: 'Mayo', price: 0.50, description: 'Mayonnaise' }
-            ]
-          },
-          {
-            id: 'extras',
-            title: 'Add Extras (Optional)',
-            required: false,
-            multiSelect: true,
-            options: [
-              { id: 'pommes', name: 'Pommes', price: 3.00, description: 'Crispy fries' }
-            ]
-          },
-          {
-            id: 'drinks',
-            title: 'Add Drinks (Optional)',
-            required: false,
-            multiSelect: true,
-            options: [
-              { id: 'coca-cola-033', name: 'Coca Cola (0,33l)', price: 2.50, description: 'Classic Coca Cola' },
-              { id: 'fanta-033', name: 'Fanta (0,33l)', price: 2.50, description: 'Orange Fanta' },
-              { id: 'sprite-033', name: 'Sprite (0,33l)', price: 2.50, description: 'Lemon-lime Sprite' },
-              { id: 'wasser-033', name: 'Wasser (0,33l)', price: 2.00, description: 'Still water' },
-              { id: 'apfelschorle-033', name: 'Apfelschorle (0,33l)', price: 2.50, description: 'Apple juice spritzer' }
-            ]
-          }
-        );
-        
-        return baseSteps;
+        // Check if this is a FALAFEL item and add FALAFEL-specific customization
+        if (item.category === 'FALAFEL' || 
+            item.id === 'falafel-pita-dp' || 
+            item.id === 'falafel-rollo-dp' || 
+            item.id === 'falafel-teller-dp') {
+          baseSteps.push(
+            {
+              id: 'falafel_sauces',
+              title: 'Choose Your Sauces (First 2 FREE)',
+              required: false,
+              multiSelect: true,
+              freeSauceLimit: 2,
+              options: [
+                { id: 'cocktail', name: 'Cocktail', price: 1.00 },
+                { id: 'tzatziki', name: 'Tzatziki', price: 1.00 },
+                { id: 'scharfe-sauce', name: 'Scharfe Sauce', price: 1.00 },
+                { id: 'knoblauch', name: 'Knoblauch', price: 1.00 },
+                { id: 'ranch', name: 'Ranch', price: 1.00 },
+                { id: 'chili-cheese', name: 'Chili Cheese', price: 1.00 }
+              ]
+            },
+            {
+              id: 'falafel_remove',
+              title: 'Remove Toppings (Optional)',
+              required: false,
+              multiSelect: true,
+              options: [
+                { id: 'no-lettuce', name: 'No Lettuce', description: 'Remove lettuce' },
+                { id: 'no-tomato', name: 'No Tomato', description: 'Remove tomato' },
+                { id: 'no-onion', name: 'No Onion', description: 'Remove red onions' },
+                { id: 'no-cabbage', name: 'No Cabbage', description: 'Remove cabbage' }
+              ]
+            },
+            {
+              id: 'falafel_extras',
+              title: 'Add Extras (Optional)',
+              required: false,
+              multiSelect: true,
+              options: [
+                { id: 'doppel-falafel', name: 'Doppel Falafel', price: 2.50, description: 'Double falafel (+€2.50)' },
+                { id: 'third-sauce', name: '3. Sauce', price: 1.00, description: 'Third sauce (+€1.00)' },
+                { id: 'mais', name: 'Mais', price: 2.00, description: 'Sweet corn (+€2.00)' },
+                { id: 'peperoni', name: 'Peperoni', price: 2.00, description: 'Peperoni (+€2.00)' },
+                { id: 'jalapeños', name: 'Jalapeños', price: 2.00, description: 'Jalapeños (+€2.00)' }
+              ]
+            }
+          );
+          
+          return baseSteps;
+        }
       }
       
       // Use the same customization steps as Burger/Burgers for regular döner restaurant
@@ -451,6 +524,21 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
       if (isMenuSelected) {
         baseSteps.push(
           {
+            id: 'sauces',
+            title: 'Sauces',
+            required: false,
+            multiSelect: true,
+            options: [
+              // All sauces - first 2 free, rest €1.00 each
+              { id: 'cocktail', name: 'Cocktail' },
+              { id: 'tzatziki', name: 'Tzatziki' },
+              { id: 'hot', name: 'Scharfe Sauce' },
+              { id: 'garlic', name: 'Knoblauch' },
+              { id: 'ranch', name: 'Ranch' },
+              { id: 'chili-cheese', name: 'Chili Cheese' }
+            ]
+          },
+          {
             id: 'menu_drink',
             title: 'Choose Your Drink (Included)',
             required: true,
@@ -468,23 +556,6 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
               { id: 'fritz_spritz_grape', name: 'Fritz-Spritz Organic Grape' },
               { id: 'fritz_spritz_rhubarb', name: 'Fritz-Spritz Organic Rhubarb' }
             ]
-          },
-          {
-            id: 'sauces',
-            title: 'Sauces',
-            required: false,
-            multiSelect: true,
-            options: [
-              // Main sauces (FREE)
-              { id: 'cocktail', name: 'Cocktail' },
-              { id: 'tzatziki', name: 'Tzatziki' },
-              { id: 'hot', name: 'Scharfe Sauce' },
-              // Premium sauces (+€1.00 each)
-              { id: 'curry', name: 'Curry', price: 1.00 },
-              { id: 'garlic', name: 'Knoblauch', price: 1.00 },
-              { id: 'ranch', name: 'Ranch', price: 1.00 },
-              { id: 'chili-cheese', name: 'Chili Cheese', price: 1.00 }
-            ]
           }
         );
       } else {
@@ -495,15 +566,13 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             required: false,
             multiSelect: true,
             options: [
-              // Main sauces (FREE)
+              // All sauces - first 2 free, rest €1.00 each
               { id: 'cocktail', name: 'Cocktail' },
               { id: 'tzatziki', name: 'Tzatziki' },
               { id: 'hot', name: 'Scharfe Sauce' },
-              // Premium sauces (+€1.00 each)
-              { id: 'curry', name: 'Curry', price: 1.00 },
-              { id: 'garlic', name: 'Knoblauch', price: 1.00 },
-              { id: 'ranch', name: 'Ranch', price: 1.00 },
-              { id: 'chili-cheese', name: 'Chili Cheese', price: 1.00 }
+              { id: 'garlic', name: 'Knoblauch' },
+              { id: 'ranch', name: 'Ranch' },
+              { id: 'chili-cheese', name: 'Chili Cheese' }
             ]
           },
           {
@@ -526,9 +595,11 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             required: false,
             multiSelect: true,
             options: [
-              { id: 'extra_cheese', name: 'Extra Cheese', price: 1.5 },
-              { id: 'feta', name: 'Feta Cheese', price: 2.0 },
-              { id: 'avocado', name: 'Avocado', price: 2.5 }
+              { id: 'feta_gouda', name: 'Feta oder Gouda', price: 1.5 },
+              { id: 'doppel_fleisch', name: 'Doppel Fleisch', price: 2.5 },
+              { id: 'mais', name: 'Mais', price: 2.0 },
+              { id: 'peperoni', name: 'Peperoni', price: 2.0 },
+              { id: 'jallapenos', name: 'Jalapeños', price: 2.0 }
             ]
           }
         );
@@ -906,9 +977,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             required: false,
             multiSelect: true,
             options: [
-              { id: 'extra_cheese', name: 'Extra Cheese', price: 1.5, description: 'Additional cheese slice (+€1.50)' },
-              { id: 'fried_onions', name: 'Fried Onions', price: 1.5, description: 'Crispy fried onions (+€1.50)' },
-              { id: 'jalapeños', name: 'Jalapeños', price: 1.0, description: 'Spicy jalapeño slices (+€1.00)' }
+              { id: 'doppel_belag', name: 'Doppel Belag', price: 3.0, description: 'Double toppings (+€3.00)' },
+              { id: 'doppel_kaese', name: 'Doppel Käse', price: 1.0, description: 'Double cheese (+€1.00)' }
             ]
           }
         );
@@ -919,24 +989,29 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
       const steps = [];
       
       // Determine sauce and drink limits based on bucket type
-      let sauceLimit = 1;
+      let freeSauceLimit = 1; // Number of FREE sauces included
       let drinkLimit = 1;
       
       if (item.name === 'Filet Bucket' || item.name === 'Keulen Bucket' || item.name === 'Twice Mix Bucket') {
-        sauceLimit = 2;
+        freeSauceLimit = 2;
         drinkLimit = 2;
       } else if (item.name === 'Family Mix Bucket') {
-        sauceLimit = 4;
+        freeSauceLimit = 4;
         drinkLimit = 4;
+      } else if (item.name === 'Single Mix Bucket' || item.name === 'Flavour Bucket') {
+        freeSauceLimit = 1;
+        drinkLimit = 1;
       }
       
       // Add sauce selection for all buckets
+      // First X sauces are FREE (included), additional sauces cost extra
       steps.push({
         id: 'bucket_sauces',
-        title: `Choose Your Sauces (up to ${sauceLimit})`,
+        title: `Choose Your Sauces (${freeSauceLimit} included)`,
         required: true,
         multiSelect: true,
-        maxSelections: sauceLimit,
+        maxSelections: undefined, // No max limit, they can add as many as they want (but pay for extras)
+        freeSauceLimit: freeSauceLimit, // Custom property to track free sauces
         options: [
           { id: 'ranch-sauce', name: 'Ranch', price: 0.50, description: 'Creamy ranch dressing sauce' },
           { id: 'curry-sauce', name: 'Curry', price: 0.50, description: 'Traditional curry sauce' },
@@ -950,12 +1025,14 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
       });
       
       // Add FRITZ drink selection
+      // First X drinks are included (free), additional drinks cost extra
       steps.push({
         id: 'bucket_fritz_drink',
-        title: `Choose Your FRITZ Drinks (up to ${drinkLimit})`,
+        title: `Choose Your FRITZ Drinks (${drinkLimit} included)`,
         required: true,
-        multiSelect: drinkLimit > 1,
-        maxSelections: drinkLimit,
+        multiSelect: true,
+        maxSelections: undefined, // No max limit, they can add as many as they want (but pay for extras)
+        freeDrinkLimit: drinkLimit, // Custom property to track free drinks
         options: [
           { id: 'fritz-kola', name: 'FRITZ Kola', price: 2.90, description: 'Classic cola with real kola nut' },
           { id: 'fritz-limo-zitrone', name: 'FRITZ Limo Zitrone', price: 2.90, description: 'Lemon flavored lemonade' },
@@ -1184,12 +1261,42 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     let total = item.basePrice * quantity;
     steps.forEach(step => {
       const stepSelections = selections[step.id] || [];
-      stepSelections.forEach(selectionId => {
-        const option = step.options.find(opt => opt.id === selectionId);
-        if (option?.price) {
-          total += option.price * quantity;
-        }
-      });
+      
+      // Special handling for sauces: first 2 are free, rest are €1.00 each (for döner/restaurant)
+      if (step.id === 'sauces') {
+        // Only charge for sauces beyond the first 2
+        const paidSaucesCount = Math.max(0, stepSelections.length - 2);
+        total += paidSaucesCount * 1.00 * quantity;
+      } 
+      // Special handling for bucket sauces: first X are free (included), rest charge their price
+      else if (step.id === 'bucket_sauces' && step.freeSauceLimit !== undefined) {
+        stepSelections.forEach((selectionId, index) => {
+          const option = step.options.find(opt => opt.id === selectionId);
+          // Only charge for sauces beyond the free limit
+          if (option?.price && index >= step.freeSauceLimit!) {
+            total += option.price * quantity;
+          }
+        });
+      }
+      // Special handling for bucket drinks: first X are free (included), rest charge their price
+      else if (step.id === 'bucket_fritz_drink' && step.freeDrinkLimit !== undefined) {
+        stepSelections.forEach((selectionId, index) => {
+          const option = step.options.find(opt => opt.id === selectionId);
+          // Only charge for drinks beyond the free limit
+          if (option?.price && index >= step.freeDrinkLimit!) {
+            total += option.price * quantity;
+          }
+        });
+      } 
+      else {
+        // Normal pricing for other options
+        stepSelections.forEach(selectionId => {
+          const option = step.options.find(opt => opt.id === selectionId);
+          if (option?.price) {
+            total += option.price * quantity;
+          }
+        });
+      }
     });
     return total;
   };
@@ -1271,16 +1378,56 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
                     
                     {stepSelections.length > 0 && (
                       <div className="space-y-1">
-                        {stepSelections.map(selectionId => {
+                        {stepSelections.map((selectionId, selectionIndex) => {
                           const option = step.options.find(opt => opt.id === selectionId);
-                          return option ? (
+                          if (!option) return null;
+                          
+                          // Special pricing display for sauces (döner/restaurant)
+                          let displayPrice = option.price;
+                          if (step.id === 'sauces') {
+                            // First 2 sauces are free (index 0 and 1)
+                            if (selectionIndex < 2) {
+                              displayPrice = 0;
+                            } else {
+                              displayPrice = 1.00;
+                            }
+                          }
+                          // Special pricing display for bucket sauces
+                          else if (step.id === 'bucket_sauces' && step.freeSauceLimit !== undefined) {
+                            // First X sauces are free (index 0 to freeSauceLimit-1)
+                            if (selectionIndex < step.freeSauceLimit) {
+                              displayPrice = 0;
+                            }
+                            // Keep the original price for extras
+                          }
+                          // Special pricing display for bucket drinks
+                          else if (step.id === 'bucket_fritz_drink' && step.freeDrinkLimit !== undefined) {
+                            // First X drinks are free (index 0 to freeDrinkLimit-1)
+                            if (selectionIndex < step.freeDrinkLimit) {
+                              displayPrice = 0;
+                            }
+                            // Keep the original price for extras
+                          }
+                          
+                          return (
                             <div key={selectionId} className="flex justify-between text-xs">
-                              <span className="text-gray-300">{option.name}</span>
-                              {option.price && option.price > 0 && (
-                                <span className="text-green-400">+€{option.price.toFixed(2)}</span>
+                              <span className="text-gray-300">
+                                {option.name}
+                                {step.id === 'sauces' && selectionIndex < 2 && (
+                                  <span className="ml-1 text-green-400">(FREE)</span>
+                                )}
+                                {step.id === 'bucket_sauces' && step.freeSauceLimit !== undefined && selectionIndex < step.freeSauceLimit && (
+                                  <span className="ml-1 text-green-400">(Included)</span>
+                                )}
+                                {step.id === 'bucket_fritz_drink' && step.freeDrinkLimit !== undefined && selectionIndex < step.freeDrinkLimit && (
+                                  <span className="ml-1 text-green-400">(Included)</span>
+                                )}
+                              </span>
+                              {displayPrice && displayPrice > 0 && (
+                                <span className="text-orange-400">+€{displayPrice.toFixed(2)}</span>
                               )}
                             </div>
-                          ) : null;
+                          );
                         })}
                       </div>
                     )}
@@ -1392,72 +1539,190 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             <div className="space-y-3">
               {currentStepData.id === 'sauces' ? (
                 <div className="space-y-4">
-                  {/* Free main sauces */}
-                  <div>
-                    <div className="space-y-2">
-                      {currentStepData.options.filter(option => !option.price).map((option) => {
-                        const isSelected = (selections[currentStepData.id] || []).includes(option.id);
-                        return (
-                          <button
-                            key={option.id}
-                            onClick={() => handleOptionSelect(currentStepData.id, option.id, currentStepData.multiSelect)}
-                            className={`w-full p-3 rounded-lg border text-left transition-all ${
-                              isSelected
-                                ? 'border-green-500 bg-green-500/10 text-white'
-                                : 'border-gray-600 hover:border-gray-500 text-gray-300 hover:bg-gray-800/30'
-                            }`}
-                          >
+                  {/* All sauces - pricing depends on selection count */}
+                  <div className="space-y-2">
+                    {currentStepData.options.map((option) => {
+                      const currentSauceSelections = selections[currentStepData.id] || [];
+                      const isSelected = currentSauceSelections.includes(option.id);
+                      const selectionCount = currentSauceSelections.length;
+                      
+                      // Determine if this sauce should show a price
+                      // If already selected, check its position in the selection order
+                      let shouldShowPrice = false;
+                      let isPremium = false;
+                      
+                      if (isSelected) {
+                        // Find the index of this selection (0-based)
+                        const selectionIndex = currentSauceSelections.indexOf(option.id);
+                        // First 2 selections (index 0 and 1) are free
+                        shouldShowPrice = selectionIndex >= 2;
+                        isPremium = shouldShowPrice;
+                      } else {
+                        // If not selected yet, will it be free or paid?
+                        shouldShowPrice = selectionCount >= 2;
+                        isPremium = shouldShowPrice;
+                      }
+                      
+                      return (
+                        <button
+                          key={option.id}
+                          onClick={() => handleOptionSelect(currentStepData.id, option.id, currentStepData.multiSelect)}
+                          className={`w-full p-3 rounded-lg border text-left transition-all ${
+                            isSelected
+                              ? isPremium
+                                ? 'border-orange-500 bg-orange-500/10 text-white'
+                                : 'border-green-500 bg-green-500/10 text-white'
+                              : 'border-gray-600 hover:border-gray-500 text-gray-300 hover:bg-gray-800/30'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
                               <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                                isSelected ? 'border-green-500 bg-green-500' : 'border-gray-500'
+                                isSelected 
+                                  ? isPremium 
+                                    ? 'border-orange-500 bg-orange-500' 
+                                    : 'border-green-500 bg-green-500'
+                                  : 'border-gray-500'
                               }`}>
                                 {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
                               </div>
                               <span className="font-medium text-sm">{option.name}</span>
                             </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  
-                  {/* Separator */}
-                  <div className="flex items-center">
-                    <div className="flex-1 border-t border-gray-600"></div>
-                    <span className="px-3 text-xs text-gray-500">Premium Options</span>
-                    <div className="flex-1 border-t border-gray-600"></div>
-                  </div>
-                  
-                  {/* Premium sauces */}
-                  <div>
-                    <div className="space-y-2">
-                      {currentStepData.options.filter(option => option.price && option.price > 0).map((option) => {
-                        const isSelected = (selections[currentStepData.id] || []).includes(option.id);
-                        return (
-                          <button
-                            key={option.id}
-                            onClick={() => handleOptionSelect(currentStepData.id, option.id, currentStepData.multiSelect)}
-                            className={`w-full p-3 rounded-lg border text-left transition-all ${
-                              isSelected
-                                ? 'border-orange-500 bg-orange-500/10 text-white'
-                                : 'border-gray-600 hover:border-gray-500 text-gray-300 hover:bg-gray-800/30'
-                            }`}
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-3">
-                                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                                  isSelected ? 'border-orange-500 bg-orange-500' : 'border-gray-500'
-                                }`}>
-                                  {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
-                                </div>
-                                <span className="font-medium text-sm">{option.name}</span>
-                              </div>
+                            {shouldShowPrice ? (
                               <span className="text-sm font-semibold text-orange-400">+€1.00</span>
+                            ) : !isSelected && selectionCount < 2 ? (
+                              <span className="text-sm font-medium text-green-400">FREE</span>
+                            ) : null}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : currentStepData.id === 'bucket_sauces' && currentStepData.freeSauceLimit !== undefined ? (
+                <div className="space-y-4">
+                  {/* Bucket sauces - first X included, rest cost extra */}
+                  <div className="space-y-2">
+                    {currentStepData.options.map((option) => {
+                      const currentSauceSelections = selections[currentStepData.id] || [];
+                      const isSelected = currentSauceSelections.includes(option.id);
+                      const selectionCount = currentSauceSelections.length;
+                      const freeLimit = currentStepData.freeSauceLimit!;
+                      
+                      // Determine if this sauce should show a price
+                      let shouldShowPrice = false;
+                      let isPremium = false;
+                      const displayPrice = option.price || 0;
+                      
+                      if (isSelected) {
+                        // Find the index of this selection (0-based)
+                        const selectionIndex = currentSauceSelections.indexOf(option.id);
+                        // First X selections are included (free)
+                        shouldShowPrice = selectionIndex >= freeLimit;
+                        isPremium = shouldShowPrice;
+                      } else {
+                        // If not selected yet, will it be free or paid?
+                        shouldShowPrice = selectionCount >= freeLimit;
+                        isPremium = shouldShowPrice;
+                      }
+                      
+                      return (
+                        <button
+                          key={option.id}
+                          onClick={() => handleOptionSelect(currentStepData.id, option.id, currentStepData.multiSelect)}
+                          className={`w-full p-3 rounded-lg border text-left transition-all ${
+                            isSelected
+                              ? isPremium
+                                ? 'border-orange-500 bg-orange-500/10 text-white'
+                                : 'border-green-500 bg-green-500/10 text-white'
+                              : 'border-gray-600 hover:border-gray-500 text-gray-300 hover:bg-gray-800/30'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                                isSelected 
+                                  ? isPremium 
+                                    ? 'border-orange-500 bg-orange-500' 
+                                    : 'border-green-500 bg-green-500'
+                                  : 'border-gray-500'
+                              }`}>
+                                {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
+                              </div>
+                              <span className="font-medium text-sm">{option.name}</span>
                             </div>
-                          </button>
-                        );
-                      })}
-                    </div>
+                            {shouldShowPrice ? (
+                              <span className="text-sm font-semibold text-orange-400">+€{displayPrice.toFixed(2)}</span>
+                            ) : !isSelected && selectionCount < freeLimit ? (
+                              <span className="text-sm font-medium text-green-400">Included</span>
+                            ) : null}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : currentStepData.id === 'bucket_fritz_drink' && currentStepData.freeDrinkLimit !== undefined ? (
+                <div className="space-y-4">
+                  {/* Bucket drinks - first X included, rest cost extra */}
+                  <div className="space-y-2">
+                    {currentStepData.options.map((option) => {
+                      const currentDrinkSelections = selections[currentStepData.id] || [];
+                      const isSelected = currentDrinkSelections.includes(option.id);
+                      const selectionCount = currentDrinkSelections.length;
+                      const freeLimit = currentStepData.freeDrinkLimit!;
+                      
+                      // Determine if this drink should show a price
+                      let shouldShowPrice = false;
+                      let isPremium = false;
+                      const displayPrice = option.price || 0;
+                      
+                      if (isSelected) {
+                        // Find the index of this selection (0-based)
+                        const selectionIndex = currentDrinkSelections.indexOf(option.id);
+                        // First X selections are included (free)
+                        shouldShowPrice = selectionIndex >= freeLimit;
+                        isPremium = shouldShowPrice;
+                      } else {
+                        // If not selected yet, will it be free or paid?
+                        shouldShowPrice = selectionCount >= freeLimit;
+                        isPremium = shouldShowPrice;
+                      }
+                      
+                      return (
+                        <button
+                          key={option.id}
+                          onClick={() => handleOptionSelect(currentStepData.id, option.id, currentStepData.multiSelect)}
+                          className={`w-full p-3 rounded-lg border text-left transition-all ${
+                            isSelected
+                              ? isPremium
+                                ? 'border-orange-500 bg-orange-500/10 text-white'
+                                : 'border-green-500 bg-green-500/10 text-white'
+                              : 'border-gray-600 hover:border-gray-500 text-gray-300 hover:bg-gray-800/30'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                                isSelected 
+                                  ? isPremium 
+                                    ? 'border-orange-500 bg-orange-500' 
+                                    : 'border-green-500 bg-green-500'
+                                  : 'border-gray-500'
+                              }`}>
+                                {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
+                              </div>
+                              <span className="font-medium text-sm">{option.name}</span>
+                            </div>
+                            {shouldShowPrice ? (
+                              <span className="text-sm font-semibold text-orange-400">+€{displayPrice.toFixed(2)}</span>
+                            ) : !isSelected && selectionCount < freeLimit ? (
+                              <span className="text-sm font-medium text-green-400">Included</span>
+                            ) : null}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               ) : (

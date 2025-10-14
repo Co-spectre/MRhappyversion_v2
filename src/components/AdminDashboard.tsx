@@ -1,11 +1,15 @@
+import { useState } from 'react';
 import { useAdmin } from '../context/AdminContext';
 import { AdminOrdersPanel } from './admin/AdminOrdersPanel';
 import { 
   ArrowLeft,
   Clock,
   Bell,
-  CheckCircle
+  CheckCircle,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
+import { notificationSound } from '../utils/notificationSound';
 
 interface AdminDashboardProps {
   onNavigateBack?: () => void;
@@ -13,12 +17,25 @@ interface AdminDashboardProps {
 
 export function AdminDashboard({ onNavigateBack }: AdminDashboardProps) {
   const { state } = useAdmin();
+  const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Demo order functionality removed for production
 
   const pendingOrdersCount = state.orders.filter(order => order.status === 'pending').length;
   const preparingOrdersCount = state.orders.filter(order => order.status === 'preparing').length;
   const readyOrdersCount = state.orders.filter(order => order.status === 'ready').length;
+
+  const toggleSound = () => {
+    if (soundEnabled) {
+      notificationSound.disable();
+      setSoundEnabled(false);
+    } else {
+      notificationSound.enable();
+      setSoundEnabled(true);
+      // Play a test sound
+      notificationSound.playNotification();
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -38,6 +55,26 @@ export function AdminDashboard({ onNavigateBack }: AdminDashboardProps) {
             </div>
             
             <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm">
+              {/* Sound Toggle Button */}
+              <button
+                onClick={toggleSound}
+                className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all ${
+                  soundEnabled 
+                    ? 'bg-green-600 hover:bg-green-700 text-white' 
+                    : 'bg-gray-700 hover:bg-gray-600 text-gray-400'
+                }`}
+                title={soundEnabled ? 'Benachrichtigungston deaktivieren' : 'Benachrichtigungston aktivieren'}
+              >
+                {soundEnabled ? (
+                  <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                ) : (
+                  <VolumeX className="w-4 h-4 sm:w-5 sm:h-5" />
+                )}
+                <span className="font-medium hidden sm:inline">
+                  {soundEnabled ? 'Ton An' : 'Ton Aus'}
+                </span>
+              </button>
+
               <div className="flex items-center space-x-2 bg-gray-700/50 px-3 py-2 rounded-lg">
                 <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
                 <span className="font-medium text-gray-300">

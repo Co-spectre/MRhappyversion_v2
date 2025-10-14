@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react';
 import { Order, InventoryItem, AuthUser, OrderAnalytics } from '../types';
 import { orderGateway } from '../services/OrderGateway';
+import { notificationSound } from '../utils/notificationSound';
 
 interface AdminState {
   orders: Order[];
@@ -148,6 +149,7 @@ const AdminContext = createContext<{
 
 export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(adminReducer, initialState);
+  const previousOrderCountRef = useRef<number>(0);
 
   useEffect(() => {
     // Load orders from the gateway instead of mock data
@@ -155,9 +157,29 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'SET_ORDERS', payload: orders });
     dispatch({ type: 'SET_INVENTORY', payload: mockInventory });
 
+    // Initialize the previous order count
+    previousOrderCountRef.current = orders.length;
+
     // Set up real-time order updates
     const interval = setInterval(() => {
       const updatedOrders = orderGateway.getAllOrders();
+      
+      // Check if there are new orders
+      const currentOrderCount = updatedOrders.length;
+      const previousOrderCount = previousOrderCountRef.current;
+      
+      if (currentOrderCount > previousOrderCount) {
+        // New order(s) detected! Play notification sound
+        const newOrdersCount = currentOrderCount - previousOrderCount;
+        console.log(`🔔 ${newOrdersCount} new order(s) received!`);
+        
+        // Play notification sound
+        notificationSound.playNotification();
+        
+        // Update the count
+        previousOrderCountRef.current = currentOrderCount;
+      }
+      
       dispatch({ type: 'SET_ORDERS', payload: updatedOrders });
     }, 1000); // Check for updates every second
 

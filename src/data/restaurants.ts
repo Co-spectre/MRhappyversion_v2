@@ -3,11 +3,11 @@ import { Restaurant, MenuItem, Ingredient } from '../types';
 export const restaurants: Restaurant[] = [
   {
     id: 'doner',
-    name: 'Mr. Happy Döner',
+    name: 'Restaurant',
     type: 'doner',
-    description: 'Authentische türkische Döner-Spezialitäten mit frischen Zutaten - 100% HALAL zertifiziert',
+    description: 'Authentische türkische Spezialitäten mit frischen Zutaten - 100% HALAL zertifiziert',
     image: 'https://images.unsplash.com/photo-1552566067-b4c7ca78de73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    specialties: ['Döner im Fladenbrot', 'Döner Yufka', 'Döner Teller', 'Döner Box'],
+    specialties: ['Pita Sandwich', 'Yufka Wrap', 'Grillteller', 'Meal Box'],
     rating: 4.8,
     deliveryTime: '25-40 min',
     deliveryFee: 2.99,
@@ -131,19 +131,6 @@ export const ingredients: Ingredient[] = [
   { id: 'hollandaise', name: 'Hollandaise Sauce', basePrice: 0, extraPrice: 3.00, doublePrice: 3.00, category: 'sauce', isPremium: true },
   { id: 'ketchup', name: 'Ketchup', basePrice: 0, extraPrice: 1.00, doublePrice: 1.00, category: 'sauce', isPremium: false },
   { id: 'mayo', name: 'Mayo', basePrice: 0, extraPrice: 1.00, doublePrice: 1.00, category: 'sauce', isPremium: false },
-  
-  // Premium Sauce Selection - Choose from all available sauces
-  { 
-    id: 'saucen-premium', 
-    name: 'Saucen Premium', 
-    basePrice: 0, 
-    extraPrice: 5.00, 
-    doublePrice: 5.00, 
-    category: 'sauce', 
-    isPremium: true,
-    description: 'Wähle aus allen verfügbaren Saucen (Chili Cheese, Ranch, Curry, Cocktail, Tzatziki, Knoblauch, Scharfe Sauce, Hollandaise, Ketchup, Mayo)'
-  },
-
   // Turkish Pizza specific sauces
   { id: 'turkish-sauce', name: 'Sauce (Turkish Pizza)', basePrice: 0, extraPrice: 1.00, doublePrice: 1.00, category: 'sauce', isPremium: false },
 
@@ -1533,23 +1520,6 @@ export const menuItems: MenuItem[] = [
     preparationTime: '20-25 min',
     origin: 'Grill Spezialität'
   },
-  {
-    id: 'hahnchen-schnitzel-new',
-    name: 'Hähnchen Schnitzel',
-    description: 'Paniertes Hähnchen Schnitzel',
-    basePrice: 8.50,
-    image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    category: 'HÄHNCHEN',
-    restaurantId: 'doner',
-    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 0, halal: true },
-    allergens: ['gluten'],
-    calories: 520,
-    ingredients: ['hahnchenfleisch', 'panade'],
-    customizable: false,
-    popular: true,
-    preparationTime: '12-15 min',
-    origin: 'Klassiker'
-  },
 
   // VEGETARISCH Section
 
@@ -1801,23 +1771,6 @@ export const menuItems: MenuItem[] = [
     popular: true,
     preparationTime: '5-8 min',
     origin: 'Internationale Küche'
-  },
-  {
-    id: 'saucen-premium',
-    name: 'Saucen Premium',
-    description: 'Chili Cheese, Ranch, Cocktail, Tzatziki, scharfe Sauce',
-    basePrice: 2.50,
-    image: '/food items/doner/sauce-dip.jpg',
-    category: 'Sides',
-    restaurantId: 'doner',
-    dietaryInfo: { vegetarian: true, vegan: false, glutenFree: true, spicy: 0, halal: true },
-    allergens: ['dairy'],
-    calories: 50,
-    ingredients: [],
-    customizable: false,
-    popular: false,
-    preparationTime: '1-2 min',
-    origin: 'Diverse'
   },
   {
     id: 'ketchup-mayo',
@@ -2440,24 +2393,6 @@ export const menuItems: MenuItem[] = [
     origin: 'Internationale Küche'
   },
 
-  // Sauces
-  {
-    id: 'sauces-selection',
-    name: 'Sauces',
-    description: 'Choose from our selection of delicious sauces',
-    basePrice: 0.50,
-    image: '/food items/buger/sauces.jpg',
-    category: 'Sauces',
-    restaurantId: 'burger',
-    dietaryInfo: { vegetarian: true, vegan: true, glutenFree: true, spicy: 0, halal: true },
-    allergens: ['dairy', 'eggs'],
-    calories: 20,
-    ingredients: ['ranch-sauce', 'curry-sauce', 'chilli-cheese-sauce', 'burger-sauce', 'ketchup-sauce', 'mayonnaise-sauce', 'bbq-sauce', 'sweet-sour-sauce'],
-    customizable: true,
-    popular: true,
-    preparationTime: '1 min',
-    origin: 'Sauce Selection'
-  },
   // Drinks
   {
     id: 'fritz-getraenke',
@@ -2471,7 +2406,7 @@ export const menuItems: MenuItem[] = [
     allergens: [],
     calories: 150,
     ingredients: [],
-    customizable: false,
+    customizable: true,
     popular: true,
     preparationTime: '1 min',
     origin: 'German Premium'
@@ -2488,7 +2423,7 @@ export const menuItems: MenuItem[] = [
     allergens: [],
     calories: 60,
     ingredients: [],
-    customizable: false,
+    customizable: true,
     popular: true,
     preparationTime: '1 min',
     origin: 'Fruity Style'
@@ -2505,7 +2440,7 @@ export const menuItems: MenuItem[] = [
     allergens: [],
     calories: 0,
     ingredients: [],
-    customizable: false,
+    customizable: true,
     popular: false,
     preparationTime: '1 min',
     origin: 'Pure Water'

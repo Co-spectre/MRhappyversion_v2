@@ -328,6 +328,20 @@ export function AdminOrdersPanel() {
                       </div>
                     </div>
 
+                    {/* Delivery Address Preview */}
+                    {order.orderType === 'delivery' && order.deliveryAddress && (
+                      <div className="mb-4 p-3 bg-gray-900 rounded-lg border border-gray-700">
+                        <div className="flex items-start space-x-2">
+                          <MapPin className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-gray-400 text-xs mb-1">Lieferadresse</p>
+                            <p className="text-white text-sm truncate">{order.deliveryAddress.street}</p>
+                            <p className="text-gray-300 text-sm">{order.deliveryAddress.zipCode} {order.deliveryAddress.city}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Order Items */}
                     <div className="mb-4">
                       <p className="text-gray-400 text-xs mb-2">Artikel ({order.items.length})</p>
@@ -479,6 +493,29 @@ export function AdminOrdersPanel() {
                       <p className="text-white">{selectedOrder.customerInfo.email}</p>
                     </div>
                   </div>
+                  
+                  {/* Delivery Address */}
+                  {selectedOrder.orderType === 'delivery' && selectedOrder.deliveryAddress && (
+                    <div className="mt-4 pt-4 border-t border-gray-700">
+                      <div className="flex items-start space-x-2">
+                        <MapPin className="w-5 h-5 text-red-400 mt-1 flex-shrink-0" />
+                        <div className="flex-1">
+                          <p className="text-gray-400 text-sm mb-1">Lieferadresse</p>
+                          <p className="text-white font-medium">
+                            {selectedOrder.deliveryAddress.street}
+                          </p>
+                          <p className="text-white">
+                            {selectedOrder.deliveryAddress.zipCode} {selectedOrder.deliveryAddress.city}
+                          </p>
+                          {selectedOrder.deliveryAddress.notes && (
+                            <p className="text-gray-400 text-sm mt-2 italic">
+                              Notizen: {selectedOrder.deliveryAddress.notes}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Order Items */}
@@ -486,22 +523,53 @@ export function AdminOrdersPanel() {
                   <h3 className="text-lg font-semibold text-white mb-3">Bestellartikel</h3>
                   <div className="space-y-3">
                     {selectedOrder.items.map((item, index) => (
-                      <div key={index} className="flex items-center space-x-4 p-3 bg-gray-800 rounded-lg">
-                        <img 
-                          src={item.menuItem.image} 
-                          alt={item.menuItem.name}
-                          className="w-12 h-12 rounded-lg object-cover"
-                        />
-                        <div className="flex-1">
-                          <h4 className="text-white font-medium">{item.menuItem.name}</h4>
-                          <p className="text-gray-400 text-sm">Anzahl: {item.quantity}</p>
-                          {item.specialInstructions && (
-                            <p className="text-yellow-400 text-sm">Notiz: {item.specialInstructions}</p>
-                          )}
-                        </div>
-                        <div className="text-right">
-                          <p className="text-white font-semibold">€{item.totalPrice.toFixed(2)}</p>
-                          <p className="text-gray-400 text-sm">€{item.menuItem.basePrice.toFixed(2)} pro Stück</p>
+                      <div key={index} className="p-3 bg-gray-800 rounded-lg border border-gray-700">
+                        <div className="flex items-start space-x-4">
+                          <img 
+                            src={item.menuItem.image} 
+                            alt={item.menuItem.name}
+                            className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between mb-2">
+                              <div>
+                                <h4 className="text-white font-medium">{item.menuItem.name}</h4>
+                                <p className="text-gray-400 text-sm">Anzahl: {item.quantity}</p>
+                              </div>
+                              <div className="text-right flex-shrink-0 ml-4">
+                                <p className="text-white font-semibold">€{item.totalPrice.toFixed(2)}</p>
+                                <p className="text-gray-400 text-sm">€{item.menuItem.basePrice.toFixed(2)} pro Stück</p>
+                              </div>
+                            </div>
+                            
+                            {/* Customizations */}
+                            {item.customizations && item.customizations.length > 0 && (
+                              <div className="mt-3 pt-3 border-t border-gray-700">
+                                <p className="text-gray-400 text-sm font-semibold mb-3">Anpassungen:</p>
+                                <div className="space-y-2">
+                                  {item.customizations.map((custom, idx) => (
+                                    <div key={idx} className="flex items-center justify-between text-base">
+                                      <div className="flex items-center space-x-2">
+                                        <span className="text-green-400 text-lg font-bold">+</span>
+                                        <span className="text-white font-medium">{custom.name || custom.ingredientId}</span>
+                                      </div>
+                                      {custom.price > 0 && (
+                                        <span className="text-orange-400 font-semibold">+€{custom.price.toFixed(2)}</span>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            
+                            {item.specialInstructions && (
+                              <div className="mt-2 pt-2 border-t border-gray-700">
+                                <p className="text-yellow-400 text-sm">
+                                  <span className="font-medium">Notiz:</span> {item.specialInstructions}
+                                </p>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))}

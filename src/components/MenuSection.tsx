@@ -159,7 +159,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({ restaurantId, isLoading = fal
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-white mb-4">
-            {restaurantId === 'doner' && 'Mr.Happy Doner Menu'}
+            {restaurantId === 'doner' && 'MR HAPPY RESTAURANT'}
             {restaurantId === 'burger' && 'Mr.Happy Burger Menu'}
             {restaurantId === 'restaurant' && 'Mr.Happy Restaurant Menu'}
           </h2>

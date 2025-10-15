@@ -102,6 +102,12 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const tip = orderDetails?.tip ?? 0;
     const total = orderDetails?.total ?? (subtotal + tax + deliveryFee + tip);
     
+    // Auto-detect restaurant from first cart item
+    const restaurantId: 'doner' | 'burger' | 'doner-pizza' = 
+      items.length > 0 && items[0].menuItem.restaurantId 
+        ? items[0].menuItem.restaurantId as 'doner' | 'burger' | 'doner-pizza'
+        : 'doner'; // fallback to doner
+    
     const order: Order = {
       id: `ORD-${Date.now()}`,
       userId,
@@ -113,6 +119,7 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       total,
       status: 'pending',
       orderType: orderDetails?.orderType ?? 'pickup',
+      restaurantId, // Add restaurant ID to order
       scheduledTime: state.scheduledTime || undefined,
       pickupLocation: state.pickupLocation,
       specialInstructions: state.specialInstructions,

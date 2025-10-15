@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAdmin } from '../context/AdminContext';
+import { useAuth } from '../context/AuthContext';
 import { AdminOrdersPanel } from './admin/AdminOrdersPanel';
 import { 
   ArrowLeft,
@@ -7,7 +8,8 @@ import {
   Bell,
   CheckCircle,
   Volume2,
-  VolumeX
+  VolumeX,
+  MapPin
 } from 'lucide-react';
 import { notificationSound } from '../utils/notificationSound';
 
@@ -15,9 +17,30 @@ interface AdminDashboardProps {
   onNavigateBack?: () => void;
 }
 
+// Helper function to get restaurant display name
+const getRestaurantName = (restaurantId: string): string => {
+  const names: Record<string, string> = {
+    'doner': 'Mr. Happy Döner (Vegesack)',
+    'burger': 'Mr. Happy Burger (Vegesack)',
+    'doner-pizza': 'Mr. Happy Döner & Pizza (Schwanewede)'
+  };
+  return names[restaurantId] || restaurantId;
+};
+
 export function AdminDashboard({ onNavigateBack }: AdminDashboardProps) {
-  const { state } = useAdmin();
+  const { state, setRestaurant } = useAdmin();
+  const { state: authState } = useAuth();
   const [soundEnabled, setSoundEnabled] = useState(true);
+
+  // Set restaurant filter based on logged-in admin
+  useEffect(() => {
+    if (authState.user?.role === 'restaurant-admin' && authState.user.restaurantId) {
+      setRestaurant(authState.user.restaurantId);
+    } else {
+      // Super admin sees all
+      setRestaurant(null);
+    }
+  }, [authState.user, setRestaurant]);
 
   // Demo order functionality removed for production
 
@@ -39,6 +62,20 @@ export function AdminDashboard({ onNavigateBack }: AdminDashboardProps) {
 
   return (
     <div className="min-h-screen bg-gray-900">
+      {/* Restaurant Banner - Show if filtering by restaurant */}
+      {state.restaurantId && (
+        <div className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 border-b-2 border-blue-500">
+          <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div className="flex items-center justify-center space-x-3">
+              <MapPin className="w-5 h-5 text-blue-400" />
+              <p className="text-blue-200 text-sm sm:text-base font-medium">
+                📍 Restaurant Admin: <strong className="text-white">{getRestaurantName(state.restaurantId)}</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <header className="bg-gray-800 shadow-sm border-b border-gray-700">
         <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 gap-4">
@@ -51,7 +88,9 @@ export function AdminDashboard({ onNavigateBack }: AdminDashboardProps) {
                   <ArrowLeft className="w-5 h-5 text-gray-300" />
                 </button>
               )}
-              <h1 className="text-xl sm:text-2xl font-bold text-white">Mr. Happy - Bestellverwaltung</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-white">
+                {state.restaurantId ? getRestaurantName(state.restaurantId) : 'Mr. Happy - Bestellverwaltung'}
+              </h1>
             </div>
             
             <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm">

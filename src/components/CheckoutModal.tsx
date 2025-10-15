@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from '../context/LocationContext';
-import { X, MapPin, Phone, Check, Mail, ArrowLeft, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import { X, MapPin, Phone, Check, Mail, ArrowLeft, ArrowRight, Loader2, AlertCircle, Store, CreditCard, Wallet, Banknote, Shield, Lock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useOrder } from '../context/OrderContext';
 import { findNearestLocation, formatDistance, calculateDistance, RESTAURANT_LOCATIONS, type Coordinates } from '../utils/locationUtils';
+import { restaurants } from '../data/restaurants';
 
 
 interface CheckoutModalProps {
@@ -28,7 +29,7 @@ interface PaymentMethod {
   type: 'card' | 'paypal' | 'cash';
   name: string;
   details: string;
-  icon: string;
+  IconComponent: React.ComponentType<{ className?: string }>;
 }
 
 const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
@@ -40,6 +41,10 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // Get restaurant ID from cart items
+  const restaurantId = cartState.items.length > 0 ? cartState.items[0].menuItem.restaurantId : null;
+  const currentRestaurant = restaurantId ? restaurants.find(r => r.id === restaurantId) : null;
   
   // Order Type
   const [orderType, setOrderType] = useState<'delivery' | 'pickup'>('pickup');
@@ -76,28 +81,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     instructions: ''
   });
   const [useNewAddress, setUseNewAddress] = useState(false);
-  
-  // Saved addresses state
-  const [savedAddresses, setSavedAddresses] = useState<DeliveryAddress[]>([
-    {
-      id: '1',
-      name: 'Home',
-      street: 'Hauptstraße 123',
-      city: 'Bremen',
-      zipCode: '28195',
-      phone: '+49 421 123 4567',
-      isDefault: true,
-    },
-    {
-      id: '2',
-      name: 'Work',
-      street: 'Bürostraße 45',
-      city: 'Bremen',
-      zipCode: '28199',
-      phone: '+49 421 987 6543',
-      isDefault: false,
-    }
-  ]);
 
   // Payment Information
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethod | null>(null);
@@ -109,7 +92,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
   const {
     isLocationEnabled,
     location,
-    setLocation
+    setLocation,
+    clearLocation
   } = useLocation();
 
   // Location permission modal state
@@ -135,6 +119,24 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
       deliveryRadius: number;
     }>;
   } | null>(null);
+
+  // Address autocomplete state
+  const [addressSuggestions, setAddressSuggestions] = useState<Array<{
+    display_name: string;
+    address: {
+      road?: string;
+      house_number?: string;
+      city?: string;
+      town?: string;
+      village?: string;
+      postcode?: string;
+      country?: string;
+    };
+    lat: string;
+    lon: string;
+  }>>([]);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   // Check delivery availability whenever location changes
   useEffect(() => {
@@ -184,32 +186,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     }
   }, [isOpen, location, isLocationEnabled]);
 
-  // Check delivery eligibility for saved addresses on mount
-  useEffect(() => {
-    const checkSavedAddresses = async () => {
-      if (savedAddresses.length > 0) {
-        for (const address of savedAddresses) {
-          const fullAddress = `${address.street}, ${address.city} ${address.zipCode}`;
-          if (!addressDeliveryStatus[fullAddress]) {
-            const deliveryInfo = await geocodeAddressAndCheckDelivery(fullAddress);
-            if (deliveryInfo) {
-              setAddressDeliveryStatus(prev => ({
-                ...prev,
-                [fullAddress]: {
-                  canDeliver: deliveryInfo.canDeliver,
-                  distance: deliveryInfo.distance
-                }
-              }));
-            }
-          }
-        }
-      }
-    };
-
-    if (isOpen) {
-      checkSavedAddresses();
-    }
-  }, [isOpen, addressDeliveryStatus, savedAddresses]);
+  // Location detection and geocoding functions are handled inline
 
   // Geocode an address and check delivery eligibility
   const geocodeAddressAndCheckDelivery = async (address: string): Promise<{canDeliver: boolean, distance: number, coordinates?: {lat: number, lng: number}} | null> => {
@@ -297,18 +274,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     return () => clearTimeout(timeoutId);
   }, [newAddress.street, newAddress.city, newAddress.zipCode, useNewAddress, setLocation]);
 
-  // Address management functions
-  const deleteAddress = (addressId: string) => {
-    // Update the savedAddresses state
-    setSavedAddresses(prev => prev.filter(addr => addr.id !== addressId));
-    
-    // If the deleted address was selected, clear the selection
-    if (selectedAddress?.id === addressId) {
-      setSelectedAddress(null);
-    }
-    
-    console.log('Address deleted:', addressId);
-  };
+  // Address management - no saved addresses, just use for current order
 
   // Auto-detect user's precise location using GPS
   const handleAutoDetectLocation = async () => {
@@ -455,7 +421,80 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  const saveNewAddress = () => {
+  // Address autocomplete search function with debouncing
+  const searchAddresses = async (query: string) => {
+    if (!query || query.length < 3) {
+      setAddressSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    setIsLoadingSuggestions(true);
+    setShowSuggestions(true);
+
+    try {
+      // Search in Bremen area with bias
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=de&viewbox=8.4,53.0,9.0,53.6&bounded=1&limit=5&addressdetails=1`,
+        {
+          headers: { 'User-Agent': 'MRhappy-Restaurant-App' }
+        }
+      );
+      
+      const data = await response.json();
+      setAddressSuggestions(data || []);
+    } catch (error) {
+      console.error('Address search error:', error);
+      setAddressSuggestions([]);
+    } finally {
+      setIsLoadingSuggestions(false);
+    }
+  };
+
+  // Debounced search effect
+  useEffect(() => {
+    const searchQuery = newAddress.street;
+    if (searchQuery && searchQuery.length >= 3) {
+      const timeoutId = setTimeout(() => {
+        searchAddresses(searchQuery);
+      }, 500); // 500ms debounce
+
+      return () => clearTimeout(timeoutId);
+    } else {
+      setAddressSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [newAddress.street]);
+
+  // Select address from autocomplete
+  const selectAddressSuggestion = (suggestion: typeof addressSuggestions[0]) => {
+    const street = suggestion.address.house_number && suggestion.address.road
+      ? `${suggestion.address.house_number} ${suggestion.address.road}`
+      : suggestion.address.road || '';
+    
+    setNewAddress(prev => ({
+      ...prev,
+      street: street,
+      city: suggestion.address.city || suggestion.address.town || suggestion.address.village || 'Bremen',
+      zipCode: suggestion.address.postcode || ''
+    }));
+
+    // Store coordinates for delivery check
+    setDetectedLocation({
+      latitude: parseFloat(suggestion.lat),
+      longitude: parseFloat(suggestion.lon),
+      accuracy: 50,
+      address: suggestion.display_name,
+      street: street,
+      city: suggestion.address.city || suggestion.address.town || suggestion.address.village || 'Bremen',
+      zipCode: suggestion.address.postcode || ''
+    });
+
+    setAddressSuggestions([]);
+    setShowSuggestions(false);
+  };
+
+  const useThisAddress = () => {
     if (!newAddress.street || !newAddress.city || !newAddress.zipCode) {
       setErrors(prev => ({
         ...prev,
@@ -464,89 +503,54 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
       return;
     }
 
-    const newAddressWithId: DeliveryAddress = {
-      id: Date.now().toString(),
+    const addressToUse: DeliveryAddress = {
+      id: 'manual-address',
       name: newAddress.name || 'My Address',
       street: newAddress.street,
       city: newAddress.city,
       zipCode: newAddress.zipCode,
       phone: newAddress.phone || customerInfo.phone,
-      isDefault: savedAddresses.length === 0,
+      isDefault: false,
       instructions: newAddress.instructions
     };
 
-    // Update the savedAddresses state
-    setSavedAddresses(prev => [...prev, newAddressWithId]);
-    setSelectedAddress(newAddressWithId);
+    setSelectedAddress(addressToUse);
     setUseNewAddress(false);
     
-    console.log('New address saved:', newAddressWithId);
+    console.log('Using address for this order:', addressToUse);
     
-    // Clear the form
-    setNewAddress({
-      name: '',
-      street: '',
-      city: '',
-      zipCode: '',
-      phone: '',
-      instructions: ''
+    // Clear errors
+    setErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors.address;
+      return newErrors;
     });
-    
-    // Clear detected location after saving
-    setDetectedLocation(null);
   };
 
-  // Corrected renderEligibilityStatus declaration
-  const renderEligibilityStatus = () => {
-    if (!isLocationEnabled || !location) {
-      return (
-        <div className="p-4 bg-yellow-900/30 border border-yellow-600 rounded-lg">
-          <p className="text-yellow-400">📍 Location not detected. Click "Delivery" to enable location for delivery eligibility check.</p>
-        </div>
-      );
-    }
 
-    const eligibility = checkEligibility(location);
 
-    return (
-      <div className={`p-4 rounded-lg border ${eligibility.canDeliver 
-        ? 'bg-green-900/30 border-green-600' 
-        : 'bg-red-900/30 border-red-600'
-      }`}>
-        <p className={eligibility.canDeliver ? 'text-green-400' : 'text-red-400'}>
-          {eligibility.message}
-        </p>
-        {!eligibility.canDeliver && (
-          <p className="text-gray-400 text-sm mt-2">
-            💡 Tip: You can still place a pickup order from any of our locations!
-          </p>
-        )}
-      </div>
-    );
-  };
-
-  // Payment methods
+  // Payment methods - All online payments will redirect to Stripe
   const paymentMethods: PaymentMethod[] = [
     {
       id: 'card',
-      type: 'card',
-      name: 'Credit/Debit Card',
-      details: 'Visa, Mastercard, American Express',
-      icon: '💳'
+      type: 'card' as const,
+      name: 'Card Payment',
+      details: 'Credit or Debit Card',
+      IconComponent: CreditCard
     },
     {
       id: 'paypal',
-      type: 'paypal',
+      type: 'paypal' as const,
       name: 'PayPal',
-      details: 'Pay with your PayPal account',
-      icon: '💰'
+      details: 'Pay with PayPal',
+      IconComponent: Wallet
     },
     {
       id: 'cash',
-      type: 'cash',
-      name: 'Cash on Delivery',
-      details: 'Pay when you receive your order',
-      icon: '💵'
+      type: 'cash' as const,
+      name: 'Cash',
+      details: `Pay on ${orderType === 'delivery' ? 'delivery' : 'pickup'}`,
+      IconComponent: Banknote
     }
   ];
 
@@ -775,9 +779,273 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     return (
       <div className="space-y-6">
         <div className="text-center mb-6">
-          <h3 className="text-2xl font-bold text-white mb-2">🏠 Delivery Location</h3>
-          <p className="text-gray-400">Choose where we should deliver your delicious food</p>
+          <h3 className="text-2xl font-bold text-white mb-2">📍 Delivery Location</h3>
+          <p className="text-gray-400">We'll detect your location automatically for fastest delivery</p>
         </div>
+        
+        {/* AUTO-DETECTED GPS LOCATION (PRIORITY #1) */}
+        {location && location.address && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-lg font-semibold text-green-400 flex items-center space-x-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span>Your Current Location (GPS)</span>
+              </h4>
+              <button
+                onClick={() => {
+                  clearLocation();
+                  setDetectedLocation(null);
+                }}
+                className="text-xs text-gray-400 hover:text-red-400 transition-colors"
+              >
+                🔄 Change Location
+              </button>
+            </div>
+            
+            <div 
+              onClick={() => {
+                // Auto-select GPS location
+                setSelectedAddress({
+                  id: 'gps-location',
+                  name: 'Current Location',
+                  street: location.address?.street || 'Detected Address',
+                  city: location.address?.city || 'Bremen',
+                  zipCode: location.address?.postalCode || '',
+                  phone: customerInfo.phone,
+                  isDefault: false
+                });
+              }}
+              className={`group cursor-pointer p-6 border-2 rounded-2xl transition-all duration-300 ${
+                selectedAddress?.id === 'gps-location'
+                  ? 'border-green-500 bg-gradient-to-br from-green-900/30 to-green-800/20 shadow-lg shadow-green-500/20'
+                  : 'border-green-600/50 bg-gradient-to-br from-green-900/20 to-gray-900/50 hover:border-green-500 hover:shadow-lg hover:shadow-green-500/10'
+              }`}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className={`p-3 rounded-full ${
+                      selectedAddress?.id === 'gps-location'
+                        ? 'bg-green-500/20 text-green-400'
+                        : 'bg-green-600/20 text-green-500'
+                    }`}>
+                      <MapPin className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h5 className="font-bold text-white text-lg">Current Location</h5>
+                      <span className="text-xs bg-green-600/30 text-green-300 px-2 py-0.5 rounded-full border border-green-500/30">
+                        📍 Auto-Detected via GPS
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="ml-16 space-y-2">
+                    <p className="text-gray-200 font-medium text-lg">
+                      {location.address.street || location.address.formatted}
+                    </p>
+                    <p className="text-gray-300">
+                      {location.address.city} {location.address.postalCode}
+                    </p>
+                    <p className="text-gray-400 text-sm">
+                      📍 Accuracy: ±{location.accuracy.toFixed(0)}m
+                    </p>
+                  </div>
+
+                  {/* Restaurant Distance Indicators */}
+                  <div className="mt-4 ml-16 space-y-2">
+                    <p className="text-sm font-semibold text-gray-400 mb-2">🚗 Distance to Restaurants:</p>
+                    {RESTAURANT_LOCATIONS.map((restaurant) => {
+                      const distance = calculateDistance(
+                        { latitude: location.latitude, longitude: location.longitude },
+                        restaurant.coordinates
+                      );
+                      const withinRange = distance <= restaurant.deliveryRadius;
+                      const restaurantIcon = restaurant.id === 'vegesack' ? '🍔' : '🍕';
+                      
+                      return (
+                        <div key={restaurant.id} className={`flex items-center justify-between p-3 rounded-xl ${
+                          withinRange 
+                            ? 'bg-green-900/30 border border-green-600/30' 
+                            : 'bg-red-900/20 border border-red-600/30'
+                        }`}>
+                          <div className="flex items-center space-x-3">
+                            <span className="text-2xl">{restaurantIcon}</span>
+                            <div>
+                              <p className={`font-semibold ${withinRange ? 'text-green-300' : 'text-red-300'}`}>
+                                {restaurant.name}
+                              </p>
+                              <p className="text-xs text-gray-400">Max: {restaurant.deliveryRadius}km</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className={`font-bold ${withinRange ? 'text-green-400' : 'text-red-400'}`}>
+                              {formatDistance(distance)}
+                            </p>
+                            <p className={`text-xs ${withinRange ? 'text-green-500' : 'text-red-500'}`}>
+                              {withinRange ? '✓ Can Deliver' : '✗ Too Far'}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  {/* Quick Action Button */}
+                  {selectedAddress?.id !== 'gps-location' && (
+                    <div className="mt-4 ml-16">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedAddress({
+                            id: 'gps-location',
+                            name: 'Current Location',
+                            street: location.address?.street || 'Detected Address',
+                            city: location.address?.city || 'Bremen',
+                            zipCode: location.address?.postalCode || '',
+                            phone: customerInfo.phone,
+                            isDefault: false
+                          });
+                        }}
+                        className="text-sm text-green-400 hover:text-green-300 font-medium transition-colors"
+                      >
+                        👆 Click here to deliver to this location
+                      </button>
+                    </div>
+                  )}
+                </div>
+                
+                {selectedAddress?.id === 'gps-location' && (
+                  <div className="ml-4">
+                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                      <Check className="w-6 h-6 text-white" />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* NO LOCATION DETECTED - SHOW DETECTION BUTTON */}
+        {!location && !isDetectingLocation && (
+          <div className="bg-gradient-to-br from-blue-900/30 to-blue-800/20 border-2 border-blue-600/50 rounded-2xl p-8 text-center">
+            <div className="mb-6">
+              <div className="w-20 h-20 bg-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <MapPin className="w-10 h-10 text-blue-400" />
+              </div>
+              <h4 className="text-xl font-bold text-white mb-2">
+                📍 Let's Find Your Location
+              </h4>
+              <p className="text-gray-300 mb-1">
+                We'll automatically detect your address for fastest delivery
+              </p>
+              <p className="text-sm text-blue-300">
+                This helps us check if we can deliver to you and calculate accurate delivery times
+              </p>
+            </div>
+            
+            <button
+              onClick={() => {
+                setIsDetectingLocation(true);
+                if (navigator.geolocation) {
+                  navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                      const coords = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        accuracy: position.coords.accuracy,
+                        timestamp: Date.now()
+                      };
+                      
+                      // Geocode to get address
+                      try {
+                        const response = await fetch(
+                          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.latitude}&lon=${coords.longitude}&zoom=18&addressdetails=1&accept-language=en`,
+                          {
+                            headers: { 'User-Agent': 'MRhappy-Restaurant-App' }
+                          }
+                        );
+                        const data = await response.json();
+                        
+                        if (data && data.address) {
+                          const address = {
+                            street: data.address.road || data.address.house_number 
+                              ? `${data.address.house_number || ''} ${data.address.road || ''}`.trim()
+                              : 'Detected Address',
+                            city: data.address.city || data.address.town || data.address.village || 'Bremen',
+                            postalCode: data.address.postcode || '',
+                            country: data.address.country,
+                            formatted: data.display_name
+                          };
+                          
+                          setLocation({
+                            ...coords,
+                            address
+                          });
+                        }
+                      } catch (error) {
+                        console.error('Geocoding error:', error);
+                        setLocation(coords);
+                      }
+                      
+                      setIsDetectingLocation(false);
+                    },
+                    (error) => {
+                      console.error('Geolocation error:', error);
+                      setIsDetectingLocation(false);
+                      setErrors(prev => ({
+                        ...prev,
+                        location: 'Could not detect location. Please enter address manually below.'
+                      }));
+                    },
+                    {
+                      enableHighAccuracy: true,
+                      timeout: 10000,
+                      maximumAge: 0
+                    }
+                  );
+                } else {
+                  setIsDetectingLocation(false);
+                  setErrors(prev => ({
+                    ...prev,
+                    location: 'Geolocation not supported. Please enter address manually.'
+                  }));
+                }
+              }}
+              className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-blue-500/50 hover:scale-105"
+            >
+              📍 Detect My Location Now
+            </button>
+            
+            <p className="text-xs text-gray-500 mt-4">
+              We use your location only to check delivery availability and calculate distances
+            </p>
+          </div>
+        )}
+        
+        {/* DETECTING LOCATION LOADER */}
+        {isDetectingLocation && (
+          <div className="bg-gradient-to-br from-blue-900/30 to-blue-800/20 border-2 border-blue-600/50 rounded-2xl p-8 text-center">
+            <div className="mb-4">
+              <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <h4 className="text-xl font-bold text-white mb-2">
+                🔍 Detecting Your Location...
+              </h4>
+              <p className="text-gray-300">
+                Please allow location access in your browser
+              </p>
+            </div>
+          </div>
+        )}
+        
+        {/* DIVIDER */}
+        {location && (
+          <div className="flex items-center space-x-4 my-6">
+            <div className="flex-1 h-px bg-gray-700"></div>
+            <span className="text-gray-500 text-sm">OR</span>
+            <div className="flex-1 h-px bg-gray-700"></div>
+          </div>
+        )}
         
         {/* User's Saved Location from Signup */}
         {userDeliveryAddress && !useNewAddress && (
@@ -899,92 +1167,18 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
           </div>
         )}
 
-        {/* Saved Addresses Section */}
-        {savedAddresses.length > 0 && !useNewAddress && (
-          <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-gray-300 flex items-center space-x-2">
-              <MapPin className="w-5 h-5 text-blue-500" />
-              <span>Saved Addresses ({savedAddresses.length})</span>
-            </h4>
-            
-            <div className="space-y-3">
-              {savedAddresses.map((address) => (
-                <div
-                  key={address.id}
-                  onClick={() => setSelectedAddress(address)}
-                  className={`group cursor-pointer p-4 border-2 rounded-xl transition-all duration-300 ${
-                    selectedAddress?.id === address.id
-                      ? 'border-blue-500 bg-gradient-to-br from-blue-900/30 to-blue-800/20 shadow-lg shadow-blue-500/20'
-                      : 'border-gray-700 bg-gradient-to-br from-gray-800/50 to-gray-900/50 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10'
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <h5 className="font-bold text-white">{address.name}</h5>
-                        {address.isDefault && (
-                          <span className="text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">
-                            Default
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-gray-300 text-sm mb-1">
-                        {address.street}
-                      </p>
-                      <p className="text-gray-400 text-sm">
-                        {address.zipCode} {address.city}
-                      </p>
-                      {address.phone && (
-                        <p className="text-gray-400 text-sm mt-1">
-                          📞 {address.phone}
-                        </p>
-                      )}
-                      {address.instructions && (
-                        <p className="text-gray-500 text-xs mt-2 italic">
-                          Note: {address.instructions}
-                        </p>
-                      )}
-                    </div>
-                    
-                    {selectedAddress?.id === address.id && (
-                      <div className="ml-4">
-                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                          <Check className="w-5 h-5 text-white" />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Delete Button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteAddress(address.id);
-                    }}
-                    className="mt-3 text-xs text-red-400 hover:text-red-300 transition-colors"
-                  >
-                    🗑️ Delete Address
-                  </button>
-                </div>
-              ))}
-            </div>
+        {/* Manual Address Entry Option */}
+        {!useNewAddress && (
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={() => setUseNewAddress(true)}
+              className="px-8 py-3 rounded-xl font-semibold transition-all duration-300 bg-gradient-to-r from-orange-600 to-orange-500 text-white hover:from-orange-700 hover:to-orange-600 shadow-lg hover:shadow-xl"
+            >
+              📝 Or Enter Address Manually
+            </button>
           </div>
         )}
-
-        {/* Add Different Address Button */}
-        <div className="flex justify-center">
-          <button
-            type="button"
-            onClick={() => setUseNewAddress(!useNewAddress)}
-            className={`px-8 py-3 rounded-xl font-semibold transition-all duration-300 ${
-              useNewAddress
-                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                : 'bg-gradient-to-r from-red-600 to-red-500 text-white hover:from-red-700 hover:to-red-600 shadow-lg hover:shadow-xl'
-            }`}
-          >
-            {useNewAddress ? '← Back to Saved Location' : '+ Add Different Address'}
-          </button>
-        </div>
 
       {/* New Address Form */}
       {useNewAddress && (
@@ -1116,19 +1310,68 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
               </div>
             </div>
 
-            <div>
+            <div className="relative">
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Street Address *
               </label>
-              <input
-                type="text"
-                value={newAddress.street}
-                onChange={(e) => setNewAddress(prev => ({ ...prev, street: e.target.value }))}
-                className={`w-full px-4 py-3 bg-black border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600 ${
-                  errors.street ? 'border-red-600' : 'border-gray-700'
-                }`}
-                placeholder="123 Main Street"
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  value={newAddress.street}
+                  onChange={(e) => setNewAddress(prev => ({ ...prev, street: e.target.value }))}
+                  onFocus={() => {
+                    if (addressSuggestions.length > 0) {
+                      setShowSuggestions(true);
+                    }
+                  }}
+                  onBlur={() => {
+                    // Delay to allow clicking on suggestions
+                    setTimeout(() => setShowSuggestions(false), 200);
+                  }}
+                  className={`w-full px-4 py-3 bg-black border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600 ${
+                    errors.street ? 'border-red-600' : 'border-gray-700'
+                  }`}
+                  placeholder="Start typing your address..."
+                  autoComplete="off"
+                />
+                {isLoadingSuggestions && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
+                  </div>
+                )}
+              </div>
+
+              {/* Autocomplete Dropdown */}
+              {showSuggestions && addressSuggestions.length > 0 && (
+                <div className="absolute z-50 w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl max-h-60 overflow-y-auto">
+                  {addressSuggestions.map((suggestion, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => selectAddressSuggestion(suggestion)}
+                      className="w-full text-left px-4 py-3 hover:bg-blue-900/30 transition-colors border-b border-gray-800 last:border-b-0"
+                    >
+                      <div className="flex items-start space-x-3">
+                        <MapPin className="w-4 h-4 text-blue-400 mt-1 flex-shrink-0" />
+                        <div>
+                          <p className="text-white text-sm font-medium">
+                            {suggestion.address.house_number && suggestion.address.road
+                              ? `${suggestion.address.house_number} ${suggestion.address.road}`
+                              : suggestion.address.road || suggestion.display_name}
+                          </p>
+                          <p className="text-gray-400 text-xs mt-0.5">
+                            {[
+                              suggestion.address.postcode,
+                              suggestion.address.city || suggestion.address.town || suggestion.address.village
+                            ].filter(Boolean).join(' ')}
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+
               {errors.street && <p className="text-red-400 text-sm mt-1">{errors.street}</p>}
               
               {/* Address delivery status indicator */}
@@ -1211,14 +1454,14 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
             />
           </div>
 
-          {/* Save Address Button */}
+          {/* Use Address Button */}
           <div className="flex space-x-3">
             <button
               type="button"
-              onClick={saveNewAddress}
+              onClick={useThisAddress}
               className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
             >
-              💾 Save Address
+              ✅ Use This Address
             </button>
             <button
               type="button"
@@ -1368,6 +1611,37 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
             </div>
           </button>
         </div>
+        
+        {/* Pickup Location Info */}
+        {orderType === 'pickup' && currentRestaurant && (
+          <div className="mt-4 bg-blue-900/20 border border-blue-600 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <div className="bg-blue-600 p-2 rounded-full flex-shrink-0">
+                <MapPin className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-white font-semibold mb-2">📍 Pick up from:</h4>
+                <p className="text-lg font-bold text-blue-300 mb-2">{currentRestaurant.name}</p>
+                <div className="space-y-1 text-sm text-blue-200">
+                  <p className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 flex-shrink-0" />
+                    {currentRestaurant.address}
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <Phone className="w-4 h-4 flex-shrink-0" />
+                    {currentRestaurant.phone}
+                  </p>
+                </div>
+                <div className="mt-3 p-2 bg-green-900/30 border border-green-600 rounded text-center">
+                  <p className="text-green-400 text-sm font-semibold">
+                    ⏱️ Ready in {currentRestaurant.deliveryTime?.split('-')[0] || '15-20'} minutes
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
         {errors.delivery && (
           <div className="mt-3 p-4 bg-red-900/50 border border-red-600 rounded-lg">
             <div className="flex items-start space-x-2">
@@ -1391,41 +1665,128 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
       
       {/* Payment Methods */}
       <div>
-        <h4 className="text-lg font-medium text-gray-300 mb-3">Payment Method</h4>
-        <p className="text-green-500 font-semibold mb-3">Payment Methods</p>
-        <div className="space-y-3">
-          <div className="flex items-center space-x-4 mb-4">
-            <img src="/path/to/paypal-logo.png" alt="PayPal" className="h-8" />
-            <img src="/path/to/visa-logo.png" alt="Visa" className="h-8" />
-            <img src="/path/to/mastercard-logo.png" alt="MasterCard" className="h-8" />
-          </div>
+        <h4 className="text-xl font-bold text-white mb-6">Choose Payment Method</h4>
+        
+        {/* Payment Options Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          {paymentMethods.map((method) => {
+            const IconComponent = method.IconComponent;
+            return (
+              <button
+                key={method.id}
+                onClick={() => setSelectedPayment(method)}
+                className={`group relative p-6 border-2 rounded-xl transition-all duration-200 ${
+                  selectedPayment?.id === method.id
+                    ? 'border-red-500 bg-gradient-to-br from-red-500/10 to-red-600/5 shadow-lg shadow-red-500/20'
+                    : 'border-gray-700 bg-gray-800/50 hover:border-gray-600 hover:bg-gray-800/80'
+                }`}
+              >
+                {/* Selected Indicator */}
+                {selectedPayment?.id === method.id && (
+                  <div className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1.5 shadow-lg">
+                    <Check className="w-4 h-4 text-white" />
+                  </div>
+                )}
+                
+                {/* Icon */}
+                <div className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-colors ${
+                  selectedPayment?.id === method.id
+                    ? 'bg-red-500/20 text-red-400'
+                    : 'bg-gray-700/50 text-gray-400 group-hover:bg-gray-700 group-hover:text-gray-300'
+                }`}>
+                  <IconComponent className="w-8 h-8" />
+                </div>
+                
+                {/* Name */}
+                <h5 className={`text-lg font-bold text-center mb-1 transition-colors ${
+                  selectedPayment?.id === method.id ? 'text-white' : 'text-gray-200 group-hover:text-white'
+                }`}>
+                  {method.name}
+                </h5>
+                
+                {/* Details */}
+                <p className="text-sm text-gray-400 text-center">
+                  {method.details}
+                </p>
+                
+                {/* Online Payment Badge */}
+                {method.id !== 'cash' && (
+                  <div className="mt-4 flex items-center justify-center gap-1.5">
+                    <Shield className="w-3.5 h-3.5 text-blue-400" />
+                    <span className="text-xs font-medium text-blue-400">
+                      Powered by Stripe
+                    </span>
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
 
-          {paymentMethods.map((method) => (
-            <div
-              key={method.id}
-              onClick={() => setSelectedPayment(method)}
-              className={`p-4 border rounded-lg cursor-pointer transition-all hover:bg-gray-800 ${
-                selectedPayment?.id === method.id
-                  ? 'border-red-600 bg-red-900/20'
-                  : 'border-gray-700 bg-gray-800/50'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <span className="text-2xl">{method.icon}</span>
-                  <div>
-                    <span className="font-medium text-white">{method.name}</span>
-                    <p className="text-gray-400 text-sm">{method.details}</p>
+        {/* Payment Info Banner - Online Payments */}
+        {selectedPayment && selectedPayment.id !== 'cash' && (
+          <div className="bg-gradient-to-r from-blue-900/20 to-blue-800/20 border border-blue-500/30 rounded-xl p-5">
+            <div className="flex items-start gap-4">
+              <div className="bg-blue-500/20 p-3 rounded-lg flex-shrink-0">
+                <Lock className="w-6 h-6 text-blue-400" />
+              </div>
+              <div className="flex-1">
+                <h5 className="text-white font-bold mb-2 flex items-center gap-2">
+                  Secure Payment Processing
+                  <span className="text-xs font-normal px-2 py-0.5 bg-green-500/20 text-green-400 rounded-full border border-green-500/30">
+                    SSL Encrypted
+                  </span>
+                </h5>
+                <p className="text-sm text-blue-200 mb-3 leading-relaxed">
+                  When you click "Place Order", you'll be securely redirected to <strong>Stripe's checkout page</strong> to complete your payment. Stripe is trusted by millions of businesses worldwide.
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                  <div className="flex items-center gap-1.5 text-blue-300">
+                    <Check className="w-3.5 h-3.5 text-green-400" />
+                    <span>PCI DSS Level 1</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-blue-300">
+                    <Check className="w-3.5 h-3.5 text-green-400" />
+                    <span>256-bit SSL</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-blue-300">
+                    <Check className="w-3.5 h-3.5 text-green-400" />
+                    <span>3D Secure</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-blue-300">
+                    <Check className="w-3.5 h-3.5 text-green-400" />
+                    <span>Fraud Protection</span>
                   </div>
                 </div>
-                {selectedPayment?.id === method.id && (
-                  <Check className="w-6 h-6 text-red-400" />
-                )}
               </div>
             </div>
-          ))}
-        </div>
-        {errors.payment && <p className="text-red-400 text-sm mt-2">{errors.payment}</p>}
+          </div>
+        )}
+
+        {/* Payment Info Banner - Cash */}
+        {selectedPayment && selectedPayment.id === 'cash' && (
+          <div className="bg-gradient-to-r from-green-900/20 to-green-800/20 border border-green-500/30 rounded-xl p-5">
+            <div className="flex items-start gap-4">
+              <div className="bg-green-500/20 p-3 rounded-lg flex-shrink-0">
+                <Banknote className="w-6 h-6 text-green-400" />
+              </div>
+              <div>
+                <h5 className="text-white font-bold mb-2">Cash Payment</h5>
+                <p className="text-sm text-green-200 leading-relaxed">
+                  No online payment required. Simply pay with cash when you {orderType === 'delivery' ? 'receive your delivery' : 'pick up your order at the restaurant'}. 
+                  Please have exact change if possible.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {errors.payment && (
+          <div className="mt-4 flex items-center gap-2 text-red-400 text-sm bg-red-900/20 border border-red-500/30 rounded-lg p-3">
+            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <span>{errors.payment}</span>
+          </div>
+        )}
       </div>
 
       {/* Tip */}
@@ -1515,31 +1876,159 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     </div>
   );
 
-  const renderOrderConfirmation = () => (
-    <div className="text-center space-y-6">
-      <div className="w-20 h-20 mx-auto bg-green-600 rounded-full flex items-center justify-center">
-        <Check className="w-10 h-10 text-white" />
-      </div>
-      <div>
-        <h3 className="text-2xl font-bold text-white mb-2">Order Placed Successfully!</h3>
-        <p className="text-gray-300 mb-2">Thank you for choosing Mr. Happy! Your order has been sent to our kitchen team.</p>
-        <p className="text-sm text-yellow-400">You'll receive notifications as your order progresses.</p>
-      </div>
-      <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-        <h4 className="text-lg font-medium text-white mb-4">Order Details</h4>
-        <div className="space-y-2 text-left">
-          <div className="flex justify-between">
-            <span className="text-gray-300">Order Number:</span>
-            <span className="text-white font-mono">MR{Date.now().toString().slice(-8)}</span>
+  const renderOrderConfirmation = () => {
+    const totals = calculateTotal();
+    const estimatedTime = orderType === 'delivery' ? '30-45 minutes' : '15-20 minutes';
+    
+    return (
+      <div className="space-y-6">
+        {/* Success Header */}
+        <div className="text-center">
+          <div className="w-20 h-20 mx-auto bg-green-600 rounded-full flex items-center justify-center animate-scaleIn">
+            <Check className="w-10 h-10 text-white" />
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-300">Estimated Delivery:</span>
-            <span className="text-white">30-45 minutes</span>
+          <h3 className="text-3xl font-bold text-white mt-4 mb-2">Order Placed Successfully!</h3>
+          <p className="text-gray-300">Thank you for choosing Mr. Happy!</p>
+        </div>
+
+        {/* Restaurant Info */}
+        {currentRestaurant && (
+          <div className="bg-gradient-to-r from-red-900/30 to-orange-900/30 border border-red-600/30 rounded-lg p-5">
+            <div className="flex items-start gap-3">
+              <div className="bg-red-600 p-2 rounded-full flex-shrink-0">
+                <Store className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-lg font-bold text-white mb-2">
+                  {orderType === 'pickup' ? 'Pick up from:' : 'Order from:'}
+                </h4>
+                <p className="text-xl font-semibold text-red-400 mb-2">{currentRestaurant.name}</p>
+                <div className="space-y-1 text-sm text-gray-300">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-red-400 flex-shrink-0" />
+                    <span>{currentRestaurant.address}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-red-400 flex-shrink-0" />
+                    <span>{currentRestaurant.phone}</span>
+                  </div>
+                </div>
+                {orderType === 'pickup' && (
+                  <div className="mt-3 p-3 bg-blue-900/30 border border-blue-600 rounded">
+                    <p className="text-blue-300 text-sm font-medium">
+                      📍 Please pick up your order from the address above
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Order Details */}
+        <div className="bg-gray-800/50 rounded-lg p-5 border border-gray-700">
+          <h4 className="text-lg font-bold text-white mb-4">Order Details</h4>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center pb-3 border-b border-gray-700">
+              <span className="text-gray-400">Order Number:</span>
+              <span className="text-white font-mono font-bold text-lg">#{Date.now().toString().slice(-8)}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400">Order Type:</span>
+              <span className="text-white font-semibold capitalize">{orderType}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400">Estimated Time:</span>
+              <span className="text-green-400 font-semibold">{estimatedTime}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400">Payment Method:</span>
+              <span className="text-white">Cash on {orderType === 'delivery' ? 'Delivery' : 'Pickup'}</span>
+            </div>
           </div>
         </div>
+
+        {/* Order Items */}
+        <div className="bg-gray-800/50 rounded-lg p-5 border border-gray-700">
+          <h4 className="text-lg font-bold text-white mb-4">Your Items</h4>
+          <div className="space-y-3">
+            {cartState.items.map((item) => (
+              <div key={item.id} className="flex justify-between items-start">
+                <div className="flex-1">
+                  <p className="text-white font-medium">{item.menuItem.name}</p>
+                  {item.customizations && item.customizations.length > 0 && (
+                    <p className="text-sm text-gray-400 mt-1">
+                      Customized ({item.customizations.length} changes)
+                    </p>
+                  )}
+                  <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                </div>
+                <span className="text-white font-semibold">€{item.totalPrice.toFixed(2)}</span>
+              </div>
+            ))}
+          </div>
+          
+          {/* Price Breakdown */}
+          <div className="mt-4 pt-4 border-t border-gray-700 space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-400">Subtotal:</span>
+              <span className="text-white">€{totals.subtotal.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-400">Tax (19%):</span>
+              <span className="text-white">€{totals.tax.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-400">Delivery Fee:</span>
+              <span className="text-white">{totals.deliveryFee === 0 ? 'FREE' : `€${totals.deliveryFee.toFixed(2)}`}</span>
+            </div>
+            {tipAmount > 0 && (
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Tip:</span>
+                <span className="text-white">€{tipAmount.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between text-lg font-bold pt-2 border-t border-gray-600">
+              <span className="text-white">Total:</span>
+              <span className="text-red-500">€{totals.total.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Delivery/Pickup Address */}
+        {orderType === 'delivery' && selectedAddress && (
+          <div className="bg-blue-900/20 border border-blue-600 rounded-lg p-4">
+            <h4 className="text-white font-semibold mb-2">Delivery Address:</h4>
+            <p className="text-blue-300">{selectedAddress.street}</p>
+            <p className="text-blue-300">{selectedAddress.city}, {selectedAddress.zipCode}</p>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="flex gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-colors"
+          >
+            Close
+          </button>
+          <button
+            onClick={() => {/* Future: Navigate to orders page */}}
+            className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors"
+          >
+            Track Order
+          </button>
+        </div>
+
+        {/* Success Message */}
+        <div className="text-center p-4 bg-green-900/20 border border-green-600 rounded-lg">
+          <p className="text-green-400 text-sm">
+            ✅ Your order has been sent to the restaurant. You'll receive updates as it progresses!
+          </p>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // Fix renderStepContent definition
   const renderStepContent = () => {
@@ -1602,6 +2091,32 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
               <X className="w-6 h-6" />
             </button>
           </div>
+
+          {/* Restaurant Banner */}
+          {currentRestaurant && !orderPlaced && (
+            <div className="mb-6 bg-gradient-to-r from-red-900/30 to-orange-900/30 border border-red-600/30 rounded-lg p-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-red-600 p-2 rounded-full">
+                  <Store className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-white">
+                    Your order from: {currentRestaurant.name}
+                  </h3>
+                  <div className="flex flex-wrap items-center gap-4 mt-1 text-sm text-gray-300">
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4 text-red-400" />
+                      <span>{currentRestaurant.address}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Phone className="w-4 h-4 text-red-400" />
+                      <span>{currentRestaurant.phone}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Content */}
           <div className="min-h-[400px]">

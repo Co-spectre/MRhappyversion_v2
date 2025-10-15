@@ -314,8 +314,8 @@ const Header: React.FC<HeaderProps> = ({ currentRestaurant, onRestaurantChange, 
                       <span className="font-medium text-sm">{t('nav.favorites')}</span>
                     </button>
 
-                    {/* Admin Panel Access - Only for admin users */}
-                    {state.user?.role === 'admin' && (
+                    {/* Admin Panel Access - For admin and restaurant-admin users */}
+                    {(state.user?.role === 'admin' || state.user?.role === 'restaurant-admin') && (
                       <>
                         <div className="border-t border-gray-600 my-2"></div>
                         <button

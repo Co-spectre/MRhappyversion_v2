@@ -10,6 +10,7 @@ interface AdminState {
   analytics: OrderAnalytics | null;
   isLoading: boolean;
   selectedOrder: Order | null;
+  restaurantId: string | null; // NEW: Current restaurant filter
   filters: {
     orderStatus: string;
     dateRange: {
@@ -31,6 +32,7 @@ type AdminAction =
   | { type: 'UPDATE_INVENTORY_ITEM'; payload: { id: string; updates: Partial<InventoryItem> } }
   | { type: 'SET_ANALYTICS'; payload: OrderAnalytics }
   | { type: 'SELECT_ORDER'; payload: Order | null }
+  | { type: 'SET_RESTAURANT'; payload: string | null } // NEW: Set restaurant filter
   | { type: 'SET_FILTERS'; payload: Partial<AdminState['filters']> };
 
 const initialState: AdminState = {
@@ -40,6 +42,7 @@ const initialState: AdminState = {
   analytics: null,
   isLoading: false,
   selectedOrder: null,
+  restaurantId: null, // NEW: Initialize restaurant filter
   filters: {
     orderStatus: 'all',
     dateRange: {
@@ -131,6 +134,8 @@ function adminReducer(state: AdminState, action: AdminAction): AdminState {
       return { ...state, analytics: action.payload };
     case 'SELECT_ORDER':
       return { ...state, selectedOrder: action.payload };
+    case 'SET_RESTAURANT':
+      return { ...state, restaurantId: action.payload }; // NEW: Set restaurant filter
     case 'SET_FILTERS':
       return { ...state, filters: { ...state.filters, ...action.payload } };
     default:
@@ -144,6 +149,7 @@ const AdminContext = createContext<{
   addOrder: (order: Order) => void;
   updateOrderStatus: (orderId: string, status: Order['status']) => void;
   updateInventoryStock: (itemId: string, newStock: number) => void;
+  setRestaurant: (restaurantId: string | null) => void; // NEW: Set restaurant filter
   getFilteredOrders: () => Order[];
 } | null>(null);
 
@@ -215,8 +221,17 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const setRestaurant = (restaurantId: string | null) => {
+    dispatch({ type: 'SET_RESTAURANT', payload: restaurantId });
+  };
+
   const getFilteredOrders = (): Order[] => {
     let filtered = state.orders;
+
+    // Filter by restaurant first (if restaurant admin)
+    if (state.restaurantId) {
+      filtered = filtered.filter(order => order.restaurantId === state.restaurantId);
+    }
 
     if (state.filters.orderStatus !== 'all') {
       filtered = filtered.filter(order => order.status === state.filters.orderStatus);
@@ -259,6 +274,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       addOrder,
       updateOrderStatus,
       updateInventoryStock,
+      setRestaurant, // NEW: Expose setRestaurant function
       getFilteredOrders,
     }}>
       {children}

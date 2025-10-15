@@ -11,10 +11,20 @@ interface MenuItemCardProps {
 }
 
 export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item, onCustomizeClick }) => {
-  const { addToCart } = useCart();
+  const { addToCart, canAddItemFromRestaurant, clearCartAndSwitchRestaurant, getLockedRestaurantId } = useCart();
   const { t } = useLanguage();
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const [showNutrition, setShowNutrition] = useState(false);
+  const [showRestaurantWarning, setShowRestaurantWarning] = useState(false);
+
+  const getRestaurantName = (restaurantId: string): string => {
+    const names: Record<string, string> = {
+      'doner': 'Döner Restaurant',
+      'burger': 'Burger Restaurant',
+      'doner-pizza': 'Pizza Restaurant'
+    };
+    return names[restaurantId] || restaurantId;
+  };
 
   const handleAddToCart = () => {
     console.log('🚨 MenuItemCard handleAddToCart clicked!', { 
@@ -24,12 +34,34 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item, onCustomizeCli
       onCustomizeClick: !!onCustomizeClick 
     });
     
+    // NEW: Check if cart is locked to a different restaurant
+    if (!canAddItemFromRestaurant(item.restaurantId)) {
+      setShowRestaurantWarning(true);
+      return;
+    }
+    
     // Always show customization for burger restaurant items OR if item is customizable
     if ((item.restaurantId === 'burger' || item.customizable) && onCustomizeClick) {
       console.log('🚨 Calling onCustomizeClick for burger/customizable item');
       onCustomizeClick(item);
     } else {
       console.log('🚨 Adding directly to cart (no customization)');
+      const result = addToCart(item);
+      if (!result.success && result.message) {
+        // This shouldn't happen since we check above, but just in case
+        alert(result.message);
+      }
+    }
+  };
+
+  const handleClearAndSwitch = () => {
+    clearCartAndSwitchRestaurant(item.restaurantId);
+    setShowRestaurantWarning(false);
+    
+    // Now add the item
+    if ((item.restaurantId === 'burger' || item.customizable) && onCustomizeClick) {
+      onCustomizeClick(item);
+    } else {
       addToCart(item);
     }
   };
@@ -234,6 +266,48 @@ export const MenuItemCard: React.FC<MenuItemCardProps> = ({ item, onCustomizeCli
           </div>
         </div>
       </div>
+
+      {/* Restaurant Warning Modal - Simple & Centered */}
+      {showRestaurantWarning && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowRestaurantWarning(false)}
+        >
+          <div 
+            className="bg-gray-900 rounded-lg shadow-2xl max-w-md w-full border border-gray-700"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Content */}
+            <div className="p-6">
+              <h3 className="text-xl font-bold text-white mb-4">
+                Different Restaurant
+              </h3>
+              
+              <p className="text-gray-300 mb-6">
+                Your cart has items from <span className="font-semibold text-red-400">{getRestaurantName(getLockedRestaurantId() || '')}</span>.
+                <br />
+                You can only order from one restaurant at a time.
+              </p>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowRestaurantWarning(false)}
+                  className="flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleClearAndSwitch}
+                  className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors"
+                >
+                  Clear Cart & Continue
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

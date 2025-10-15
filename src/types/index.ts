@@ -132,6 +132,7 @@ export interface Order {
   total: number;
   status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'completed' | 'cancelled';
   orderType: 'pickup' | 'delivery';
+  restaurantId: 'doner' | 'burger' | 'doner-pizza'; // Track which restaurant
   scheduledTime?: Date;
   pickupLocation?: string;
   estimatedTime?: string;
@@ -154,7 +155,8 @@ export interface AuthUser {
   favoriteItems: string[];
   loyaltyPoints: number;
   createdAt: Date;
-  role?: 'customer' | 'admin' | 'manager';
+  role?: 'customer' | 'admin' | 'manager' | 'restaurant-admin';
+  restaurantId?: 'doner' | 'burger' | 'doner-pizza'; // For restaurant admins
   preferredLocation?: 'vegesack' | 'schwanewede';
   deliveryAddress?: Address;
   locationVerified?: boolean;
@@ -212,3 +214,44 @@ export interface OrderAnalytics {
     orderCount: number;
   }[];
 }
+
+export interface RestaurantAdmin {
+  id: string;
+  restaurantId: 'doner' | 'burger' | 'doner-pizza';
+  restaurantName: string;
+  email: string;
+  password: string; // In production, this would be hashed
+  location: string;
+  phone: string;
+  stripeAccountId?: string; // For split payments
+}
+
+export const RESTAURANT_ADMINS: RestaurantAdmin[] = [
+  {
+    id: 'admin-doner',
+    restaurantId: 'doner',
+    restaurantName: 'Mr. Happy Döner (Vegesack)',
+    email: 'doner@mrhappy.de',
+    password: 'doner123',
+    location: 'Zum Alten Speicher 1, 28759 Bremen',
+    phone: '04209/8989990'
+  },
+  {
+    id: 'admin-burger',
+    restaurantId: 'burger',
+    restaurantName: 'Mr. Happy Burger (Vegesack)',
+    email: 'burger@mrhappy.de',
+    password: 'burger123',
+    location: 'Zum Alten Speicher 1, 28759 Bremen',
+    phone: '04209/8989990'
+  },
+  {
+    id: 'admin-pizza',
+    restaurantId: 'doner-pizza',
+    restaurantName: 'Mr. Happy Döner & Pizza (Schwanewede)',
+    email: 'pizza@mrhappy.de',
+    password: 'pizza123',
+    location: 'Heidkamp 25, 28790 Schwanewede',
+    phone: '042098989992'
+  }
+];

@@ -5,10 +5,20 @@ import { useAuth } from '../context/AuthContext';
 import CheckoutModal from './CheckoutModal';
 
 const CartSidebar: React.FC = () => {
-  const { state, dispatch, getTotalPrice, removeFromCart } = useCart();
+  const { state, dispatch, getTotalPrice, removeFromCart, getLockedRestaurantId } = useCart();
   const { state: authState } = useAuth();
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = React.useState(false);
   const [slideIn, setSlideIn] = React.useState(false);
+
+  const getRestaurantName = (restaurantId: string | null): string => {
+    if (!restaurantId) return '';
+    const names: Record<string, string> = {
+      'doner': '🥙 Döner Restaurant',
+      'burger': '🍔 Burger Restaurant',
+      'doner-pizza': '🍕 Pizza Restaurant'
+    };
+    return names[restaurantId] || restaurantId;
+  };
 
   // Trigger slide-in animation when cart opens
   React.useEffect(() => {
@@ -91,7 +101,19 @@ const CartSidebar: React.FC = () => {
             </button>
           </div>
 
-
+          {/* Restaurant Lock Banner */}
+          {getLockedRestaurantId() && (
+            <div className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 border-y border-blue-500/30 px-4 py-2">
+              <div className="flex items-center justify-center space-x-2">
+                <span className="text-blue-300 text-sm font-medium">
+                  {getRestaurantName(getLockedRestaurantId())}
+                </span>
+              </div>
+              <p className="text-blue-400/70 text-xs text-center mt-1">
+                You can only order from one restaurant at a time
+              </p>
+            </div>
+          )}
 
           {/* Cart Items */}
           <div className="flex-1 overflow-y-auto p-3">

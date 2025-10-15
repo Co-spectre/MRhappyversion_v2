@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
-import { AuthUser } from '../types';
+import { AuthUser, RESTAURANT_ADMINS } from '../types';
 
 interface AuthState {
   user: AuthUser | null;
@@ -95,11 +95,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       let user: AuthUser;
       
       if (email === 'admin@mrhappy.com' && password === 'admin123') {
-        // Admin user
+        // Super Admin user - sees ALL restaurants
         user = {
           id: 'admin-1',
           email,
-          name: 'Admin User',
+          name: 'Super Admin',
           phone: '+49 555 123456',
           addresses: [],
           favoriteItems: [],
@@ -107,52 +107,73 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           createdAt: new Date('2024-12-01'),
           role: 'admin'
         };
-      } else if (email === 'customer@mrhappy.com' && password === 'customer123') {
-        // Demo customer
-        user = {
-          id: 'customer-1',
-          email,
-          name: 'Demo Customer',
-          phone: '+49 123 456789',
-          addresses: [
-            {
-              id: '1',
-              name: 'Home',
-              street: 'Hauptstraße 123',
-              city: 'Bremen',
-              state: 'Bremen',
-              zipCode: '28195',
-              isDefault: true
-            }
-          ],
-          favoriteItems: ['burger-1', 'burger-2'],
-          loyaltyPoints: 150,
-          createdAt: new Date('2025-01-15'),
-          role: 'customer'
-        };
       } else {
-        // Generic user for any other email/password combination
-        user = {
-          id: Date.now().toString(),
-          email,
-          name: email.split('@')[0],
-          phone: '+49 555 000000',
-          addresses: [
-            {
-              id: '1',
-              name: 'Home',
-              street: 'Beispielstraße 1',
-              city: 'Bremen',
-              state: 'Bremen',
-              zipCode: '28199',
-              isDefault: true
-            }
-          ],
-          favoriteItems: [],
-          loyaltyPoints: 0,
-          createdAt: new Date(),
-          role: 'customer'
-        };
+        // Check for restaurant admin
+        const restaurantAdmin = RESTAURANT_ADMINS.find(
+          admin => admin.email === email && admin.password === password
+        );
+        
+        if (restaurantAdmin) {
+          // Restaurant Admin - sees only their restaurant
+          user = {
+            id: restaurantAdmin.id,
+            email: restaurantAdmin.email,
+            name: restaurantAdmin.restaurantName,
+            phone: restaurantAdmin.phone,
+            addresses: [],
+            favoriteItems: [],
+            loyaltyPoints: 0,
+            createdAt: new Date(),
+            role: 'restaurant-admin',
+            restaurantId: restaurantAdmin.restaurantId
+          };
+        } else if (email === 'customer@mrhappy.com' && password === 'customer123') {
+          // Demo customer
+          user = {
+            id: 'customer-1',
+            email,
+            name: 'Demo Customer',
+            phone: '+49 123 456789',
+            addresses: [
+              {
+                id: '1',
+                name: 'Home',
+                street: 'Hauptstraße 123',
+                city: 'Bremen',
+                state: 'Bremen',
+                zipCode: '28195',
+                isDefault: true
+              }
+            ],
+            favoriteItems: ['burger-1', 'burger-2'],
+            loyaltyPoints: 150,
+            createdAt: new Date('2025-01-15'),
+            role: 'customer'
+          };
+        } else {
+          // Generic user for any other email/password combination
+          user = {
+            id: Date.now().toString(),
+            email,
+            name: email.split('@')[0],
+            phone: '+49 555 000000',
+            addresses: [
+              {
+                id: '1',
+                name: 'Home',
+                street: 'Beispielstraße 1',
+                city: 'Bremen',
+                state: 'Bremen',
+                zipCode: '28199',
+                isDefault: true
+              }
+            ],
+            favoriteItems: [],
+            loyaltyPoints: 0,
+            createdAt: new Date(),
+            role: 'customer'
+          };
+        }
       }
       
       localStorage.setItem('mr-happy-user', JSON.stringify(user));

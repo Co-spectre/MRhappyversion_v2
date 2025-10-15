@@ -37,7 +37,7 @@ const translations = {
     'hero.followUs': 'Follow Us',
     
     // Restaurant Cards
-    'restaurant.doner.name': 'Döner',
+    'restaurant.doner.name': 'Restaurant',
     'restaurant.doner.desc': 'Authentic Turkish flavors',
     'restaurant.burger.name': 'Burger',
     'restaurant.burger.desc': 'Premium American classics',

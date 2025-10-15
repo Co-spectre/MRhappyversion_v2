@@ -47,7 +47,7 @@ const Header: React.FC<HeaderProps> = ({ currentRestaurant, onRestaurantChange, 
   }, []);
 
   const restaurants = [
-    { id: 'doner', name: 'Doner', icon: <UtensilsCrossed className="w-4 h-4" /> },
+    { id: 'doner', name: 'Restaurant', icon: <UtensilsCrossed className="w-4 h-4" /> },
     { id: 'burger', name: 'Burger', icon: <Beef className="w-4 h-4" /> },
     { id: 'doner-pizza', name: 'Döner&Pizza', icon: <ChefHat className="w-4 h-4" /> }
   ];

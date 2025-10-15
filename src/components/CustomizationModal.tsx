@@ -539,6 +539,33 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             ]
           },
           {
+            id: 'toppings',
+            title: 'Remove Toppings',
+            required: false,
+            multiSelect: true,
+            options: [
+              { id: 'no_lettuce', name: 'No Lettuce' },
+              { id: 'no_tomato', name: 'No Tomato' },
+              { id: 'no_onion', name: 'No Onion' },
+              { id: 'no_white_cabbage', name: 'No White Cabbage' },
+              { id: 'no_red_cabbage', name: 'No Red Cabbage' },
+              { id: 'no_cheese', name: 'No Cheese' }
+            ]
+          },
+          {
+            id: 'extras',
+            title: 'Add Extras (Optional)',
+            required: false,
+            multiSelect: true,
+            options: [
+              { id: 'feta_gouda', name: 'Feta oder Gouda', price: 1.5 },
+              { id: 'doppel_fleisch', name: 'Doppel Fleisch', price: 2.5 },
+              { id: 'mais', name: 'Mais', price: 2.0 },
+              { id: 'peperoni', name: 'Peperoni', price: 2.0 },
+              { id: 'jallapenos', name: 'Jalapeños', price: 2.0 }
+            ]
+          },
+          {
             id: 'menu_drink',
             title: 'Choose Your Drink (Included)',
             required: true,

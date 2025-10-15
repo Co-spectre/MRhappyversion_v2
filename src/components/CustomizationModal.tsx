@@ -581,7 +581,10 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
               { id: 'fritz_limo_ginger', name: 'Fritz-Limo Ginger-Lime' },
               { id: 'fritz_spritz_apple', name: 'Fritz-Spritz Organic Cloudy Apple' },
               { id: 'fritz_spritz_grape', name: 'Fritz-Spritz Organic Grape' },
-              { id: 'fritz_spritz_rhubarb', name: 'Fritz-Spritz Organic Rhubarb' }
+              { id: 'fritz_spritz_rhubarb', name: 'Fritz-Spritz Organic Rhubarb' },
+              { id: 'uludag', name: 'Uludag' },
+              { id: 'ayran', name: 'Ayran' },
+              { id: 'wasser', name: 'Wasser' }
             ]
           }
         );
@@ -944,7 +947,12 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
               // Fritz-Spritz varieties  
               { id: 'fritz_spritz_apple', name: 'Fritz-Spritz Organic Cloudy Apple' },
               { id: 'fritz_spritz_grape', name: 'Fritz-Spritz Organic Grape' },
-              { id: 'fritz_spritz_rhubarb', name: 'Fritz-Spritz Organic Rhubarb' }
+              { id: 'fritz_spritz_rhubarb', name: 'Fritz-Spritz Organic Rhubarb' },
+              
+              // Other drinks
+              { id: 'uludag', name: 'Uludag' },
+              { id: 'ayran', name: 'Ayran' },
+              { id: 'wasser', name: 'Wasser' }
             ]
           },
           {

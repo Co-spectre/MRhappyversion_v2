@@ -2180,6 +2180,52 @@ export const menuItems: MenuItem[] = [
     ]
   },
 
+  // Chicken Nuggets
+  {
+    id: 'chicken-nuggets',
+    name: 'Chicken Nuggets',
+    description: 'Classic crispy chicken nuggets - Choose your size',
+    basePrice: 7.90,
+    image: '/food items/buger/nuggets.jpg',
+    category: 'Crispy Chicken',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 0, halal: true },
+    allergens: ['gluten', 'eggs'],
+    calories: 380,
+    ingredients: ['chicken', 'breadcrumbs', 'spices'],
+    customizable: false,
+    popular: true,
+    preparationTime: '8-10 min',
+    origin: 'Classic Style',
+    sizes: [
+      { name: '6-er', priceMultiplier: 1.0 }, // €7.90
+      { name: '9-er', priceMultiplier: 1.253 }, // €9.90
+      { name: '20-er', priceMultiplier: 2.266 } // €17.90
+    ]
+  },
+  {
+    id: 'chili-cheese-nuggets',
+    name: 'Chili Cheese Nuggets',
+    description: 'Spicy chicken nuggets with melted cheese - Choose your size',
+    basePrice: 7.90,
+    image: '/food items/buger/chili-cheese-nuggets.jpg',
+    category: 'Crispy Chicken',
+    restaurantId: 'burger',
+    dietaryInfo: { vegetarian: false, vegan: false, glutenFree: false, spicy: 2, halal: true },
+    allergens: ['gluten', 'eggs', 'dairy'],
+    calories: 450,
+    ingredients: ['chicken', 'cheese', 'chili', 'breadcrumbs'],
+    customizable: false,
+    popular: true,
+    preparationTime: '10-12 min',
+    origin: 'Spicy Special',
+    sizes: [
+      { name: '6-er', priceMultiplier: 1.0 }, // €7.90
+      { name: '9-er', priceMultiplier: 1.506 }, // €11.90
+      { name: '18-er', priceMultiplier: 2.139 } // €16.90
+    ]
+  },
+
   // Flavour Chicken - Non-Customizable Items with updated prices
   {
     id: 'flavour-chicken-keulen',

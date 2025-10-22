@@ -1,237 +1,168 @@
-# MRhappy Restaurant Platform v2 🍕
+# MRhappy Burger v2 🍔
 
-A comprehensive multi-restaurant ordering system with advanced authentication, real-time tracking, and modern web technologies.
+A modern multi-restaurant ordering platform built with React, TypeScript, and Tailwind CSS.
 
-## 🎯 Project Overview
+## 🏪 Restaurant Concepts
 
-MRhappy is a full-stack restaurant platform that enables users to browse multiple restaurants, customize orders, track deliveries, and manage their dining experience. Built with modern technologies and enterprise-grade security.
+- **Mr.Happy Döner** - Authentic Turkish & Mediterranean cuisine
+- **Mr.Happy Burger** - Premium American burgers & chicken
+- **Mr.Happy Restaurant** - Fine dining with seasonal menus
 
-## 🚀 Technologies Used
+## ✨ Features
 
-### Frontend
-- **React 18** with TypeScript
-- **Vite** for fast development and building
-- **Tailwind CSS** for responsive styling
-- **Lucide React** for optimized icons
-- **Context API** for state management
+- 🍽️ Multi-restaurant platform with seamless switching
+- 🛒 Advanced shopping cart with customizations
+- 🎯 Promo code support (try "mr.happy" for 10% off!)
+- 👤 User authentication with role-based access
+- 📱 Fully responsive mobile-first design
+- 🌍 Multi-language support (EN/DE/TR)
+- 🔔 Real-time order notifications
+- 👨‍💼 Admin dashboard for order & inventory management
 
-### Backend
-- **Node.js** with Express.js
-- **ES Modules** for modern JavaScript
-- **JWT Authentication** with refresh tokens
-- **bcryptjs** for password hashing
-- **Express Rate Limiting** for security
-- **Helmet.js** for security headers
-- **CORS** configuration
+## 🚀 Tech Stack
 
-### Database
-- **MongoDB** on port 27018
-- **Mongoose** ODM with schema validation
-- **Comprehensive data models** for all entities
-- **Optimized indexes** for performance
+- **Frontend**: React 18 + TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **Icons**: Lucide React
+- **State Management**: React Context API
 
-## 🗄️ Database Architecture
-
-The MRhappy platform uses MongoDB with the following comprehensive collections:
-
-### 👥 Users Collection
-- **Authentication System**: Email/password with JWT tokens
-- **User Profiles**: Personal information, preferences, addresses
-- **Security Features**: Email verification, password reset tokens
-- **Loyalty Program**: Points system and rewards tracking
-- **Privacy Compliance**: GDPR-compliant consent management
-
-### 🏪 Restaurants Collection
-- **Restaurant Profiles**: Name, description, cuisine type, ratings
-- **Location Data**: Address, coordinates, delivery zones
-- **Operating Hours**: Opening/closing times, special schedules
-- **Contact Information**: Phone, email, social media links
-- **Media Assets**: Logo, cover images, gallery photos
-
-### 🍽️ Menu Items Collection
-- **Detailed Menu Data**: Name, description, pricing, categories
-- **Nutritional Information**: Calories, allergens, dietary preferences
-- **Customization Options**: Ingredients, sizes, preparation methods
-- **Availability**: Stock status, time-based availability
-- **Media**: High-quality food images and videos
-
-### 🛒 Orders Collection
-- **Order Management**: Status tracking, timestamps, delivery info
-- **Customer Data**: User details, delivery addresses, preferences
-- **Payment Information**: Transaction details, payment methods
-- **Order Items**: Detailed list with customizations and pricing
-- **Delivery Tracking**: Real-time location and status updates
-
-### 🎯 Additional Collections
-- **Categories**: Food categories and subcategories
-- **Ingredients**: Comprehensive ingredient database with allergen info
-- **Promotions**: Discount codes, special offers, loyalty rewards
-- **Reviews**: Customer feedback and ratings system
-- **Analytics**: Usage statistics and performance metrics
-
-## 🔧 Setup Instructions
+## 📦 Quick Start
 
 ### Prerequisites
-- Node.js (v18 or higher)
-- MongoDB (running on port 27018)
-- Git
+- Node.js 18+ 
+- npm or yarn
 
 ### Installation
 
-1. **Clone the repository:**
-```bash
-git clone https://github.com/Co-spectre/MRhappyversion_v2.git
-cd MRhappyversion_v2
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/MRhapopyburger-v2.git
+   cd MRhapopyburger-v2
+   ```
+
+2. **Install dependencies**
+   ```bash
+   cd project
+   npm install
+   ```
+
+3. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+4. **Open your browser**
+   ```
+   http://localhost:5173
+   ```
+
+## 🔑 Demo Accounts
+
+### Admin Access
+- **Email**: admin@mrhappy.com
+- **Password**: admin123
+
+### Customer Account
+- **Email**: customer@mrhappy.com  
+- **Password**: customer123
+
+## 📱 Project Structure
+
+```
+MRhapopyburger-v2/
+├── project/                 # Main React application
+│   ├── src/
+│   │   ├── components/      # React components
+│   │   ├── context/         # Context providers
+│   │   ├── data/           # Restaurant & menu data
+│   │   ├── services/       # Business logic
+│   │   └── types/          # TypeScript definitions
+│   ├── package.json
+│   └── vite.config.ts
+├── memory-bank/            # Project documentation
+└── README.md
 ```
 
-2. **Setup Backend:**
+## 🍕 Menu Highlights
+
+### Döner Selection
+- Classic Chicken Döner (€8.50)
+- Spicy Lamb Döner (€10.90) 
+- Mixed Meat Supreme (€12.50)
+
+### Burger Collection  
+- Nashville Burger Spicy (€12.90)
+- Smash Burger (€11.90)
+- Chilli Cheese Burger (€12.50)
+
+### Fine Dining
+- Pan-Seared Atlantic Salmon (€18.90)
+- Prime Beef Tenderloin (€24.50)
+- Truffle Mushroom Risotto (€16.50)
+
+## 🛠️ Available Scripts
+
 ```bash
-cd MRhappywebsite/backend
-npm install
-npm run db:seed  # Populate database with sample data
-npm start        # Start on port 5000
+npm run dev        # Start development server
+npm run build      # Build for production  
+npm run preview    # Preview production build
+npm run lint       # Run ESLint
 ```
 
-3. **Setup Frontend:**
-```bash
-cd ../project
-npm install
-npm run dev      # Start on port 5173
-```
+## 🔧 Configuration
 
-4. **Setup Database:**
-```bash
-# Ensure MongoDB is running on port 27018
-mongod --port 27018 --dbpath C:\data\mrhappy
-```
+The project uses:
+- **Vite** for fast development and building
+- **Tailwind CSS** for utility-first styling
+- **ESLint** for code quality
+- **TypeScript** for type safety
 
-## 🎯 Features Implemented
+## 📋 Features Overview
 
-### ✅ Authentication System
-- User registration with email verification
-- Secure login with JWT tokens
-- Password reset functionality
-- Refresh token rotation
-- Rate limiting for security
-- GDPR compliance features
+### Customer Features
+- Browse multiple restaurant menus
+- Customize orders with ingredients
+- Apply promo codes for discounts
+- Track order status in real-time
+- Save favorite items
+- Multi-language interface
 
-### ✅ Restaurant Management
-- Multi-restaurant support
-- Dynamic menu loading
-- Real-time availability updates
-- Advanced filtering and search
-- Category-based organization
+### Admin Features  
+- Order management dashboard
+- Inventory tracking
+- User management
+- Analytics and reporting
+- Real-time notifications
 
-### ✅ Order System
-- Shopping cart with customizations
-- Order tracking and history
-- Multiple payment methods
-- Delivery address management
-- Order status notifications
-
-### ✅ User Experience
+### Technical Features
 - Responsive design for all devices
-- Real-time updates and notifications
-- Favorites and wishlist
-- Loyalty points system
-- Multi-language support
+- Dark theme with modern UI
+- Smooth animations and transitions
+- Local storage for user preferences
+- Context-based state management
 
-## 🔒 Security Features
+## 🌐 Deployment
 
-- **JWT Authentication** with secure token management
-- **Password Hashing** using bcryptjs
-- **Rate Limiting** to prevent brute force attacks
-- **Input Validation** with express-validator
-- **CORS Protection** with proper configuration
-- **Security Headers** via Helmet.js
-- **MongoDB Injection Protection**
+Build the project for production:
 
-## 📊 Database Schema
-
-### User Schema
-```javascript
-{
-  email: String (required, unique),
-  password: String (hashed),
-  name: String,
-  phone: String,
-  role: String (customer/admin),
-  isActive: Boolean,
-  isEmailVerified: Boolean,
-  dataProcessingConsent: Boolean,
-  loyaltyPoints: Number,
-  addresses: [AddressSchema],
-  favoriteItems: [ObjectId],
-  refreshTokens: [TokenSchema],
-  // ... additional fields
-}
+```bash
+cd project
+npm run build
 ```
 
-### Restaurant Schema
-```javascript
-{
-  name: String,
-  description: String,
-  cuisine: [String],
-  location: LocationSchema,
-  rating: Number,
-  priceRange: String,
-  isActive: Boolean,
-  operatingHours: HoursSchema,
-  // ... additional fields
-}
-```
+The `dist` folder will contain the production-ready files.
 
-### Order Schema
-```javascript
-{
-  userId: ObjectId,
-  restaurantId: ObjectId,
-  items: [OrderItemSchema],
-  totalAmount: Number,
-  status: String,
-  deliveryAddress: AddressSchema,
-  paymentDetails: PaymentSchema,
-  timestamps: TimestampSchema,
-  // ... additional fields
-}
-```
+## 📄 Legal Compliance
 
-## 🚀 API Endpoints
+This project includes comprehensive German legal compliance documentation for restaurant businesses, covering:
 
-### Authentication
-- `POST /auth/register` - User registration
-- `POST /auth/login` - User login
-- `POST /auth/refresh` - Token refresh
-- `POST /auth/logout` - User logout
-- `GET /auth/profile` - Get user profile
-- `PUT /auth/profile` - Update profile
+- GDPR compliance requirements
+- Food service regulations  
+- Business registration details
+- Insurance and licensing
 
-### Restaurants
-- `GET /restaurants` - List all restaurants
-- `GET /restaurants/:id` - Get restaurant details
-- `GET /restaurants/:id/menu` - Get restaurant menu
-
-### Orders
-- `POST /orders` - Create new order
-- `GET /orders` - Get user orders
-- `GET /orders/:id` - Get order details
-- `PUT /orders/:id/status` - Update order status
-
-## 🔗 MongoDB Compass Connection
-
-To view the database in MongoDB Compass:
-1. **Connection String:** `mongodb://localhost:27018`
-2. **Database Name:** `mrhappy`
-3. **Collections:** users, restaurants, orders, categories, ingredients
-
-## 📈 Performance Optimizations
-
-- **Vite Build Optimization** for faster loading
-- **Icon Tree Shaking** to reduce bundle size
-- **MongoDB Indexing** for query performance
-- **Lazy Loading** for components
-- **Caching Strategies** for API responses
+See `RECHTLICHE_ANGABEN_CHECKLISTE.md` for details.
 
 ## 🤝 Contributing
 
@@ -247,11 +178,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- React team for the amazing framework
-- MongoDB team for the robust database
-- Lucide team for beautiful icons
-- Tailwind CSS team for the utility-first CSS framework
+- Built with love for the Mr.Happy restaurant family
+- Designed for the Bremen, Germany market
+- Special thanks to all beta testers and early users
 
 ---
 
-**MRhappy Restaurant Platform** - Bringing culinary experiences to your fingertips! 🍕🚀
+**Made with ❤️ in Bremen, Germany**
+
+For support or questions: info@mrhappy.de

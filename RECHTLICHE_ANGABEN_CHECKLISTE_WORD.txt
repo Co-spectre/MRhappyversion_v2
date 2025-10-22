@@ -1,0 +1,492 @@
+RECHTLICHE ANGABEN FÜR WEBSITE - CHECKLISTE
+
+Diese Informationen sind gesetzlich vorgeschrieben für eine rechtskonforme Website in Deutschland
+
+═══════════════════════════════════════════════════════════════════════════════
+
+1. UNTERNEHMENSDATEN (Pflichtangaben für Impressum)
+
+Diese Angaben müssen nach § 5 TMG (Telemediengesetz) im Impressum stehen
+
+Grundlegende Firmendaten:
+• Vollständiger Firmenname (exakt wie im Handelsregister eingetragen): 
+  _________________________________________________________________
+
+• Rechtsform (z.B. GmbH, UG haftungsbeschränkt, Einzelunternehmen, etc.): 
+  _________________________________________________________________
+
+• Geschäftsadresse (vollständige Anschrift mit Straße, Hausnummer, PLZ, Ort): 
+  _________________________________________________________________
+
+• Geschäftsführer/Inhaber (vollständiger Name des vertretungsberechtigten Geschäftsführers): 
+  _________________________________________________________________
+
+Registrierung:
+• Handelsregisternummer (z.B. HRB 12345): 
+  _________________________________________________________________
+
+• Registergericht (z.B. Amtsgericht Bremen): 
+  _________________________________________________________________
+
+• Umsatzsteuer-Identifikationsnummer (beginnt mit DE, z.B. DE123456789): 
+  _________________________________________________________________
+
+• Steuernummer (vom Finanzamt): 
+  _________________________________________________________________
+
+Zusätzliche Angaben (nur falls zutreffend):
+• Berufshaftpflichtversicherung (Name und Anschrift der Versicherung): 
+  _________________________________________________________________
+
+• Aufsichtsbehörde (nur bei regulierten Berufen): 
+  _________________________________________________________________
+
+• Berufsbezeichnung (nur bei Freiberuflern): 
+  _________________________________________________________________
+
+═══════════════════════════════════════════════════════════════════════════════
+
+2. KONTAKTDATEN
+
+Erreichbarkeit für Kunden und Behörden (§ 5 TMG)
+
+Hauptkontakt:
+• Telefonnummer (Hauptgeschäft, muss während Geschäftszeiten erreichbar sein): 
+  _________________________________________________________________
+
+• E-Mail-Adresse (allgemeine Anfragen, z.B. info@mrhappy.de): 
+  _________________________________________________________________
+
+• E-Mail für Datenschutz (z.B. datenschutz@mrhappy.de): 
+  _________________________________________________________________
+
+• E-Mail für Beschwerden (z.B. beschwerde@mrhappy.de): 
+  _________________________________________________________________
+
+Standorte:
+Vollständige Angaben für alle Geschäftsstellen
+
+STANDORT 1 - Mr.Happy Döner (Vegesack)
+• Vollständige Adresse (Straße, Hausnummer, PLZ, Ort): 
+  _________________________________________________________________
+
+• Telefonnummer (direkte Durchwahl dieses Standorts): 
+  _________________________________________________________________
+
+• Öffnungszeiten (z.B. Mo-Sa: 08:00-20:00, So: geschlossen): 
+  _________________________________________________________________
+
+STANDORT 2 - Mr.Happy Burger (Vegesack)
+• Vollständige Adresse (Straße, Hausnummer, PLZ, Ort): 
+  _________________________________________________________________
+
+• Telefonnummer (direkte Durchwahl dieses Standorts): 
+  _________________________________________________________________
+
+• Öffnungszeiten (z.B. Mo-Sa: 08:00-20:00, So: geschlossen): 
+  _________________________________________________________________
+
+STANDORT 3 - Mr.Happy Döner & Pizza (Schwanewede)
+• Vollständige Adresse (Straße, Hausnummer, PLZ, Ort): 
+  _________________________________________________________________
+
+• Telefonnummer (direkte Durchwahl dieses Standorts): 
+  _________________________________________________________________
+
+• Öffnungszeiten (z.B. täglich: 11:00-22:00): 
+  _________________________________________________________________
+
+═══════════════════════════════════════════════════════════════════════════════
+
+3. DATENSCHUTZ
+
+Pflichtangaben nach DSGVO (Datenschutz-Grundverordnung)
+
+Datenschutzbeauftragter:
+Ab 20 Personen mit regelmäßiger Datenverarbeitung ist ein DSB Pflicht
+
+• Haben Sie einen Datenschutzbeauftragten? 
+  ☐ Ja ☐ Nein
+
+• Falls ja - Vollständiger Name: 
+  _________________________________________________________________
+
+• E-Mail des Datenschutzbeauftragten: 
+  _________________________________________________________________
+
+• Ist der DSB intern oder extern? 
+  ☐ Intern ☐ Extern
+
+Aufsichtsbehörde:
+Zuständige Behörde für Datenschutzbeschwerden
+
+• Zuständige Datenschutz-Aufsichtsbehörde:
+  ☐ Die Landesbeauftragte für Datenschutz und Informationsfreiheit Bremen
+  ☐ Andere Landesbehörde: ________________________________________
+  ☐ Unsicher - bitte prüfen lassen
+
+═══════════════════════════════════════════════════════════════════════════════
+
+4. VERWENDETE DIENSTE (für Cookie-/Datenschutzerklärung)
+
+Alle externen Dienste müssen in der Datenschutzerklärung aufgeführt werden
+
+Zahlungsdienstleister:
+Welche Zahlungsanbieter nutzen Sie für Online-Zahlungen?
+
+☐ PayPal - Händler-ID oder Kontodetails: 
+  _________________________________________________________________
+
+☐ Stripe - Account-Details: 
+  _________________________________________________________________
+
+☐ Klarna - Händlernummer: 
+  _________________________________________________________________
+
+☐ SEPA-Lastschrift über eigene Bank
+
+☐ Andere: 
+  _________________________________________________________________
+
+Website-Dienste:
+Tracking und Analyse-Tools (wichtig für Cookie-Banner)
+
+☐ Google Analytics - Tracking-ID (UA- oder GA4-): 
+  _________________________________________________________________
+
+☐ Google Fonts - ☐ Lokal gehostet ☐ Von Google-Servern geladen
+
+☐ Google Maps - ☐ Ja, eingebettet ☐ Nein
+
+☐ Facebook Pixel - Pixel-ID: 
+  _________________________________________________________________
+
+☐ Instagram Integration - ☐ Ja ☐ Nein
+
+☐ YouTube Videos eingebettet - ☐ Ja ☐ Nein
+
+☐ Andere Tracking-Tools: 
+  _________________________________________________________________
+
+Hosting & Technische Dienste:
+Diese Informationen sind für die Datenschutzerklärung wichtig
+
+• Website-Hosting-Anbieter (Name und Ort des Servers): 
+  _________________________________________________________________
+
+• CDN-Anbieter (Content Delivery Network, falls verwendet): 
+  _________________________________________________________________
+
+• E-Mail-Provider (für Geschäfts-E-Mails): 
+  _________________________________________________________________
+
+• SSL-Zertifikat-Anbieter: 
+  _________________________________________________________________
+
+• Backup-Dienste: 
+  _________________________________________________________________
+
+Online-Bestellsystem:
+Falls Sie Online-Bestellungen anbieten
+
+☐ Eigenes Bestellsystem auf Website
+
+☐ Externes Bestellsystem - Anbieter: 
+  _________________________________________________________________
+
+☐ Nur telefonische Bestellungen
+
+☐ Nur Vor-Ort-Bestellungen
+
+Lieferdienste:
+Externe Plattformen für Bestellungen (falls genutzt)
+
+☐ Nur eigene Website/Telefon (kein Lieferservice)
+
+☐ Lieferando - Partnernummer: 
+  _________________________________________________________________
+
+☐ Uber Eats - Restaurant-ID: 
+  _________________________________________________________________
+
+☐ foodpanda - Partner-ID: 
+  _________________________________________________________________
+
+☐ Andere Lieferplattformen: 
+  _________________________________________________________________
+
+═══════════════════════════════════════════════════════════════════════════════
+
+5. SOCIAL MEDIA (für Verlinkungen)
+
+Nur aktive Profile angeben, die regelmäßig gepflegt werden
+
+Aktive Profile:
+
+☐ Facebook - Vollständige URL: 
+  _________________________________________________________________
+
+☐ Instagram - Vollständige URL: 
+  _________________________________________________________________
+
+☐ Twitter/X - Vollständige URL: 
+  _________________________________________________________________
+
+☐ TikTok - Vollständige URL: 
+  _________________________________________________________________
+
+☐ YouTube - Vollständige URL: 
+  _________________________________________________________________
+
+☐ WhatsApp Business - Nummer: 
+  _________________________________________________________________
+
+☐ Andere: 
+  _________________________________________________________________
+
+═══════════════════════════════════════════════════════════════════════════════
+
+6. GESCHÄFTLICHE DETAILS
+
+Für Allgemeine Geschäftsbedingungen (AGB) erforderlich
+
+Geschäftsmodell:
+Wichtig für AGB und Datenschutzerklärung
+
+☐ Nur Abholung (Pick-up)
+☐ Nur Lieferservice  
+☐ Beides (Abholung und Lieferung)
+
+Abholservice-Details (falls zutreffend):
+
+• Vorbestellzeit (wie lange vorher muss bestellt werden?): 
+  _________________________________________________________________
+
+• Abholzeiten (z.B. Mo-Sa: 10:00-19:30): 
+  _________________________________________________________________
+
+• Wartezeit bei Bestellung vor Ort: 
+  _________________________________________________________________
+
+• Parkplätze verfügbar: ☐ Ja ☐ Nein
+
+• Bestellung per Telefon möglich: ☐ Ja ☐ Nein
+
+• Online-Vorbestellung möglich: ☐ Ja ☐ Nein
+
+Liefergebiete (nur bei Lieferservice):
+Genaue Gebietsabgrenzung für transparente Lieferkosten
+
+• Liefergebiet Zone 1 (z.B. Bremen Innenstadt, kostenlos ab): 
+  €_________________________________________________________________
+
+• Liefergebühr Zone 1 (bei Unterschreitung des Mindestbestellwerts): 
+  €_________________________________________________________________
+
+• Liefergebiet Zone 2 (z.B. Bremen Außenbezirke): 
+  _________________________________________________________________
+
+• Liefergebühr Zone 2: 
+  €_________________________________________________________________
+
+• Mindestbestellwert (falls vorhanden): 
+  €_________________________________________________________________
+
+• Maximaler Lieferradius: 
+  _________________________________________________________________km
+
+Zahlungsarten:
+Alle angebotenen Zahlungsmöglichkeiten
+
+☐ Barzahlung bei Lieferung
+☐ EC-Karte bei Lieferung
+☐ Kreditkarte bei Lieferung
+☐ PayPal (online)
+☐ Vorkasse/Überweisung
+☐ SEPA-Lastschrift
+
+☐ Andere: 
+  _________________________________________________________________
+
+Geschäftsbedingungen:
+
+• Vorbestellzeit (wie lange im Voraus muss bestellt werden?): 
+  _________________________________________________________________
+
+• Stornierungsrichtlinie (bis wann kann storniert werden?): 
+  _________________________________________________________________
+
+• Wartezeit-Policy (was passiert bei längeren Wartezeiten?): 
+  _________________________________________________________________
+
+• Rückgaberichtlinie (bei Problemen mit dem Essen): 
+  _________________________________________________________________
+
+• Mindesthaltbarkeitsdatum-Policy: 
+  _________________________________________________________________
+
+• Sonderbestellungen möglich: ☐ Ja ☐ Nein (z.B. Catering, große Mengen)
+
+• Anzahlung bei Großbestellungen: ☐ Ja ☐ Nein - Ab welchem Betrag: 
+  €_________________________________________________________________
+
+═══════════════════════════════════════════════════════════════════════════════
+
+7. ZUSÄTZLICHE RECHTLICHE FRAGEN
+
+Spezielle Genehmigungen und Zertifikate für Gastronomiebetriebe
+
+Alkoholausschank:
+Nur bei Verkauf von alkoholischen Getränken relevant
+
+• Haben Sie eine Schankerlaubnis? ☐ Ja ☐ Nein
+
+• Falls ja - Erlaubnisnummer: 
+  _________________________________________________________________
+
+• Ausstellende Behörde: 
+  _________________________________________________________________
+
+Hygiene & Zertifikate:
+Qualitäts- und Herkunftsnachweise
+
+• Halal-Zertifizierung: ☐ Ja ☐ Nein - Zertifikat von: 
+  _________________________________________________________________
+
+• Bio-Zertifizierung: ☐ Ja ☐ Nein - Zertifizierungsstelle: 
+  _________________________________________________________________
+
+• Lebensmittelhygiene-Schulung - Letztes Datum: 
+  _________________________________________________________________
+
+• HACCP-Konzept vorhanden: ☐ Ja ☐ Nein
+
+• Allergen-Management-System: ☐ Ja ☐ Nein
+
+Versicherungen:
+Wichtige Haftungsabsicherungen
+
+• Betriebshaftpflichtversicherung - Versicherer und Versicherungssumme: 
+  _________________________________________________________________
+
+• Produkthaftpflichtversicherung - Versicherer: 
+  _________________________________________________________________
+
+• Cyber-Versicherung: ☐ Ja ☐ Nein - Versicherer: 
+  _________________________________________________________________
+
+• Rechtsschutzversicherung: ☐ Ja ☐ Nein
+
+Lebensmittelrecht:
+
+• Betriebsnummer nach VO (EG) 852/2004: 
+  _________________________________________________________________
+
+• Zuständiges Veterinäramt: 
+  _________________________________________________________________
+
+• Letzte Lebensmittelkontrolle (Datum): 
+  _________________________________________________________________
+
+Gaststättenrecht:
+Wichtige Genehmigungen für Gastronomiebetriebe
+
+• Gaststättenerlaubnis vorhanden: ☐ Ja ☐ Nein - Nummer: 
+  _________________________________________________________________
+
+• Ausstellende Behörde: 
+  _________________________________________________________________
+
+• Gültig bis: 
+  _________________________________________________________________
+
+• Konzessionsnehmer (Name): 
+  _________________________________________________________________
+
+Arbeitsrecht & Mitarbeiter:
+Bei Beschäftigung von Mitarbeitern relevant
+
+• Betriebsnummer der Agentur für Arbeit: 
+  _________________________________________________________________
+
+• Unfallversicherung (Berufsgenossenschaft): 
+  _________________________________________________________________
+
+• Mitgliedsnummer BG: 
+  _________________________________________________________________
+
+Steuerliche Angaben:
+
+• Finanzamt (zuständiges Amt): 
+  _________________________________________________________________
+
+• Steuerberater (Name und Adresse): 
+  _________________________________________________________________
+
+• Kassensystem-Anbieter (TSE-konform): 
+  _________________________________________________________________
+
+═══════════════════════════════════════════════════════════════════════════════
+
+8. WEITERE ANGABEN
+
+Zusätzliche Informationen für vollständige Rechtssicherheit
+
+Besondere Hinweise:
+
+• Allergene-Information (wie werden Allergene gekennzeichnet?): 
+  _________________________________________________________________
+
+• Besondere Diätangebote (vegan, glutenfrei, laktosefrei, etc.): 
+  _________________________________________________________________
+
+• Nährwertangaben verfügbar: ☐ Ja ☐ Nein
+
+• Herkunft der Hauptzutaten (z.B. "Fleisch aus Deutschland"): 
+  _________________________________________________________________
+
+Mitarbeiter & Schulungen:
+
+• Anzahl der Mitarbeiter insgesamt: 
+  _________________________________________________________________
+
+• Anzahl Mitarbeiter mit Kundendaten-Zugang: 
+  _________________________________________________________________
+
+• Datenschutz-Schulungen durchgeführt: ☐ Ja ☐ Nein - Letztes Datum: 
+  _________________________________________________________________
+
+Sonstige rechtliche Hinweise:
+
+• Besondere Geschäftsbedingungen (z.B. bei Events): 
+  _________________________________________________________________
+
+• Kooperationen mit anderen Unternehmen: 
+  _________________________________________________________________
+
+• Franchise-System: ☐ Ja ☐ Nein - Franchise-Geber: 
+  _________________________________________________________________
+
+═══════════════════════════════════════════════════════════════════════════════
+
+WICHTIG: 
+• Alle Angaben müssen wahrheitsgemäß und vollständig sein
+• Falsche oder unvollständige Angaben können zu kostenpflichtigen Abmahnungen führen
+• Bei Änderungen müssen die Website-Angaben binnen 4 Wochen aktualisiert werden
+• Diese Checkliste ersetzt keine Rechtsberatung - bei Unsicherheiten konsultieren Sie einen Anwalt für IT-Recht
+
+Datum der Ausfüllung: _________________________________
+
+Ausgefüllt von (Name und Position): _________________________________
+
+Unterschrift: _________________________________
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Diese Checkliste dient der Vollständigkeit der rechtlichen Angaben für die Website nach deutschem Recht (TMG, DSGVO, BGB). Alle Angaben sind nach bestem Wissen und Gewissen zu machen. Bei rechtlichen Unsicherheiten sollte unbedingt ein spezialisierter Rechtsanwalt für Internetrecht konsultiert werden.
+
+NÄCHSTE SCHRITTE NACH DEM AUSFÜLLEN:
+1. Ausgefüllte Checkliste an den Webentwickler senden
+2. Rechtliche Seiten werden mit echten Daten aktualisiert  
+3. Finale Überprüfung durch Rechtsanwalt (empfohlen)
+4. Regelmäßige Aktualisierung bei Änderungen

@@ -30,9 +30,6 @@ import ChefShowcaseSection from './components/ChefShowcaseSection';
 import SpecialOffersSection from './components/SpecialOffersSection';
 import { AdminDashboard } from './components/AdminDashboard';
 import { NotificationCenter } from './components/NotificationCenter';
-import LocationSelectionModal from './components/LocationSelectionModal';
-import LocationPermissionModal from './components/LocationPermissionModal';
-import { useLocation } from './context/LocationContext';
 
 // Component to handle notification gateway registration
 function NotificationGatewayConnector() {
@@ -82,65 +79,21 @@ function App() {
 
 function AppContent() {
   const { state: authState } = useAuth();
-  const { location: userLocation } = useLocation();
   const [currentView, setCurrentView] = useState<'home' | 'menu' | 'about' | 'orders' | 'my-orders' | 'admin' | 'impressum' | 'jobs' | 'privacy' | 'terms' | 'cookies' | 'allergens'>('home');
   const [selectedRestaurant, setSelectedRestaurant] = useState<string>('');
   const [viewTransition, setViewTransition] = useState(false);
-  const [showLocationModal, setShowLocationModal] = useState(false);
-  const [showLocationPermissionModal, setShowLocationPermissionModal] = useState(false);
 
-  // Show location permission modal on first visit if no location is saved
+  // Protect admin panel access
   useEffect(() => {
-    // Check if this is first visit and user has no saved location
-    const hasSeenLocationPrompt = localStorage.getItem('locationPromptSeen');
-    
-    if (!hasSeenLocationPrompt && !userLocation) {
-      // Delay showing modal by 1 second to let page load
-      const timer = setTimeout(() => {
-        setShowLocationPermissionModal(true);
-        localStorage.setItem('locationPromptSeen', 'true');
-      }, 1000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [userLocation]);
-
-  // Show location modal after successful login/registration if not verified
-  useEffect(() => {
-    if (authState.isAuthenticated && authState.user && !authState.user.locationVerified) {
-      setShowLocationModal(true);
-    }
-  }, [authState.isAuthenticated, authState.user]);
-
-  // Protect admin panel access - allow both 'admin' and 'restaurant-admin'
-  useEffect(() => {
-    if (currentView === 'admin') {
-      const hasAdminAccess = authState.user && 
-        (authState.user.role === 'admin' || authState.user.role === 'restaurant-admin');
-      
-      if (!hasAdminAccess) {
-        setCurrentView('home');
-      }
+    if (currentView === 'admin' && (!authState.user || authState.user.role !== 'admin')) {
+      setCurrentView('home');
     }
   }, [currentView, authState.user]);
 
-  const handleLocationComplete = () => {
-    setShowLocationModal(false);
-  };
-
-  const handleLocationPermissionConfirmed = () => {
-    setShowLocationPermissionModal(false);
-  };
-
   const handleViewChange = (view: string) => {
-    // Additional protection for admin panel - allow both 'admin' and 'restaurant-admin'
-    if (view === 'admin') {
-      const hasAdminAccess = authState.user && 
-        (authState.user.role === 'admin' || authState.user.role === 'restaurant-admin');
-      
-      if (!hasAdminAccess) {
-        return; // Don't allow navigation to admin panel
-      }
+    // Additional protection for admin panel
+    if (view === 'admin' && (!authState.user || authState.user.role !== 'admin')) {
+      return; // Don't allow navigation to admin panel
     }
     
     if (view !== currentView) {
@@ -282,20 +235,6 @@ function AppContent() {
           
           {/* Notification Center */}
           <NotificationCenter />
-
-          {/* Location Permission Modal - Shows on first visit */}
-          <LocationPermissionModal
-            isOpen={showLocationPermissionModal}
-            onClose={() => setShowLocationPermissionModal(false)}
-            onLocationConfirmed={handleLocationPermissionConfirmed}
-            requireLocation={false}
-          />
-
-          {/* Location Selection Modal - Shows after login/registration */}
-          <LocationSelectionModal 
-            isOpen={showLocationModal} 
-            onComplete={handleLocationComplete} 
-          />
         </>
       )}
     </div>

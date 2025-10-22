@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
-import { AuthUser, RESTAURANT_ADMINS } from '../types';
+import { AuthUser } from '../types';
 
 interface AuthState {
   user: AuthUser | null;
@@ -18,7 +18,7 @@ const AuthContext = createContext<{
   state: AuthState;
   dispatch: React.Dispatch<AuthAction>;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (email: string, password: string, name: string, phone?: string) => Promise<boolean>;
+  register: (email: string, password: string, name: string) => Promise<boolean>;
   logout: () => void;
   updateProfile: (updates: Partial<AuthUser>) => void;
   checkProfileComplete: () => boolean;
@@ -95,11 +95,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       let user: AuthUser;
       
       if (email === 'admin@mrhappy.com' && password === 'admin123') {
-        // Super Admin user - sees ALL restaurants
+        // Admin user
         user = {
           id: 'admin-1',
           email,
-          name: 'Super Admin',
+          name: 'Admin User',
           phone: '+49 555 123456',
           addresses: [],
           favoriteItems: [],
@@ -107,73 +107,52 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           createdAt: new Date('2024-12-01'),
           role: 'admin'
         };
+      } else if (email === 'customer@mrhappy.com' && password === 'customer123') {
+        // Demo customer
+        user = {
+          id: 'customer-1',
+          email,
+          name: 'Demo Customer',
+          phone: '+49 123 456789',
+          addresses: [
+            {
+              id: '1',
+              name: 'Home',
+              street: 'Hauptstraße 123',
+              city: 'Bremen',
+              state: 'Bremen',
+              zipCode: '28195',
+              isDefault: true
+            }
+          ],
+          favoriteItems: ['burger-1', 'burger-2'],
+          loyaltyPoints: 150,
+          createdAt: new Date('2025-01-15'),
+          role: 'customer'
+        };
       } else {
-        // Check for restaurant admin
-        const restaurantAdmin = RESTAURANT_ADMINS.find(
-          admin => admin.email === email && admin.password === password
-        );
-        
-        if (restaurantAdmin) {
-          // Restaurant Admin - sees only their restaurant
-          user = {
-            id: restaurantAdmin.id,
-            email: restaurantAdmin.email,
-            name: restaurantAdmin.restaurantName,
-            phone: restaurantAdmin.phone,
-            addresses: [],
-            favoriteItems: [],
-            loyaltyPoints: 0,
-            createdAt: new Date(),
-            role: 'restaurant-admin',
-            restaurantId: restaurantAdmin.restaurantId
-          };
-        } else if (email === 'customer@mrhappy.com' && password === 'customer123') {
-          // Demo customer
-          user = {
-            id: 'customer-1',
-            email,
-            name: 'Demo Customer',
-            phone: '+49 123 456789',
-            addresses: [
-              {
-                id: '1',
-                name: 'Home',
-                street: 'Hauptstraße 123',
-                city: 'Bremen',
-                state: 'Bremen',
-                zipCode: '28195',
-                isDefault: true
-              }
-            ],
-            favoriteItems: ['burger-1', 'burger-2'],
-            loyaltyPoints: 150,
-            createdAt: new Date('2025-01-15'),
-            role: 'customer'
-          };
-        } else {
-          // Generic user for any other email/password combination
-          user = {
-            id: Date.now().toString(),
-            email,
-            name: email.split('@')[0],
-            phone: '+49 555 000000',
-            addresses: [
-              {
-                id: '1',
-                name: 'Home',
-                street: 'Beispielstraße 1',
-                city: 'Bremen',
-                state: 'Bremen',
-                zipCode: '28199',
-                isDefault: true
-              }
-            ],
-            favoriteItems: [],
-            loyaltyPoints: 0,
-            createdAt: new Date(),
-            role: 'customer'
-          };
-        }
+        // Generic user for any other email/password combination
+        user = {
+          id: Date.now().toString(),
+          email,
+          name: email.split('@')[0],
+          phone: '+49 555 000000',
+          addresses: [
+            {
+              id: '1',
+              name: 'Home',
+              street: 'Beispielstraße 1',
+              city: 'Bremen',
+              state: 'Bremen',
+              zipCode: '28199',
+              isDefault: true
+            }
+          ],
+          favoriteItems: [],
+          loyaltyPoints: 0,
+          createdAt: new Date(),
+          role: 'customer'
+        };
       }
       
       localStorage.setItem('mr-happy-user', JSON.stringify(user));
@@ -185,7 +164,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const register = async (email: string, _password: string, name: string, phone?: string): Promise<boolean> => {
+  const register = async (email: string, _password: string, name: string): Promise<boolean> => {
     dispatch({ type: 'LOGIN_START' });
     
     try {
@@ -196,13 +175,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         id: Date.now().toString(),
         email,
         name,
-        phone: phone || undefined,
         addresses: [],
         favoriteItems: [],
         loyaltyPoints: 0,
-        createdAt: new Date(),
-        locationVerified: false,
-        emailVerified: false
+        createdAt: new Date()
       };
       
       localStorage.setItem('mr-happy-user', JSON.stringify(user));
@@ -230,12 +206,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const checkProfileComplete = (): boolean => {
     if (!state.user) return false;
     
-    // Check if all required profile fields are filled
-    const requiredFields = ['name', 'email', 'phone'];
-    return requiredFields.every(field => {
-      const value = state.user![field as keyof AuthUser];
-      return value && value.toString().trim().length > 0;
-    });
+    // Check if essential profile fields are filled
+    const hasName = !!state.user.name && state.user.name.trim().length > 0;
+    const hasPhone = !!state.user.phone && state.user.phone.trim().length > 0;
+    const hasAddress = state.user.addresses && state.user.addresses.length > 0;
+    
+    return hasName && hasPhone && hasAddress;
   };
 
   return (
